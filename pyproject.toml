@@ -13,12 +13,6 @@ description = "Smartspace Flows"
 authors = ["David Gentile <david.gentile@smartspace.ai>", "Denver Hayward <denver.hayward@smartspace.ai>"]
 
 
-
-[[tool.poetry.source]]
-name = "PyPI"
-priority = "primary"
-
-
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
 annotated-types = "0.5.0"
@@ -38,6 +32,11 @@ pytest-mock = "^3.12.0"
 mypy = "^1.8.0"
 pytest-cov = "^4.1.0"
 
+
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.0"
+mkdocs-material = "^9.5.28"
 
 [build-system]
 requires = ["poetry-core"]

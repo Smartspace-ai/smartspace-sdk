@@ -1,0 +1,21 @@
+site_name: Smartspace Flows
+site_url: "https://redesigned-happiness-lml15p6.pages.github.io/"
+repo_url: "https://github.com/Smartspace-ai/smartspace-flows"
+theme:
+  name: material
+  palette:
+    scheme: default
+    primary: custom
+    accent: custom
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo: assets/smartspace-logo-white.svg
+  favicon: assets/smartspace-favicon.webp
+  icon:
+    repo: fontawesome/brands/git-alt
+
+extra_css:
+  - stylesheets/extra.css
+nav:
+  - Home: index.md

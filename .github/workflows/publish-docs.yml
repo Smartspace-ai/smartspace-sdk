@@ -1,0 +1,35 @@
+name: Build/Publish Release Docs
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.10
+      - name: Load cached Poetry installation
+        id: cached-poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local # the path depends on the OS
+          key: poetry-0 # increment to reset cache
+      - name: Install Poetry
+        if: steps.cached-poetry.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
+      - name: Install library
+        run: poetry install --no-interaction --only docs
+      - name: Build Docs Website
+        run: |
+          # Extract major and minor from tag (assuming tag format is semver, e.g., 2.1.1) 
+          MAJOR_MINOR=$(echo ${{ github.event.release.tag_name }} | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+/\1/')
+          echo "Deploying docs for version $MAJOR_MINOR"
+          mike deploy --push --update-aliases $MAJOR_MINOR latest

@@ -1,6 +1,7 @@
 site_name: Smartspace Flows
 site_url: "https://redesigned-happiness-lml15p6.pages.github.io/"
 repo_url: "https://github.com/Smartspace-ai/smartspace-flows"
+
 theme:
   name: material
   palette:
@@ -19,3 +20,14 @@ extra_css:
   - stylesheets/extra.css
 nav:
   - Home: index.md
+
+plugins:
+  - mike:
+      # These fields are all optional; the defaults are as below...
+      alias_type: symlink
+      redirect_template: null
+      deploy_prefix: ""
+      canonical_version: null
+      version_selector: true
+      css_dir: css
+      javascript_dir: js

@@ -8,7 +8,7 @@ filterwarnings = [
 
 [tool.poetry]
 name = "smartspace"
-version = "0.0.0"
+version = "0.1.0"
 description = "Smartspace Flows"
 authors = ["David Gentile <david.gentile@smartspace.ai>", "Denver Hayward <denver.hayward@smartspace.ai>"]
 
@@ -37,6 +37,7 @@ pytest-cov = "^4.1.0"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.6.0"
 mkdocs-material = "^9.5.28"
+mike = "^2.1.2"
 
 [build-system]
 requires = ["poetry-core"]

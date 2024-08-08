@@ -1,25 +1,60 @@
-site_name: Smartspace Flows
+site_name: Smartspace Workflow Documentation
 site_url: "https://redesigned-happiness-lml15p6.pages.github.io/"
 repo_url: "https://github.com/Smartspace-ai/smartspace-flows"
 
 theme:
+  features:
+    - navigation.footer
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - toc.follow
+  favicon: assets/smartspace-favicon.webp
+  font:
+    text: Roboto
+    code: Roboto Mono
+  icon:
+    repo: fontawesome/brands/git-alt
+  logo: assets/smartspace_small_logo_white.png
   name: material
   palette:
     scheme: default
     primary: custom
     accent: custom
-  font:
-    text: Roboto
-    code: Roboto Mono
-  logo: assets/smartspace-logo-white.svg
-  favicon: assets/smartspace-favicon.webp
-  icon:
-    repo: fontawesome/brands/git-alt
+
+markdown_extensions:
+  - toc:
+      permalink: true
 
 extra_css:
   - stylesheets/extra.css
 nav:
   - Home: index.md
+  - Getting Started: getting-started/index.md
+  - Concepts:
+      - Overview: concepts/index.md
+      - Blocks:
+          - Overview: concepts/blocks/index.md
+          - Inputs: concepts/blocks/block-inputs.md
+          - Steps: concepts/blocks/block-steps.md
+          - Tools: concepts/blocks/block-tools.md
+          - State: concepts/blocks/block-state.md
+          - Outputs: concepts/blocks/block-outputs.md
+      - Custom Blocks:
+          - Building Your Own Blocks: concepts/custom-blocks/index.md
+          - Deploying Custom Blocks: concepts/custom-blocks/deploying.md
+      - Connections:
+          - Linking blocks: concepts/connections/index.md
+      - Building Flows:
+          - Flow Definition: concepts/flows/flow-definition.md
+          - Flow Deployment: concepts/flows/flow-deployment.md
+          - Flow Execution: concepts/flows/flow-execution.md
+  - Examples: examples/index.md
+  - API Reference: api/index.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
 
 plugins:
   - search

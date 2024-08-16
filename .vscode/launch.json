@@ -6,7 +6,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "smartspace",
-            "args": ["blocks", "debug", "--poll", "--path", ".local"]
+            "args": [
+                "blocks",
+                "debug",
+                "--poll"
+            ]
         }
     ]
 }

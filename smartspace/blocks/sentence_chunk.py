@@ -56,6 +56,11 @@ class SentenceChunk(Block):
         )
         try:
             nodes = splitter.get_nodes_from_documents(documents)
-            return [node.text for node in nodes]
+            text_chunks = [node.text for node in nodes]
+            if len(text_chunks) == 0:
+                text_chunks = [
+                    ""
+                ]  # there is not sentence to chunk, therefore the result is empty
+            return text_chunks
         except Exception as e:
             raise RuntimeError(f"Error during chunking: {str(e)}")

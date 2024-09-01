@@ -8,7 +8,7 @@ from smartspace.enums import BlockCategory
     category=BlockCategory.FUNCTION,
     description="regex-based pattern matching on a string input, returning a list of all matches found.",
 )
-class Regex(Block):
+class RegexMatch(Block):
     """
     Input:
         1. a string input

@@ -26,7 +26,7 @@ class SemanticChunk(Block):
 
     breakpoint_percentile_threshold: Config[int] = 95
 
-    chunk_model: Config[str] = "BAAI/bge-small-en-v1.5"
+    model_name: Config[str] = "BAAI/bge-small-en-v1.5"
 
     @step(output_name="result")
     async def semantic_chunk(self, text: str | list[str]) -> list[str]:
@@ -37,7 +37,7 @@ class SemanticChunk(Block):
 
         documents = [Document(text=doc_text) for doc_text in doc_text_list]
 
-        embed_model = HuggingFaceEmbedding(model_name=self.chunk_model)
+        embed_model = HuggingFaceEmbedding(model_name=self.model_name)
 
         splitter = SemanticSplitterNodeParser(
             buffer_size=self.buffer_size,

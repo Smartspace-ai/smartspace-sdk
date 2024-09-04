@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from transformers import AutoTokenizer
 
 from smartspace.blocks.sentence_chunk import SentenceChunk
 
@@ -14,6 +15,7 @@ def mock_block():
         separator=" ",
         paragraph_separator="\n\n\n",
         secondary_chunking_regex="[^,.;]+[,.;]?",
+        model_name="gpt-3.5-turbo",
     )
 
 
@@ -71,6 +73,8 @@ async def test_chunk_with_custom_config(mock_block: Mock):
         "[^,.]+[,.]?"  # new regex means split by comma or period
     )
 
+    mock_block.model_name = "HuggingFaceH4/zephyr-7b-beta"
+
     mocked_chunk = SentenceChunk(Mock(), Mock())
     input_text = (
         "This is a sample text for testing token chunking with custom configuration."
@@ -97,3 +101,18 @@ async def test_chunk_error_handling(mock_block: Mock):
             await mocked_chunk.sentence_chunk._fn(mock_block, input_text)
 
         assert "Error during chunking" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_chunk_tokenizer_error_handling(mock_block: Mock):
+    mock_block.model_name = "non_existent_model"
+    mocked_chunk = SentenceChunk(Mock(), Mock())
+    input_text = "This is a sample text. "
+
+    with patch.object(
+        AutoTokenizer, "from_pretrained", side_effect=Exception("Tokenizer error")
+    ):
+        with pytest.raises(RuntimeError) as exc_info:
+            await mocked_chunk.sentence_chunk._fn(mock_block, input_text)
+
+        assert "Error loading tokenizer for model" in str(exc_info.value)

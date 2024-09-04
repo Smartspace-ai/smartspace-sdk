@@ -1,7 +1,10 @@
+import tiktoken
 from llama_index.core import Document
 from llama_index.core.node_parser import (
     SentenceSplitter,
 )
+from tiktoken.model import MODEL_TO_ENCODING
+from transformers import AutoTokenizer
 
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
@@ -35,11 +38,25 @@ class SentenceChunk(Block):
 
     separator: Config[str] = " "
     paragraph_separator: Config[str] = "\n\n\n"
+    model_name: Config[str] = "gpt-3.5-turbo"
 
     secondary_chunking_regex: Config[str] = "[^,.;。？！]+[,.;。？！]?"
 
     @step(output_name="result")
     async def sentence_chunk(self, text: str | list[str]) -> list[str]:
+        # get the tokenizer for the model
+        tiktoken_models = MODEL_TO_ENCODING.keys()
+
+        if self.model_name in tiktoken_models:
+            tokenizer = tiktoken.encoding_for_model(model_name=self.model_name).encode
+        else:
+            try:
+                tokenizer = AutoTokenizer.from_pretrained(self.model_name).encode
+            except Exception as e:
+                raise RuntimeError(
+                    f"Error loading tokenizer for model {self.model_name}: {str(e)}"
+                )
+
         if isinstance(text, str):
             doc_text_list = [text]
         else:
@@ -53,6 +70,7 @@ class SentenceChunk(Block):
             separator=self.separator,
             paragraph_separator=self.paragraph_separator,
             secondary_chunking_regex=self.secondary_chunking_regex,
+            tokenizer=tokenizer,
         )
         try:
             nodes = splitter.get_nodes_from_documents(documents)

@@ -3,24 +3,15 @@ from datetime import datetime, timezone
 from typing import Annotated, Any, ClassVar, Tuple
 from uuid import UUID
 
-import pydantic
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
     PlainSerializer,
-    TypeAdapter,
     model_serializer,
 )
 
-
-def _nullable_schema_override(
-    self, schema: Any
-) -> pydantic.json_schema.JsonSchemaValue:
-    return self.generate_inner(schema["schema"])
-
-
-pydantic.json_schema.GenerateJsonSchema.nullable_schema = _nullable_schema_override  # type: ignore
+from smartspace.utils import _get_type_adapter
 
 
 class BlockReference(BaseModel):
@@ -121,7 +112,8 @@ class InputInterface(IOCInterface):
 class OutputInterface(IOCInterface): ...
 
 
-class ConfigInterface(IOCInterface): ...
+class ConfigInterface(IOCInterface):
+    default_value: Annotated[Any, Field(alias="defaultValue")]
 
 
 class ToolInterface(BaseModel):
@@ -233,7 +225,9 @@ class FlowIODefinition(BaseModel):
 
     @classmethod
     def from_type(cls, name: str, t: type):
-        return FlowIODefinition(name=name, json_schema=TypeAdapter(t).json_schema())
+        return FlowIODefinition(
+            name=name, json_schema=_get_type_adapter(t).json_schema()
+        )
 
 
 class ValueSourceType(enum.Enum):

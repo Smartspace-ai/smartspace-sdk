@@ -206,17 +206,17 @@ def debug(path: str = "", poll: bool = False):
 
         for block_interface, _ in updated_blocks:
             print(f"Updating {block_interface.name}")
-            data = block_interface.model_dump(by_alias=True)
+            data = block_interface.model_dump(by_alias=True, mode="json")
             await client.send("registerblock", [data])
 
         for block_interface, _ in new_blocks:
             print(f"Registering {block_interface.name}")
-            data = block_interface.model_dump(by_alias=True)
+            data = block_interface.model_dump(by_alias=True, mode="json")
             await client.send("registerblock", [data])
 
         for block_interface, _ in removed_blocks:
             print(f"Removing {block_interface.name}")
-            data = block_interface.model_dump(by_alias=True)
+            data = block_interface.model_dump(by_alias=True, mode="json")
             await client.send("removeblock", [data])
 
         blocks.clear()

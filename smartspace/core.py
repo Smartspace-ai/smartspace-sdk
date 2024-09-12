@@ -1,7 +1,6 @@
 import abc
 import asyncio
 import inspect
-import json
 from functools import lru_cache, partial
 from typing import (
     Annotated,
@@ -20,7 +19,7 @@ from typing import (
 )
 
 from more_itertools import first
-from pydantic import BaseModel, TypeAdapter
+from pydantic import BaseModel
 from typing_extensions import get_origin
 
 from smartspace.enums import BlockCategory
@@ -51,17 +50,13 @@ from smartspace.models import (
     ValueSourceRef,
     ValueSourceType,
 )
-from smartspace.utils import _issubclass
+from smartspace.utils import _get_type_adapter, _issubclass
 
 B = TypeVar("B", bound="Block")
 S = TypeVar("S")
 T = TypeVar("T")
 R = TypeVar("R")
 P = ParamSpec("P")
-
-
-def _issubclass(cls, base):
-    return inspect.isclass(cls) and issubclass(get_origin(cls) or cls, base)
 
 
 @lru_cache(maxsize=1000)
@@ -88,9 +83,7 @@ def _get_input_interfaces(callable: Callable) -> list["InputInterface"]:
     return [
         InputInterface(
             name=name,
-            json_schema=TypeAdapter(annotation).json_schema()
-            if annotation is not inspect.Parameter.empty
-            else {},
+            json_schema=_get_type_adapter(annotation).json_schema(),
             sticky=any(
                 [
                     metadata.sticky
@@ -116,9 +109,7 @@ def _get_output_interface(name: str, callable: Callable) -> "OutputInterface | N
     if return_type:
         return OutputInterface(
             name=name,
-            json_schema=TypeAdapter(return_type).json_schema()
-            if return_type is not inspect.Parameter.empty
-            else {},
+            json_schema=_get_type_adapter(return_type).json_schema(),
         )
     else:
         return None
@@ -127,18 +118,43 @@ def _get_output_interface(name: str, callable: Callable) -> "OutputInterface | N
 def _get_configs(cls) -> list["ConfigInterface"]:
     configs: list[ConfigInterface] = []
     for field_name, field_type in cls.__annotations__.items():
-        for m in getattr(field_type, "__metadata__", []):
+        annotations = getattr(field_type, "__metadata__", [])
+
+        for m in annotations:
             if m is ConfigValue:
                 if len(field_type.__args__) != 1:
                     raise Exception("Outputs must have exactly one type.")
 
+                metadata = first(
+                    (
+                        metadata.data
+                        for metadata in annotations
+                        if type(metadata) is Metadata
+                    ),
+                    {},
+                )
+
                 config_type = field_type.__args__[0]
+                type_adapter = _get_type_adapter(config_type)
+                no_default = "__no_default__"
+                default_value = (
+                    getattr(cls, field_name, no_default)
+                    or type_adapter.get_default_value()
+                )
+                if default_value is no_default:
+                    try:
+                        default_value = type_adapter.dump_python(
+                            config_type(), mode="json"
+                        )
+                    except Exception:
+                        default_value = None
+
                 configs.append(
                     ConfigInterface(
                         name=field_name,
-                        json_schema=TypeAdapter(config_type).json_schema()
-                        if config_type is not inspect.Parameter.empty
-                        else {},
+                        json_schema=type_adapter.json_schema(),
+                        default_value=default_value,
+                        metadata=metadata,
                     )
                 )
 
@@ -190,24 +206,13 @@ class State:
     ):
         self.step_id = step_id
         self.input_ids = input_ids
-        self.default_value_class = default_value.__class__
-        self.default_value_is_pydantic_model = _issubclass(
-            self.default_value_class, BaseModel
-        )
-        self.default_value_json = (
-            json.dumps(default_value)
-            if not self.default_value_is_pydantic_model
-            else cast(BaseModel, default_value).model_dump_json()
-        )
+        self.default_value_type_adapter = _get_type_adapter(default_value.__class__)
+        self.default_value_json = self.default_value_type_adapter.dump_json(
+            default_value
+        ).decode()
 
     def get_default_value(self) -> Any | None:
-        return (
-            json.loads(self.default_value_json)
-            if not self.default_value_is_pydantic_model
-            else cast(type[BaseModel], self.default_value_class).model_validate_json(
-                self.default_value_json
-            )
-        )
+        return self.default_value_type_adapter.validate_json(self.default_value_json)
 
     def interface(self, name: str) -> StateInterface:
         return StateInterface(
@@ -299,8 +304,14 @@ class EmitOutputValueFunction(Protocol):
     ) -> FlowValue: ...
 
 
+class BlockError(BaseModel):
+    message: str
+    data: Any = None
+
+
 class Block:
     metadata: ClassVar[dict] = {}
+    error: Output[BlockError]
 
     def __init__(
         self,
@@ -367,18 +378,11 @@ class Block:
         for config_name, config_definition in self._definition.configs.items():
             field_type = self.__class__.__annotations__[config_name]
             config_type = field_type.__args__[0]
-
-            if _issubclass(config_type, BaseModel) and isinstance(
-                config_definition.value, dict
-            ):
-                config_type = cast(type[BaseModel], config_type)
-                setattr(
-                    self,
-                    config_name,
-                    config_type.model_validate(config_definition.value),
-                )
-            else:
-                setattr(self, config_name, config_definition.value)
+            setattr(
+                self,
+                config_name,
+                _get_type_adapter(config_type).validate_python(config_definition.value),
+            )
 
         tool_groups: dict[str, dict[str, Tool]] = {
             field_name: {}
@@ -459,7 +463,10 @@ class Block:
         states: list[StateInterface] = []
         configs = _get_configs(cls)
 
-        for field_name, field_type in cls.__annotations__.items():
+        for field_name, field_type in {
+            **cls.__annotations__,
+            **Block.__annotations__,
+        }.items():
             o = get_origin(field_type)
             if o is Output:
                 if len(field_type.__args__) != 1:
@@ -469,9 +476,7 @@ class Block:
                 outputs.append(
                     OutputInterface(
                         name=field_name,
-                        json_schema=TypeAdapter(output_type).json_schema()
-                        if output_type is not inspect.Parameter.empty
-                        else {},
+                        json_schema=_get_type_adapter(output_type).json_schema(),
                     )
                 )
             elif _issubclass(field_type, Tool):
@@ -623,21 +628,11 @@ class StepInstance(Generic[B, P, T]):
 
         for input_name, value in kwargs.items():
             input_type = input_types[input_name]
-            o = get_origin(input_type)
-            if _issubclass(input_type, BaseModel) and isinstance(value, dict):
-                input_type = cast(type[BaseModel], input_type)
-                step_kwargs[input_name] = input_type.model_validate(value)
-            elif o is list:
-                value = cast(list[Any], value)
-                item_type: type = input_type.__args__[0]
-                if _issubclass(item_type, BaseModel) and isinstance(value, dict):
-                    step_kwargs[input_name] = [item_type.validate(v) for v in value]
-                else:
-                    step_kwargs[input_name] = value
-            else:
-                step_kwargs[input_name] = value
+            step_kwargs[input_name] = _get_type_adapter(input_type).validate_python(
+                value
+            )
 
-        result = await self.step._fn(self.parent_block, *tuple(), **kwargs)
+        result = await self.step._fn(self.parent_block, *tuple(), **step_kwargs)
         if self.output:
             self.output.emit(result)
         return result

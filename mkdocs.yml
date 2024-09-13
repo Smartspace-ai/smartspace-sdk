@@ -27,34 +27,49 @@ theme:
 markdown_extensions:
   - toc:
       permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 
 extra_css:
   - stylesheets/extra.css
 nav:
   - Home: index.md
-  - Getting Started: getting-started/index.md
-  - Concepts:
-      - Overview: concepts/index.md
-      - Blocks:
-          - Overview: concepts/blocks/index.md
-          - Inputs: concepts/blocks/block-inputs.md
-          - Steps: concepts/blocks/block-steps.md
-          - Tools: concepts/blocks/block-tools.md
-          - State: concepts/blocks/block-state.md
-          - Outputs: concepts/blocks/block-outputs.md
-      - Custom Blocks:
-          - Building Your Own Blocks: concepts/custom-blocks/index.md
-          - Deploying Custom Blocks: concepts/custom-blocks/deploying.md
-      - Connections:
-          - Linking blocks: concepts/connections/index.md
-      - Building Flows:
-          - Flow Definition: concepts/flows/flow-definition.md
-          - Flow Deployment: concepts/flows/flow-deployment.md
-          - Flow Execution: concepts/flows/flow-execution.md
-  - Examples: examples/index.md
-  - API Reference: api/index.md
-  - Contributing: contributing.md
-  - Changelog: changelog.md
+  - Block Reference:
+      - Overview: block-reference/index.md
+      - All Blocks: block-reference/all-blocks.md
+      - Agent:
+          - LLM: block-reference/llm.md
+      - Data:
+          - SQLServer: block-reference/SQLServer.md
+      - Text:
+          - JoinStrings: block-reference/JoinStrings.md
+  # - Getting Started: getting-started/index.md
+  # - Concepts:
+  #     - Overview: concepts/index.md
+  #     - Blocks:
+  #         - Overview: concepts/blocks/index.md
+  #         - Inputs: concepts/blocks/block-inputs.md
+  #         - Steps: concepts/blocks/block-steps.md
+  #         - Tools: concepts/blocks/block-tools.md
+  #         - State: concepts/blocks/block-state.md
+  #         - Outputs: concepts/blocks/block-outputs.md
+  #     - Custom Blocks:
+  #         - Building Your Own Blocks: concepts/custom-blocks/index.md
+  #         - Deploying Custom Blocks: concepts/custom-blocks/deploying.md
+  #     - Connections:
+  #         - Linking blocks: concepts/connections/index.md
+  #     - Building Flows:
+  #         - Flow Definition: concepts/flows/flow-definition.md
+  #         - Flow Deployment: concepts/flows/flow-deployment.md
+  #         - Flow Execution: concepts/flows/flow-execution.md
+  # - Examples: examples/index.md
+  # - API Reference: api/index.md
+
+  # - Contributing: contributing.md
+  # - Changelog: changelog.md
 
 plugins:
   - search
@@ -67,8 +82,13 @@ plugins:
       version_selector: true
       css_dir: css
       javascript_dir: js
+  - macros:
+      module_name: docs/macros
 
 extra:
   version:
     provider: mike
     alias: true
+
+exclude_docs: |
+  BLOCK-TEMPLATE.md

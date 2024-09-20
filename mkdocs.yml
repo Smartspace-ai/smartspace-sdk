@@ -46,9 +46,9 @@ nav:
           - SQLServer: block-reference/SQLServer.md
       - Text:
           - JoinStrings: block-reference/JoinStrings.md
-  # - Getting Started: getting-started/index.md
-  # - Concepts:
-  #     - Overview: concepts/index.md
+  - Concepts:
+      - Overview: concepts/index.md
+      - Channels: concepts/channels.md
   #     - Blocks:
   #         - Overview: concepts/blocks/index.md
   #         - Inputs: concepts/blocks/block-inputs.md
@@ -65,6 +65,7 @@ nav:
   #         - Flow Definition: concepts/flows/flow-definition.md
   #         - Flow Deployment: concepts/flows/flow-deployment.md
   #         - Flow Execution: concepts/flows/flow-execution.md
+  # - Getting Started: getting-started/index.md
   # - Examples: examples/index.md
   # - API Reference: api/index.md
 

@@ -1,3 +1,5 @@
+from typing import Annotated
+
 import tiktoken
 from llama_index.core import Document
 from llama_index.core.node_parser import (
@@ -32,12 +34,12 @@ from smartspace.enums import BlockCategory
     """,
 )
 class TokenChunk(Block):
-    chunk_size: Config[int] = 200
-    chunk_overlap: Config[int] = 10
-    separator: Config[str] = " "
-    model_name: Config[str] = "gpt-3.5-turbo"
+    chunk_size: Annotated[int, Config()] = 200
+    chunk_overlap: Annotated[int, Config()] = 10
+    separator: Annotated[str, Config()] = " "
+    model_name: Annotated[str, Config()] = "gpt-3.5-turbo"
 
-    # backup_separators: Config[List] # description="Additional separators for splitting."
+    # backup_separators: Annotated[List] # description="Additional separators for splitting."
 
     @step(output_name="result")
     async def token_chunk(self, text: str | list[str]) -> list[str]:

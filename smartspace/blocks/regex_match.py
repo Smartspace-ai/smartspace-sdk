@@ -1,4 +1,5 @@
 import re
+from typing import Annotated
 
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
@@ -16,7 +17,9 @@ class RegexMatch(Block):
     Output: a list of match results of a regex expression
     """
 
-    regex: Config[str] = r".*"  # Default pattern to match the entire string
+    regex: Annotated[str, Config()] = (
+        r".*"  # Default pattern to match the entire string
+    )
 
     @step(output_name="result")
     async def regex_match(self, input_strings: str) -> list[str]:

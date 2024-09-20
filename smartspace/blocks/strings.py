@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from smartspace.core import (
     Block,
@@ -7,17 +7,14 @@ from smartspace.core import (
 )
 from smartspace.enums import BlockCategory
 
+SequenceT = TypeVar("SequenceT", bound=str | list[Any])
+
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Concatenates 2 lists or strings",
 )
-class Concat(Block):
+class Concat(Block, Generic[SequenceT]):
     @step(output_name="result")
-    async def concat(self, a: str | list[Any], b: str | list[Any]) -> str | list[Any]:
-        if (isinstance(a, str) and isinstance(b, list)) or (
-            isinstance(a, list) and isinstance(b, str)
-        ):
-            raise Exception("a and b must either both be strings or both be lists")
-
+    async def concat(self, a: SequenceT, b: SequenceT) -> SequenceT:
         return a + b  # type: ignore

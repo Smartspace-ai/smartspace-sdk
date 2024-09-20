@@ -50,13 +50,13 @@ class HTTPError(Exception):
     category=BlockCategory.FUNCTION,
 )
 class HTTPRequest(Block):
-    timeout: Config[int] = 30  # Timeout in seconds
+    timeout: Annotated[int, Config()] = 30  # Timeout in seconds
 
-    method: Config[HTTPMethod] = HTTPMethod.GET
-    url: Config[str] = ""
-    headers: Config[dict[str, Any] | None] = None
-    query_params: Config[dict[str, Any] | None] = None
-    body: Config[dict[str, Any] | None] = None
+    method: Annotated[HTTPMethod, Config()] = HTTPMethod.GET
+    url: Annotated[str, Config()] = ""
+    headers: Annotated[dict[str, Any] | None, Config()] = None
+    query_params: Annotated[dict[str, Any] | None, Config()] = None
+    body: Annotated[dict[str, Any] | None, Config()] = None
 
     @step(output_name="response")
     async def make_request(

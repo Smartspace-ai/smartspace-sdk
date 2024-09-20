@@ -42,7 +42,7 @@ class ParseJson(Block):
     obsolete=True,
 )
 class GetJsonField(Block):
-    json_field_structure: Config[str]
+    json_field_structure: Annotated[str, Config()]
 
     @step(output_name="field")
     async def get(self, json_object: Any) -> Any:
@@ -63,7 +63,7 @@ class GetJsonField(Block):
     description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/",
 )
 class Get(Block):
-    path: Config[str]
+    path: Annotated[str, Config()]
 
     @step(output_name="result")
     async def get(self, data: list[Any] | dict[str, Any]) -> Any:
@@ -80,7 +80,7 @@ class Get(Block):
     description="Merges objects from two lists by matching on the configured key",
 )
 class MergeLists(Block):
-    key: Config[str]
+    key: Annotated[str, Config()]
 
     @step(output_name="result")
     async def merge_lists(

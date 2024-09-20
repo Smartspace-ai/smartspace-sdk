@@ -6,3 +6,13 @@ class BlockCategory(Enum):
     FUNCTION = {"name": "Function", "description": "A callable entity"}
     DATA = {"name": "Data", "description": "A data entity"}
     CUSTOM = {"name": "Custom", "description": "A custom entity"}
+
+
+class ChannelEvent(Enum):
+    DATA = "Data"
+    CLOSE = "Close"
+
+
+class ChannelState(Enum):
+    OPEN = "Open"
+    CLOSED = "Closed"

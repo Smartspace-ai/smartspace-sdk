@@ -1,3 +1,5 @@
+from typing import Annotated
+
 import tiktoken
 from llama_index.core import Document
 from llama_index.core.node_parser import (
@@ -33,14 +35,14 @@ from smartspace.enums import BlockCategory
     """,
 )
 class SentenceChunk(Block):
-    chunk_size: Config[int] = 200
-    chunk_overlap: Config[int] = 10
+    chunk_size: Annotated[int, Config()] = 200
+    chunk_overlap: Annotated[int, Config()] = 10
 
-    separator: Config[str] = " "
-    paragraph_separator: Config[str] = "\n\n\n"
-    model_name: Config[str] = "gpt-3.5-turbo"
+    separator: Annotated[str, Config()] = " "
+    paragraph_separator: Annotated[str, Config()] = "\n\n\n"
+    model_name: Annotated[str, Config()] = "gpt-3.5-turbo"
 
-    secondary_chunking_regex: Config[str] = "[^,.;。？！]+[,.;。？！]?"
+    secondary_chunking_regex: Annotated[str, Config()] = "[^,.;。？！]+[,.;。？！]?"
 
     @step(output_name="result")
     async def sentence_chunk(self, text: str | list[str]) -> list[str]:

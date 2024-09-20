@@ -24,9 +24,11 @@ def config(
         tenant_id=current_config["tenant_id"] if tenantId is None else tenantId,
         client_id=current_config["client_id"] if clientId is None else clientId,
     )
-    save_config(new_config)
 
-    print("Config updated")
+    if apiUrl or tenantId or clientId:
+        save_config(new_config)
+        print("Config updated")
+
     print(json.dumps(new_config, indent=2))
 
 

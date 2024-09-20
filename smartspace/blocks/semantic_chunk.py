@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from llama_index.core import Document
 from llama_index.core.node_parser import (
     SemanticSplitterNodeParser,
@@ -22,11 +24,11 @@ from smartspace.enums import BlockCategory
     """,
 )
 class SemanticChunk(Block):
-    buffer_size: Config[int] = 1
+    buffer_size: Annotated[int, Config()] = 1
 
-    breakpoint_percentile_threshold: Config[int] = 95
+    breakpoint_percentile_threshold: Annotated[int, Config()] = 95
 
-    model_name: Config[str] = "BAAI/bge-small-en-v1.5"
+    model_name: Annotated[str, Config()] = "BAAI/bge-small-en-v1.5"
 
     @step(output_name="result")
     async def semantic_chunk(self, text: str | list[str]) -> list[str]:

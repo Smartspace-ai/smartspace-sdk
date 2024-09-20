@@ -1,105 +1,109 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, Generic, TypeVar
 
 from more_itertools import flatten
 
 from smartspace.core import (
     Block,
+    ChannelEvent,
     Config,
-    InputConfig,
+    InputChannel,
     Output,
+    OutputChannel,
     State,
     Tool,
     callback,
     metadata,
     step,
 )
-from smartspace.enums import BlockCategory
+from smartspace.enums import BlockCategory, ChannelState
+
+ItemT = TypeVar("ItemT")
+ResultT = TypeVar("ResultT")
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
 )
-class Map(Block):
+class Map(Block, Generic[ItemT, ResultT]):
     class Operation(Tool):
-        def run(self, item: Any) -> Any: ...
+        def run(self, item: ItemT) -> ResultT: ...
 
     run: Operation
 
-    results: Output[list[Any]]
+    results: Output[list[ResultT]]
 
     count: Annotated[
         int,
         State(
             step_id="map",
             input_ids=["items"],
-            default_value=0,
         ),
-    ]
+    ] = 0
 
     results_state: Annotated[
         list[Any],
         State(
             step_id="map",
             input_ids=["items"],
-            default_value=[],
         ),
-    ]
+    ] = []
 
     @step()
-    async def map(self, items: list[Any]):
+    async def map(self, items: list[ItemT]):
         if len(items) == 0:
-            self.results.emit([])
+            self.results.send([])
             return
 
         self.results_state = [None] * len(items)
         self.count = len(items)
         for i, item in enumerate(items):
-            self.run.call(item).then(lambda result: self.collect(result, i))
+            await self.run.call(item).then(lambda result: self.collect(result, i))
 
     @callback()
     async def collect(
         self,
-        result: Any,
+        result: ResultT,
         index: int,
     ):
         self.results_state[index] = result
         self.count -= 1
 
         if self.count == 0:
-            self.results.emit(self.results_state)
+            self.results.send(self.results_state)
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Collects data and outputs as a list.\nOnce 'count' items have been received it will output the items in a list",
+    description="Collects data from a channel and outputs them as a list once the channel closes",
 )
-class Collect(Block):
-    items: Output[list[Any]]
+class Collect(Block, Generic[ItemT]):
+    items: Output[list[ItemT]]
 
     items_state: Annotated[
-        list[Any],
+        list[ItemT],
         State(
             step_id="collect",
-            input_ids=["count"],
-            default_value=[],
+            input_ids=["item"],
         ),
-    ]
+    ] = []
 
     @step()
     async def collect(
         self,
-        item: Any,
-        count: Annotated[int, InputConfig(sticky=True)],
+        item: InputChannel[ItemT],
     ):
-        self.items_state.append(item)
+        if (
+            item.state == ChannelState.OPEN
+            and item.event == ChannelEvent.DATA
+            and item.data
+        ):
+            self.items_state.append(item.data)
 
-        if len(self.items_state) == count:
-            self.items.emit(self.items_state)
-            self.items_state = []
+        if item.event == ChannelEvent.CLOSE:
+            self.items.send(self.items_state)
 
 
-@metadata(category=BlockCategory.FUNCTION)
 class Count(Block):
     @step(output_name="output")
     async def count(self, items: list[Any]) -> int:
@@ -110,13 +114,15 @@ class Count(Block):
     category=BlockCategory.FUNCTION,
     description="Loops through a list of items and outputs them one at a time",
 )
-class ForEach(Block):
-    item: Output[Any]
+class ForEach(Block, Generic[ItemT]):
+    item: OutputChannel[ItemT]
 
     @step()
-    async def foreach(self, items: list[Any]):
+    async def foreach(self, items: list[ItemT]):
         for item in items:
-            self.item.emit(item)
+            self.item.send(item)
+
+        self.item.close()
 
 
 @metadata(
@@ -124,7 +130,7 @@ class ForEach(Block):
     description="Joins a list of strings using the configured separator and outputs the resulting string",
 )
 class JoinStrings(Block):
-    separator: Config[str] = ""
+    separator: Annotated[str, Config()] = ""
 
     @step(output_name="output")
     async def join(self, strings: list[str]) -> str:
@@ -136,8 +142,8 @@ class JoinStrings(Block):
     description="Splits a string using the configured separator and outputs a list of the substrings",
 )
 class SplitString(Block):
-    separator: Config[str] = "\n"
-    include_separator: Config[bool] = False
+    separator: Annotated[str, Config()] = "\n"
+    include_separator: Annotated[bool, Config()] = False
 
     @step(output_name="output")
     async def split(self, string: str) -> list[str]:
@@ -154,8 +160,8 @@ class SplitString(Block):
     description="Slices a list or string using the configured start and end indexes",
 )
 class Slice(Block):
-    start: Config[int] = 0
-    end: Config[int] = 0
+    start: Annotated[int, Config()] = 0
+    end: Annotated[int, Config()] = 0
 
     @step(output_name="items")
     async def slice(self, items: list[Any] | str) -> list[Any] | str:

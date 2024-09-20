@@ -7,7 +7,6 @@ import os
 
 from docs.utils.block_doc_generator import (
     generate_block_markdown_details,
-    generate_block_markdown_overview,
 )
 
 
@@ -46,10 +45,6 @@ def define_env(env):
     def reverse(x):
         "Reverse a string (and uppercase)"
         return x.upper()[::-1]
-
-    @env.macro
-    def generate_block_overview(block_name: str):
-        return generate_block_markdown_overview(block_name)
 
     @env.macro
     def generate_block_details(block_name: str):

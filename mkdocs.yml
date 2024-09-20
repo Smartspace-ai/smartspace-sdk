@@ -40,12 +40,12 @@ nav:
   - Block Reference:
       - Overview: block-reference/index.md
       - All Blocks: block-reference/all-blocks.md
-      - Agent:
-          - LLM: block-reference/llm.md
-      - Data:
-          - SQLServer: block-reference/SQLServer.md
       - Text:
           - JoinStrings: block-reference/JoinStrings.md
+      # - Agent:
+          # - LLM: block-reference/llm.md
+      # - Data:
+          # - SQLServer: block-reference/SQLServer.md
   - Concepts:
       - Overview: concepts/index.md
       - Channels: concepts/channels.md

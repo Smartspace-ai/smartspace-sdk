@@ -1,336 +1,363 @@
 import ast
 import logging
 import os
-from typing import Any, Dict, List, TypedDict
+from typing import Any, TypedDict, cast
 
 logging.basicConfig(level=logging.DEBUG, filename="block_doc_generator.log")
 logger = logging.getLogger(__name__)
 
 
-def print_ast(node, indent=""):
-    """Recursively print the AST structure."""
-    logger.debug(f"{indent}{type(node).__name__}")
-    for field, value in ast.iter_fields(node):
-        if isinstance(value, list):
-            for item in value:
-                if isinstance(item, ast.AST):
-                    logger.debug(f"{indent}  {field}:")
-                    print_ast(item, indent + "    ")
-        elif isinstance(value, ast.AST):
-            logger.debug(f"{indent}  {field}:")
-            print_ast(value, indent + "    ")
-        else:
-            logger.debug(f"{indent}  {field}: {value}")
-
-
-def parse_class(class_def: ast.ClassDef) -> Dict[str, Any]:
-    class_info = {
-        "name": class_def.name,
-        "description": "",
-        "config": [],
-        "inputs": [],
-        "outputs": [],
-    }
-
-    logger.debug(f"Parsing class: {class_def.name}")
-    logger.debug("Class AST:")
-    print_ast(class_def)
-
-    # Parse metadata decorator
-    for decorator in class_def.decorator_list:
-        if (
-            isinstance(decorator, ast.Call)
-            and isinstance(decorator.func, ast.Name)
-            and decorator.func.id == "metadata"
-        ):
-            for keyword in decorator.keywords:
-                if keyword.arg == "description":
-                    class_info["description"] = ast.literal_eval(keyword.value)
-                    logger.debug(
-                        f"Found class description: {class_info['description']}"
-                    )
-
-    # Parse class body
-    for node in class_def.body:
-        if isinstance(node, ast.AnnAssign):
-            target = node.target.id
-            annotation = node.annotation
-
-            if isinstance(annotation, ast.Subscript):
-                value_type = annotation.value
-                if isinstance(value_type, ast.Name):
-                    value_id = value_type.id
-                    if value_id == "Config":
-                        config_type = get_annotation_type(annotation.slice)
-                        class_info["config"].append(
-                            {
-                                "name": target,
-                                "type": config_type,
-                            }
-                        )
-                        logger.debug(f"Found Config: {target} of type {config_type}")
-                    elif value_id == "Output":
-                        output_type = get_annotation_type(annotation.slice)
-                        class_info["outputs"].append(
-                            {
-                                "name": target,
-                                "type": get_annotation_type(annotation.slice),
-                            }
-                        )
-                        logger.debug(f"Found output: {target} of type {output_type}")
-
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            logger.debug(f"Examining function: {node.name}")
-            logger.debug("Function AST:")
-            print_ast(node)
-
-            is_step = False
-            output_name = None
-            for decorator in node.decorator_list:
-                logger.debug(f"Examining decorator: {ast.dump(decorator)}")
-                if isinstance(decorator, ast.Name) and decorator.id == "step":
-                    is_step = True
-                elif (
-                    isinstance(decorator, ast.Call)
-                    and isinstance(decorator.func, ast.Name)
-                    and decorator.func.id == "step"
-                ):
-                    is_step = True
-                    for keyword in decorator.keywords:
-                        if keyword.arg == "output_name":
-                            output_name = ast.literal_eval(keyword.value)
-                            logger.debug(f"Found output_name: {output_name}")
-
-            if is_step:
-                logger.debug(f"Found @step decorator on function: {node.name}")
-
-                # Parse inputs (function parameters)
-                for arg in node.args.args[1:]:  # Skip 'self'
-                    arg_type = (
-                        get_annotation_type(arg.annotation) if arg.annotation else "Any"
-                    )
-                    class_info["inputs"].append({"name": arg.arg, "type": arg_type})
-                    logger.debug(f"Found input: {arg.arg} of type {arg_type}")
-
-                # Parse output
-                if output_name:
-                    output_type = (
-                        get_annotation_type(node.returns) if node.returns else "Any"
-                    )
-                    class_info["outputs"].append(
-                        {"name": output_name, "type": output_type}
-                    )
-                    logger.debug(f"Added output: {output_name} of type {output_type}")
-                else:
-                    logger.warning(f"No output_name found for function: {node.name}")
-            else:
-                logger.debug(f"Function {node.name} is not decorated with @step")
-
-    logger.debug(f"Finished parsing class {class_def.name}")
-    logger.debug(f"Class info: {class_info}")
-    return class_info
-
-
-def get_annotation_type(annotation):
-    try:
-        if isinstance(annotation, ast.Name):
-            return annotation.id
-        elif isinstance(annotation, ast.Subscript):
-            value_type = get_annotation_type(annotation.value)
-            slice_type = get_annotation_type(annotation.slice)
-            return f"{value_type}[{slice_type}]"
-        elif isinstance(annotation, ast.Index):  # For Python < 3.9
-            return get_annotation_type(annotation.value)
-        elif isinstance(annotation, ast.Constant):  # For Python >= 3.9
-            return annotation.value
-        elif isinstance(
-            annotation, ast.BinOp
-        ):  # For union types like list[Any] | dict[str, Any]
-            left = get_annotation_type(annotation.left)
-            right = get_annotation_type(annotation.right)
-            return f"{left} | {right}"
-        elif isinstance(annotation, ast.Tuple):  # For tuple types
-            return f"Tuple[{', '.join(get_annotation_type(elem) for elem in annotation.elts)}]"
-        else:
-            logger.warning(f"Unknown annotation type: {type(annotation)}")
-            return "Any"
-    except Exception as e:
-        logger.error(f"Error in get_annotation_type: {e}")
-        return "Any"
-
-
-class MarkdownObject(TypedDict):
-    overview: str
-    config: str
-    inputs: str
-    outputs: str
-
-
-def generate_full_markdown(class_info: Dict[str, Any]) -> str:
-    md = f"# {class_info['name']}\n\n"
-    md += "## Overview\n\n"
-    md += f"{class_info['description']}\n\n"
-    md += '!!! info "Details"\n\n'
-
-    # Config
-    md += '    === "Config"\n\n'
-    if class_info["config"]:
-        md += "        | Name | Data Type | Description | Default Value | Notes |\n"
-        md += "        |------|-----------|-------------|---------------|-------|\n"
-        for config in class_info["config"]:
-            md += f"        | {config['name']} | `{config['type']}` | | | |\n"
-    else:
-        md += "        No configuration options available.\n"
-    md += "\n"
-
-    # Inputs
-    md += '    === "Inputs"\n\n'
-    if class_info["inputs"]:
-        md += "        | Name | Data Type | Description | Notes |\n"
-        md += "        |------|-----------|-------------|-------|\n"
-        for input in class_info["inputs"]:
-            md += f"        | {input['name']} | `{input['type']}` | | |\n"
-    else:
-        md += "        No inputs available.\n"
-    md += "\n"
-
-    # Outputs
-    md += '    === "Outputs"\n\n'
-    if class_info["outputs"]:
-        md += "        | Name | Data Type | Description | Notes |\n"
-        md += "        |------|-----------|-------------|-------|\n"
-        for output in class_info["outputs"]:
-            md += f"        | {output['name']} | `{output['type']}` | | |\n"
-    else:
-        md += "        No outputs available.\n"
-    md += "\n"
-
-    # Add placeholder sections
-    md += "## Example(s)\n\n"
-    md += "## Error Handling\n\n"
-    md += "## FAQ\n\n"
-    md += "## See Also\n"
-
-    return md
-
-
-def generate_markdown_details(class_info: Dict[str, Any]) -> str:
-    # Config
-    md = '    === "Config"\n\n'
-    if class_info["config"]:
-        md += "        | Name | Data Type | Description | Default Value | Notes |\n"
-        md += "        |------|-----------|-------------|---------------|-------|\n"
-        for config in class_info["config"]:
-            md += f"        | {config['name']} | `{config['type']}` | | | |\n"
-    else:
-        md += "        No configuration options available.\n"
-    md += "\n"
-
-    # Inputs
-    md += '    === "Inputs"\n\n'
-    if class_info["inputs"]:
-        md += "        | Name | Data Type | Description | Notes |\n"
-        md += "        |------|-----------|-------------|-------|\n"
-        for input in class_info["inputs"]:
-            md += f"        | {input['name']} | `{input['type']}` | | |\n"
-    else:
-        md += "        No inputs available.\n"
-    md += "\n"
-
-    # Outputs
-    md += '    === "Outputs"\n\n'
-    if class_info["outputs"]:
-        md += "        | Name | Data Type | Description | Notes |\n"
-        md += "        |------|-----------|-------------|-------|\n"
-        for output in class_info["outputs"]:
-            md += f"        | {output['name']} | `{output['type']}` | | |\n"
-    else:
-        md += "        No outputs available.\n"
-    md += "\n"
-
-    return md
-
-
-def generate_markdown_object(class_info: Dict[str, Any]) -> MarkdownObject:
-    markdown_object = MarkdownObject(
-        overview=f"{class_info['description']}",
-        config="",
-        inputs="",
-        outputs="",
-    )
-
-    # Config
-    config_md = ""
-    if class_info["config"]:
-        config_md = "| Name | Data Type | Description | Default Value | Notes |\n"
-
-        config_md += "|------|-----------|-------------|---------------|-------|\n"
-        for config in class_info["config"]:
-            config_md += "| {config['name']} | `{config['type']}` | | | |\n"
-    else:
-        config_md += "No configuration options available.\n"
-    config_md += "\n"
-    markdown_object["config"] = config_md
-
-    # Inputs
-    input_md = ""
-    if class_info["inputs"]:
-        input_md += "| Name | Data Type | Description | Notes |\n"
-        input_md += "|------|-----------|-------------|-------|\n"
-        for input in class_info["inputs"]:
-            input_md += f"| {input['name']} | `{input['type']}` | | |\n"
-    else:
-        input_md += "No inputs available.\n"
-    input_md += "\n"
-    markdown_object["inputs"] = input_md
-
-    # Outputs
-
-    output_md = ""
-    if class_info["outputs"]:
-        output_md += "| Name | Data Type | Description | Notes |\n"
-        output_md += "|------|-----------|-------------|-------|\n"
-        for output in class_info["outputs"]:
-            output_md += f"| {output['name']} | `{output['type']}` | | |\n"
-    else:
-        output_md += "No outputs available.\n"
-    output_md += "\n"
-    markdown_object["outputs"] = output_md
-
-    return markdown_object
-
-
-def process_file(file_path: str) -> List[Dict[str, Any]]:
+def parse_module(file_path):
     with open(file_path, "r") as file:
-        content = file.read()
+        module_source = file.read()
+    module_ast = ast.parse(module_source, filename=file_path)
+    return module_ast
 
-    tree = ast.parse(content)
-    block_classes = []
 
-    for node in ast.walk(tree):
+def get_block_classes(module_ast) -> list[ast.ClassDef]:
+    block_classes: list[ast.ClassDef] = []
+    for node in module_ast.body:
         if isinstance(node, ast.ClassDef):
-            # Check if the class inherits from Block
-            if any(
-                base.id == "Block" for base in node.bases if isinstance(base, ast.Name)
-            ):
-                block_classes.append(parse_class(node))
-
+            for base in node.bases:
+                if (isinstance(base, ast.Name) and base.id == "Block") or (
+                    isinstance(base, ast.Attribute) and base.attr == "Block"
+                ):
+                    block_classes.append(node)
     return block_classes
 
 
-def get_block_class(block_name: str):
+def get_block_class(block_name: str) -> ast.ClassDef | None:
     files = [
         os.path.join("smartspace/blocks", f)
         for f in os.listdir("smartspace/blocks")
         if f.endswith(".py")
     ]
     for file_path in files:
-        block_classes = process_file(file_path)
+        module_ast = parse_module(file_path)
+        block_classes = get_block_classes(module_ast)
         for class_info in block_classes:
-            if class_info["name"] == block_name:
+            if class_info.name == block_name:
                 return class_info
 
 
+def get_value_from_node(node):
+    if isinstance(node, ast.Constant):  # For literals like strings, numbers, etc.
+        return node.value
+    elif isinstance(node, ast.Str):  # For Python versions < 3.8
+        return node.s
+    elif isinstance(node, ast.Num):  # For Python versions < 3.8
+        return node.n
+    elif isinstance(node, ast.Name):
+        return node.id
+    elif isinstance(node, ast.Attribute):
+        value = get_value_from_node(node.value)
+        return f"{value}.{node.attr}"
+    elif isinstance(node, ast.Call):
+        func_name = get_value_from_node(node.func)
+        args = [get_value_from_node(arg) for arg in node.args]
+        keywords = {kw.arg: get_value_from_node(kw.value) for kw in node.keywords}
+        return {"func": func_name, "args": args, "keywords": keywords}
+    elif isinstance(node, ast.List):
+        return [get_value_from_node(el) for el in node.elts]
+    elif isinstance(node, ast.Tuple):
+        return tuple(get_value_from_node(el) for el in node.elts)
+    elif isinstance(node, ast.Dict):
+        keys = [get_value_from_node(k) for k in node.keys]
+        values = [get_value_from_node(v) for v in node.values]
+        return dict(zip(keys, values))
+    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+        # Handle negative numbers
+        return -get_value_from_node(node.operand)
+    elif isinstance(node, ast.BinOp):
+        left = get_value_from_node(node.left)
+        right = get_value_from_node(node.right)
+        if isinstance(node.op, ast.Add):
+            return left + right
+        elif isinstance(node.op, ast.Sub):
+            return left - right
+        elif isinstance(node.op, ast.Mult):
+            return left * right
+        elif isinstance(node.op, ast.Div):
+            return left / right
+        else:
+            return f"Unsupported BinOp({ast.dump(node.op)})"
+    elif isinstance(
+        node, ast.NameConstant
+    ):  # For True, False, None in Python versions < 3.8
+        return node.value
+    else:
+        return ast.dump(node)  # For debugging purposes or unhandled cases
+
+
+def get_annotation_name(annotation_node):
+    if isinstance(annotation_node, ast.Name):
+        return annotation_node.id
+    elif isinstance(annotation_node, ast.Subscript):
+        base = get_annotation_name(annotation_node.value)
+        sub = get_annotation_name(annotation_node.slice)
+        return f"{base}[{sub}]"
+    elif isinstance(annotation_node, ast.Attribute):
+        return f"{get_annotation_name(annotation_node.value)}.{annotation_node.attr}"
+    elif isinstance(annotation_node, ast.BinOp):
+        if isinstance(annotation_node.op, ast.BitOr):
+            left = get_annotation_name(annotation_node.left)
+            right = get_annotation_name(annotation_node.right)
+            return f"{left} | {right}"
+        elif isinstance(annotation_node.op, ast.Add):
+            left = get_annotation_name(annotation_node.left)
+            right = get_annotation_name(annotation_node.right)
+            return f"{left} + {right}"
+        elif isinstance(annotation_node.op, ast.Sub):
+            left = get_annotation_name(annotation_node.left)
+            right = get_annotation_name(annotation_node.right)
+            return f"{left} - {right}"
+        else:
+            return f"Unsupported BinOp({ast.dump(annotation_node.op)})"
+    elif isinstance(annotation_node, ast.Tuple):
+        elements = [get_annotation_name(el) for el in annotation_node.elts]
+        return f"({', '.join(elements)})"
+    elif isinstance(annotation_node, ast.Call):
+        func_name = get_annotation_name(annotation_node.func)
+        args = [get_annotation_name(arg) for arg in annotation_node.args]
+        return f"{func_name}({', '.join(args)})"
+    else:
+        return ast.dump(annotation_node)  # For debugging purposes
+
+
+class BlockMetadata(TypedDict, total=False):
+    category: str
+    description: str
+    obsolete: bool
+
+
+def get_metadata_decorator(class_def) -> BlockMetadata:
+    metadata_info: BlockMetadata = {}
+    for decorator in class_def.decorator_list:
+        if isinstance(decorator, ast.Call) and (
+            getattr(decorator.func, "id", "") == "metadata"
+            or getattr(decorator.func, "attr", "") == "metadata"
+        ):
+            for keyword in decorator.keywords:
+                key = keyword.arg
+                if not key:
+                    continue
+                value = get_value_from_node(keyword.value)
+                metadata_info[key] = value
+    return metadata_info
+
+
+def get_subscript_slice_elements(subscript_node):
+    if isinstance(subscript_node.slice, ast.Tuple):
+        # Python 3.9+, the slice is directly the tuple
+        return subscript_node.slice.elts
+    elif isinstance(subscript_node.slice, ast.Index):
+        # Python <3.9, the value is in slice.value
+        value = subscript_node.slice.value
+        if isinstance(value, ast.Tuple):
+            return value.elts
+        else:
+            return [value]
+    else:
+        # In some cases, slice might be an expression directly
+        return [subscript_node.slice]
+
+
+class BlockAttributes(TypedDict, total=False):
+    name: str
+    type: str | None
+    config: bool
+    output: bool
+    state: bool
+    metadata: dict[str, Any] | None
+    default_value: Any | None
+
+
+def get_class_attributes(class_def) -> list[BlockAttributes]:
+    attributes: list[BlockAttributes] = []
+    for node in class_def.body:
+        if isinstance(node, ast.AnnAssign):
+            if isinstance(node.target, ast.Name):
+                attr_name = node.target.id
+            else:
+                continue  # Skip if target is not a simple name
+            attr_annotation = node.annotation
+            attr_info = {
+                "name": attr_name,
+                "type": None,
+                "config": False,
+                "output": False,
+                "state": False,
+                "metadata": None,
+                "default_value": None,
+            }
+
+            # Process the annotation to extract type and metadata
+            if (
+                isinstance(attr_annotation, ast.Subscript)
+                and get_annotation_name(attr_annotation.value) == "Annotated"
+            ):
+                # It's an Annotated type
+                annotated_args = get_subscript_slice_elements(attr_annotation)
+                attr_type = annotated_args[0]
+                metadata_node = annotated_args[1] if len(annotated_args) > 1 else None
+
+                attr_info["type"] = get_annotation_name(attr_type)
+
+                # Check if metadata_node is Config, Metadata, or State
+                if isinstance(metadata_node, ast.Call):
+                    func_name = get_annotation_name(metadata_node.func)
+                    if func_name == "Config":
+                        attr_info["config"] = True
+                        # Extract any Config parameters if needed
+                    elif func_name == "Metadata":
+                        # Extract metadata details
+                        metadata_details = {}
+                        for keyword in metadata_node.keywords:
+                            key = keyword.arg
+                            value = get_value_from_node(keyword.value)
+                            metadata_details[key] = value
+                        attr_info["metadata"] = metadata_details
+                    elif func_name == "State":
+                        attr_info["state"] = True
+                        # Extract state details if needed
+                        state_details = {}
+                        for keyword in metadata_node.keywords:
+                            key = keyword.arg
+                            value = get_value_from_node(keyword.value)
+                            state_details[key] = value
+                        attr_info["state_details"] = state_details
+                else:
+                    # Handle cases where metadata_node is not a call (e.g., just a type)
+                    pass
+            else:
+                # Non-Annotated attribute
+                attr_info["type"] = get_annotation_name(attr_annotation)
+
+            # Check if the type is 'Output' or 'Output[...]'
+            if attr_info["type"].startswith("Output"):
+                attr_info["output"] = True
+
+            # Extract default value if available
+            if node.value:
+                attr_info["default_value"] = get_value_from_node(node.value)
+
+            attributes.append(attr_info)
+    return attributes
+
+
+class BlockStepInput(TypedDict, total=False):
+    name: str
+    type: str | None
+    metadata: dict[str, Any] | None
+
+
+class BlockStep(TypedDict, total=False):
+    name: str
+    output_name: str | None
+    inputs: list[BlockStepInput]
+    return_type: str | None
+
+
+def get_step_functions(class_def) -> list[BlockStep]:
+    steps: list[BlockStep] = []
+    for node in class_def.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            is_step = False
+            output_name = None
+            for decorator in node.decorator_list:
+                # Check if decorator is @step or @step(...)
+                decorator_name = get_decorator_name(decorator)
+                if decorator_name == "step":
+                    is_step = True
+                    # If it's a call, extract output_name
+                    if isinstance(decorator, ast.Call):
+                        for keyword in decorator.keywords:
+                            if keyword.arg == "output_name":
+                                output_name = cast(
+                                    str, get_value_from_node(keyword.value)
+                                )
+            if is_step:
+                step_info: BlockStep = {
+                    "name": node.name,
+                    "output_name": output_name,
+                    "inputs": [],
+                    "return_type": None,
+                }
+
+                # Get inputs (parameters)
+                for arg in node.args.args[1:]:  # Skip 'self'
+                    input_info: BlockStepInput = {
+                        "name": arg.arg,
+                        "type": None,
+                        "metadata": None,
+                    }
+                    if arg.annotation:
+                        input_info["type"] = get_annotation_name(arg.annotation)
+                        # Check if it's Annotated
+                        if (
+                            isinstance(arg.annotation, ast.Subscript)
+                            and get_annotation_name(arg.annotation.value) == "Annotated"
+                        ):
+                            annotated_args = get_subscript_slice_elements(
+                                arg.annotation
+                            )
+                            input_type = annotated_args[0]
+                            metadata_node = (
+                                annotated_args[1] if len(annotated_args) > 1 else None
+                            )
+                            input_info["type"] = get_annotation_name(input_type)
+
+                            # Extract metadata
+                            if (
+                                isinstance(metadata_node, ast.Call)
+                                and get_annotation_name(metadata_node.func)
+                                == "Metadata"
+                            ):
+                                metadata_details = {}
+                                for keyword in metadata_node.keywords:
+                                    key = keyword.arg
+                                    value = get_value_from_node(keyword.value)
+                                    metadata_details[key] = value
+                                input_info["metadata"] = metadata_details
+                    step_info["inputs"].append(input_info)
+
+                # Get return type
+                if node.returns:
+                    step_info["return_type"] = get_annotation_name(node.returns)
+
+                steps.append(step_info)
+    return steps
+
+
+def get_decorator_name(decorator):
+    if isinstance(decorator, ast.Name):
+        return decorator.id
+    elif isinstance(decorator, ast.Attribute):
+        return decorator.attr
+    elif isinstance(decorator, ast.Call):
+        return get_decorator_name(decorator.func)
+    else:
+        return None
+
+
+class BlockInfo(TypedDict):
+    name: str
+    metadata: BlockMetadata
+    attributes: list[BlockAttributes]
+    steps: list[BlockStep]
+
+
+def get_block_info(class_def) -> BlockInfo:
+    block_info: BlockInfo = {
+        "name": class_def.name,
+        "metadata": get_metadata_decorator(class_def),
+        "attributes": get_class_attributes(class_def),
+        "steps": get_step_functions(class_def),
+    }
+    return block_info
+
+
+####
 def get_block_markdown_template() -> str:
     with open(os.path.join("docs", "block-reference", "BLOCK-TEMPLATE.md"), "r") as f:
         return f.read()
@@ -352,44 +379,199 @@ def generate_block_docs(input_path: str, output_dir: str):
         raise ValueError("Input path must be a file or directory")
 
     for file_path in files:
-        block_classes = process_file(file_path)
-        for class_info in block_classes:
+        module = parse_module(file_path)
+        block_classes = get_block_classes(module)
+        for block_class in block_classes:
+            block_info = get_block_info(block_class)
+            # check if file already exists
+            if os.path.exists(os.path.join(output_dir, f"{block_info['name']}.md")):
+                print(f"Documentation for {block_info['name']} already exists")
+                continue
             markdown_content = get_block_markdown_template()
-            output_file = os.path.join(output_dir, f"{class_info['name']}.md")
+            output_file = os.path.join(output_dir, f"{block_info['name']}.md")
             with open(output_file, "w") as f:
                 f.write(markdown_content)
-            print(f"Generated documentation for {class_info['name']} in {output_file}")
+            print(f"Generated documentation for {block_info['name']} in {output_file}")
+
+
+def escape_markdown(text):
+    """
+    Escapes markdown special characters in the given text.
+    """
+    if not isinstance(text, str):
+        text = str(text)
+    # Escape the pipe character
+    return text.replace("|", "\\|")
+
+
+def generate_markdown(block_info):
+    md = ""
+
+    # Block Description
+    md += "## Description\n\n"
+    description = block_info["metadata"].get("description", "")
+    md += f"{description}\n\n"
+
+    # Additional Metadata
+    metadata_items = {
+        k: v for k, v in block_info["metadata"].items() if k != "description"
+    }
+    if metadata_items:
+        md += "## Metadata\n\n"
+        for key, value in metadata_items.items():
+            md += f"- **{key.capitalize()}**: {value}\n"
+        md += "\n"
+
+    # Config Options
+    config_attributes = [attr for attr in block_info["attributes"] if attr["config"]]
+    md += "## Configuration Options\n\n"
+    if config_attributes:
+        md += "| Name | Data Type | Description | Default Value |\n"
+        md += "|------|-----------|-------------|---------------|\n"
+        for config in config_attributes:
+            name = escape_markdown(config["name"])
+            data_type = escape_markdown(config["type"])
+            description = escape_markdown(
+                config["metadata"].get("description", "") if config["metadata"] else ""
+            )
+            default_value = (
+                config["default_value"] if config["default_value"] is not None else ""
+            )
+            default_value = escape_markdown(default_value)
+            md += f"| {name} | `{data_type}` | {description} | {f'`{default_value}`' if default_value else ''} |\n"
+    else:
+        md += "No configuration options available.\n"
+    md += "\n"
+
+    # Inputs
+    md += "## Inputs\n\n"
+    inputs = []
+    for step in block_info["steps"]:
+        for input_param in step["inputs"]:
+            inputs.append(input_param)
+    if inputs:
+        md += "| Name | Data Type | Description |\n"
+        md += "|------|-----------|-------------|\n"
+        for input_param in inputs:
+            name = escape_markdown(input_param["name"])
+            data_type = escape_markdown(input_param["type"])
+            description = escape_markdown(
+                input_param["metadata"].get("description", "")
+                if input_param["metadata"]
+                else ""
+            )
+            md += f"| {name} | `{data_type}` | {description} |\n"
+    else:
+        md += "No inputs available.\n"
+    md += "\n"
+
+    # Outputs
+    md += "## Outputs\n\n"
+    outputs = []
+
+    # Outputs from class attributes
+    output_attributes = [attr for attr in block_info["attributes"] if attr["output"]]
+    for output_attr in output_attributes:
+        outputs.append(
+            {
+                "name": output_attr["name"],
+                "type": output_attr["type"],
+                "description": output_attr["metadata"].get("description", "")
+                if output_attr["metadata"]
+                else "",
+            }
+        )
+
+    # Outputs from step functions
+    for step in block_info["steps"]:
+        if step["output_name"] and step["return_type"]:
+            outputs.append(
+                {
+                    "name": step["output_name"],
+                    "type": step["return_type"],
+                    "description": "",
+                }
+            )
+
+    if outputs:
+        md += "| Name | Data Type | Description |\n"
+        md += "|------|-----------|-------------|\n"
+        for output in outputs:
+            name = escape_markdown(output["name"])
+            data_type = escape_markdown(output["type"])
+            description = escape_markdown(output["description"])
+            md += f"| {name} | `{data_type}` | {description} |\n"
+    else:
+        md += "No outputs available.\n"
+    md += "\n"
+
+    # State Variables
+    state_attributes = [attr for attr in block_info["attributes"] if attr["state"]]
+    md += "## State Variables\n\n"
+    if state_attributes:
+        md += "| Name | Data Type | Description |\n"
+        md += "|------|-----------|-------------|\n"
+        for state in state_attributes:
+            name = escape_markdown(state["name"])
+            data_type = escape_markdown(state["type"])
+            description = escape_markdown(
+                state["metadata"].get("description", "") if state["metadata"] else ""
+            )
+            md += f"| {name} | `{data_type}` | {description} |\n"
+    else:
+        md += "No state variables available.\n"
+    md += "\n"
+
+    # Step Functions
+    # md += "## Step Functions\n\n"
+    # for step in block_info["steps"]:
+    #     md += f"### {step['name']}\n\n"
+    #     md += f"- **Output Name**: {step['output_name']}\n"
+    #     md += f"- **Return Type**: `{step['return_type']}`\n\n"
+    #     md += "#### Inputs:\n\n"
+    #     if step["inputs"]:
+    #         md += "| Name | Data Type | Description |\n"
+    #         md += "|------|-----------|-------------|\n"
+    #         for input_param in step["inputs"]:
+    #             name = input_param["name"]
+    #             data_type = input_param["type"]
+    #             description = (
+    #                 input_param["metadata"].get("description", "")
+    #                 if input_param["metadata"]
+    #                 else ""
+    #             )
+    #             md += f"| {name} | `{data_type}` | {description} |\n"
+    #         md += "\n"
+    #     else:
+    #         md += "No inputs for this step function.\n\n"
+
+    return md
 
 
 def generate_block_markdown_details(block_name: str):
     block_class = get_block_class(block_name)
     if not block_class:
         return f"Block {block_name} not found"
-    markdown_content = generate_markdown_details(block_class)
+    block_info = get_block_info(block_class)
+    markdown_content = generate_markdown(block_info)
     return markdown_content
-
-
-def generate_block_markdown_overview(block_name: str):
-    block_class = get_block_class(block_name)
-    if not block_class:
-        return f"Block {block_name} not found"
-    return block_class["description"]
 
 
 # Example usage
 if __name__ == "__main__":
-    import sys
-
+    block_name = "JoinStrings"
+    markdown_content = generate_block_markdown_details(block_name)
+    pass
     # if len(sys.argv) != 3:
     #     print("Usage: python script.py <input_path> <output_dir>")
     #     sys.exit(1)
 
-    try:
-        input_path = sys.argv[1]
-    except IndexError:
-        input_path = os.path.join("smartspace", "blocks")
-    try:
-        output_dir = sys.argv[2]
-    except IndexError:
-        output_dir = os.path.join("docs", "block-reference")
-    generate_block_docs(input_path, output_dir)
+    # try:
+    #     input_path = sys.argv[1]
+    # except IndexError:
+    #     input_path = os.path.join("smartspace", "blocks")
+    # try:
+    #     output_dir = sys.argv[2]
+    # except IndexError:
+    #     output_dir = os.path.join("docs", "block-reference")
+    # generate_block_docs(input_path, output_dir)

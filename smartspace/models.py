@@ -313,3 +313,31 @@ class OutputChannelMessage(BaseModel, Generic[ChannelT]):
 
     event: ChannelEvent | None
     data: ChannelT | None
+
+
+Embeddings = list[float]
+
+
+class SearchResult(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: str | None = None
+    path: str | None = None
+    content: str
+    parent_id: Annotated[str | None, Field(alias="parentId")] = None
+    child_count: Annotated[int | None, Field(alias="childCount")] = None
+    data_type: Annotated[str | None, Field(alias="dataType")] = None
+    score: Annotated[float, Field(..., alias="@search.score")]
+    reranker_score: Annotated[float | None, Field(alias="@search.reranker_score")] = (
+        None
+    )
+    highlights: Annotated[list[str] | None, Field(alias="@search.highlights")] = None
+    captions: Annotated[list[str] | None, Field(alias="@search.captions")] = None
+    content_vector: Annotated[Embeddings | None, Field(alias="contentVector")] = None
+
+
+class InMemorySearchResult(SearchResult):
+    model_config = ConfigDict(populate_by_name=True)
+    # add additional fields for in-memory search results: file_name, chunk_content
+    file_name: str | None = None
+    chunk_content: str | None = None

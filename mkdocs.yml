@@ -47,6 +47,7 @@ nav:
           - WindowChunk: block-reference/WindowChunk.md
       - Function:
           - Collect: block-reference/Collect.md
+          - Concat: block-reference/Concat.md
           - First: block-reference/First.md
           - Flatten: block-reference/Flatten.md
           - ForEach: block-reference/ForEach.md
@@ -59,8 +60,9 @@ nav:
           - ParseJson: block-reference/ParseJson.md
       - Text:
           - JoinStrings: block-reference/JoinStrings.md
-          - SplitString: block-reference/SplitString.md
           - RegexMatch: block-reference/RegexMatch.md
+          - SplitString: block-reference/SplitString.md
+          - StringTruncator: block-reference/StringTruncator.md
       - Misc:
           - Count: block-reference/Count.md
       - Obsolete:
@@ -70,8 +72,8 @@ nav:
       # - Data:
           # - SQLServer: block-reference/SQLServer.md
   - Concepts:
-      - Overview: concepts/index.md
       - Channels: concepts/channels.md
+      # - Overview: concepts/index.md
   #     - Blocks:
   #         - Overview: concepts/blocks/index.md
   #         - Inputs: concepts/blocks/block-inputs.md

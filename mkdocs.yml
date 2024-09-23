@@ -39,7 +39,6 @@ nav:
   - Home: index.md
   - Block Reference:
       - Overview: block-reference/index.md
-      - All Blocks: block-reference/all-blocks.md
       - Chunking:
           - SemanticChunk: block-reference/SemanticChunk.md
           - SentenceChunk: block-reference/SentenceChunk.md

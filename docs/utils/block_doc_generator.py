@@ -424,6 +424,8 @@ def generate_markdown(block_info):
     # Block Description
     md += "## Description\n\n"
     description = block_info["metadata"].get("description", "")
+    # remove leading and trailing whitespaces for each line
+    description = "\n".join([line.strip() for line in description.split("\n")])
     md += f"{description}\n\n"
 
     # Additional Metadata

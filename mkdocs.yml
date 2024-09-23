@@ -40,6 +40,11 @@ nav:
   - Block Reference:
       - Overview: block-reference/index.md
       - All Blocks: block-reference/all-blocks.md
+      - Chunking:
+          - SemanticChunk: block-reference/SemanticChunk.md
+          - SentenceChunk: block-reference/SentenceChunk.md
+          - TokenChunk: block-reference/TokenChunk.md
+          - WindowChunk: block-reference/WindowChunk.md
       - Function:
           - Collect: block-reference/Collect.md
           - First: block-reference/First.md
@@ -55,6 +60,7 @@ nav:
       - Text:
           - JoinStrings: block-reference/JoinStrings.md
           - SplitString: block-reference/SplitString.md
+          - RegexMatch: block-reference/RegexMatch.md
       - Misc:
           - Count: block-reference/Count.md
       - Obsolete:

@@ -1,6 +1,7 @@
 import ast
 import logging
 import os
+import sys
 from typing import Any, TypedDict, cast
 
 logging.basicConfig(level=logging.DEBUG, filename="block_doc_generator.log")
@@ -130,6 +131,12 @@ class BlockMetadata(TypedDict, total=False):
     obsolete: bool
 
 
+def clean_metadata_value(value: Any) -> str:
+    if isinstance(value, str) and "BlockCategory" in value:
+        value = value.replace("BlockCategory.", "").title()
+    return value
+
+
 def get_metadata_decorator(class_def) -> BlockMetadata:
     metadata_info: BlockMetadata = {}
     for decorator in class_def.decorator_list:
@@ -142,6 +149,7 @@ def get_metadata_decorator(class_def) -> BlockMetadata:
                 if not key:
                     continue
                 value = get_value_from_node(keyword.value)
+                value = clean_metadata_value(value)
                 metadata_info[key] = value
     return metadata_info
 
@@ -401,7 +409,13 @@ def escape_markdown(text):
     if not isinstance(text, str):
         text = str(text)
     # Escape the pipe character
-    return text.replace("|", "\\|")
+    text = text.replace("|", "or")
+    # Escape backsplash
+    text = text.replace("\n", "\\n")
+    # Clean up HTTPMethod
+    text = text.replace("HTTPMethod.", "")
+
+    return text
 
 
 def generate_markdown(block_info):
@@ -559,19 +573,19 @@ def generate_block_markdown_details(block_name: str):
 
 # Example usage
 if __name__ == "__main__":
-    block_name = "JoinStrings"
+    block_name = "Slice"
     markdown_content = generate_block_markdown_details(block_name)
     pass
     # if len(sys.argv) != 3:
     #     print("Usage: python script.py <input_path> <output_dir>")
     #     sys.exit(1)
 
-    # try:
-    #     input_path = sys.argv[1]
-    # except IndexError:
-    #     input_path = os.path.join("smartspace", "blocks")
-    # try:
-    #     output_dir = sys.argv[2]
-    # except IndexError:
-    #     output_dir = os.path.join("docs", "block-reference")
-    # generate_block_docs(input_path, output_dir)
+    try:
+        input_path = sys.argv[1]
+    except IndexError:
+        input_path = os.path.join("smartspace", "blocks")
+    try:
+        output_dir = sys.argv[2]
+    except IndexError:
+        output_dir = os.path.join("docs", "block-reference")
+    generate_block_docs(input_path, output_dir)

@@ -40,8 +40,25 @@ nav:
   - Block Reference:
       - Overview: block-reference/index.md
       - All Blocks: block-reference/all-blocks.md
+      - Function:
+          - Collect: block-reference/Collect.md
+          - First: block-reference/First.md
+          - Flatten: block-reference/Flatten.md
+          - ForEach: block-reference/ForEach.md
+          - HTTPRequest: block-reference/HTTPRequest.md
+          - Map: block-reference/Map.md
+          - MergeLists: block-reference/MergeLists.md
+          - Slice: block-reference/Slice.md
+      - JSON:
+          - Get: block-reference/Get.md
+          - ParseJson: block-reference/ParseJson.md
       - Text:
           - JoinStrings: block-reference/JoinStrings.md
+          - SplitString: block-reference/SplitString.md
+      - Misc:
+          - Count: block-reference/Count.md
+      - Obsolete:
+          - GetJsonField: block-reference/GetJsonField.md
       # - Agent:
           # - LLM: block-reference/llm.md
       # - Data:

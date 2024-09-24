@@ -51,6 +51,10 @@ def define_env(env):
         return generate_block_markdown_details(block_name)
 
     @env.macro
+    def generate_block_details_smartspace(block_name: str):
+        return generate_block_markdown_details(block_name, True)
+
+    @env.macro
     def block_image_exists(path: str):
         full_path = os.path.join("docs", "block-reference", path)
         return os.path.exists(full_path)

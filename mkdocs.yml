@@ -64,6 +64,11 @@ nav:
           - StringTruncator: block-reference/StringTruncator.md
       - Misc:
           - Count: block-reference/Count.md
+      - SmartSpace Blocks:
+          - Data:
+              - GetFileContent: block-reference/GetFileContent.md
+          - Utils:
+              - Cast: block-reference/Cast.md
       - Obsolete:
           - GetJsonField: block-reference/GetJsonField.md
       # - Agent:
@@ -117,3 +122,4 @@ extra:
 
 exclude_docs: |
   BLOCK-TEMPLATE.md
+  BLOCK-TEMPLATE-SS.md

@@ -1,16 +1,19 @@
 import ast
 import logging
 import os
-import sys
+import re
 from typing import Any, TypedDict, cast
 
 logging.basicConfig(level=logging.DEBUG, filename="block_doc_generator.log")
 logger = logging.getLogger(__name__)
 
 
-def parse_module(file_path):
-    with open(file_path, "r") as file:
-        module_source = file.read()
+def parse_module(file_path: str, module_source: str | None = None) -> ast.Module:
+    if not file_path and not module_source:
+        raise ValueError("Either file_path or module_source must be provided")
+    if not module_source:
+        with open(file_path, "r") as file:
+            module_source = file.read()
     module_ast = ast.parse(module_source, filename=file_path)
     return module_ast
 
@@ -20,25 +23,40 @@ def get_block_classes(module_ast) -> list[ast.ClassDef]:
     for node in module_ast.body:
         if isinstance(node, ast.ClassDef):
             for base in node.bases:
-                if (isinstance(base, ast.Name) and base.id == "Block") or (
-                    isinstance(base, ast.Attribute) and base.attr == "Block"
+                if (
+                    (isinstance(base, ast.Name) and base.id == "Block")
+                    or (isinstance(base, ast.Attribute) and base.attr == "Block")
+                    or (isinstance(base, ast.Name) and base.id == "WorkSpaceBlock")
+                    or (
+                        isinstance(base, ast.Attribute)
+                        and base.attr == "WorkSpaceBlock"
+                    )
                 ):
                     block_classes.append(node)
     return block_classes
 
 
-def get_block_class(block_name: str) -> ast.ClassDef | None:
-    files = [
-        os.path.join("smartspace/blocks", f)
-        for f in os.listdir("smartspace/blocks")
-        if f.endswith(".py")
-    ]
+def get_block_class(
+    block_name: str, is_smartspace: bool = False
+) -> ast.ClassDef | None:
+    if is_smartspace:
+        files = [
+            os.path.join("docs", "utils", "smartspace_blocks", f)
+            for f in os.listdir(os.path.join("docs", "utils", "smartspace_blocks"))
+        ]
+    else:
+        files = [
+            os.path.join("smartspace", "blocks", f)
+            for f in os.listdir(os.path.join("smartspace", "blocks"))
+            if f.endswith(".py")
+        ]
     for file_path in files:
         module_ast = parse_module(file_path)
         block_classes = get_block_classes(module_ast)
         for class_info in block_classes:
             if class_info.name == block_name:
                 return class_info
+    return None
 
 
 def get_value_from_node(node):
@@ -134,6 +152,8 @@ class BlockMetadata(TypedDict, total=False):
 def clean_metadata_value(value: Any) -> str:
     if isinstance(value, str) and "BlockCategory" in value:
         value = value.replace("BlockCategory.", "").title()
+    if isinstance(value, dict):
+        return value.get("name", "")
     return value
 
 
@@ -366,9 +386,22 @@ def get_block_info(class_def) -> BlockInfo:
 
 
 ####
-def get_block_markdown_template() -> str:
+def get_block_markdown_template(is_smartspace: bool = False) -> str:
+    if is_smartspace:
+        with open(
+            os.path.join("docs", "block-reference", "BLOCK-TEMPLATE-SS.md"), "r"
+        ) as f:
+            return f.read()
     with open(os.path.join("docs", "block-reference", "BLOCK-TEMPLATE.md"), "r") as f:
         return f.read()
+
+
+def generate_block_doc(block_info: BlockInfo, output_dir: str):
+    markdown_content = get_block_markdown_template()
+    output_file = os.path.join(output_dir, f"{block_info['name']}.md")
+    with open(output_file, "w") as f:
+        f.write(markdown_content)
+    print(f"Generated documentation for {block_info['name']} in {output_file}")
 
 
 def generate_block_docs(input_path: str, output_dir: str):
@@ -395,11 +428,7 @@ def generate_block_docs(input_path: str, output_dir: str):
             if os.path.exists(os.path.join(output_dir, f"{block_info['name']}.md")):
                 print(f"Documentation for {block_info['name']} already exists")
                 continue
-            markdown_content = get_block_markdown_template()
-            output_file = os.path.join(output_dir, f"{block_info['name']}.md")
-            with open(output_file, "w") as f:
-                f.write(markdown_content)
-            print(f"Generated documentation for {block_info['name']} in {output_file}")
+            generate_block_doc(block_info, output_dir)
 
 
 def escape_markdown(text):
@@ -414,6 +443,8 @@ def escape_markdown(text):
     text = text.replace("\n", "\\n")
     # Clean up HTTPMethod
     text = text.replace("HTTPMethod.", "")
+    # Clean up Output[...] to just the type inside
+    text = re.sub(r"Output\[(.*)\]", r"\1", text)
 
     return text
 
@@ -564,8 +595,8 @@ def generate_markdown(block_info):
     return md
 
 
-def generate_block_markdown_details(block_name: str):
-    block_class = get_block_class(block_name)
+def generate_block_markdown_details(block_name: str, is_smartspace: bool = False):
+    block_class = get_block_class(block_name, is_smartspace)
     if not block_class:
         return f"Block {block_name} not found"
     block_info = get_block_info(block_class)
@@ -573,21 +604,78 @@ def generate_block_markdown_details(block_name: str):
     return markdown_content
 
 
+def generate_block_docs_from_text(module_text: str, output_dir: str):
+    module_ast = parse_module("", module_text)
+    block_classes = get_block_classes(module_ast)
+    for block_class in block_classes:
+        block_info = get_block_info(block_class)
+        markdown_content = get_block_markdown_template()
+        details_markdown_content = generate_markdown(block_info)
+        markdown_content = markdown_content.replace(
+            "{{ generate_block_details(page.title) }}    ", details_markdown_content
+        )
+        output_file = os.path.join(output_dir, f"{block_info['name']}.md")
+        with open(output_file, "w") as f:
+            f.write(markdown_content)
+        print(f"Generated documentation for {block_info['name']} in {output_file}")
+
+
+def generate_block_docs_temp(input_path: str, output_dir: str):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if os.path.isfile(input_path):
+        files = [input_path]
+    elif os.path.isdir(input_path):
+        files = [
+            os.path.join(input_path, f)
+            for f in os.listdir(input_path)
+            if f.endswith(".py")
+        ]
+    else:
+        raise ValueError("Input path must be a file or directory")
+
+    for file_path in files:
+        module = parse_module(file_path)
+        block_classes = get_block_classes(module)
+        for block_class in block_classes:
+            block_info = get_block_info(block_class)
+            # check if file already exists
+            if os.path.exists(os.path.join(output_dir, f"{block_info['name']}.md")):
+                print(f"Documentation for {block_info['name']} already exists")
+                continue
+            markdown_content = get_block_markdown_template(is_smartspace=True)
+            details_markdown_content = generate_markdown(block_info)
+            markdown_content = markdown_content.replace(
+                "{{ generate_block_details(page.title) }}    ", details_markdown_content
+            )
+            output_file = os.path.join(output_dir, f"{block_info['name']}.md")
+            with open(output_file, "w") as f:
+                f.write(markdown_content)
+            print(f"Generated documentation for {block_info['name']} in {output_file}")
+
+
 # Example usage
 if __name__ == "__main__":
-    block_name = "Slice"
-    markdown_content = generate_block_markdown_details(block_name)
-    pass
-    # if len(sys.argv) != 3:
-    #     print("Usage: python script.py <input_path> <output_dir>")
-    #     sys.exit(1)
+    # generate markdown by class name
+    # block_name = "Slice"
+    # markdown_content = generate_block_markdown_details(block_name)
+    # pass
 
-    try:
-        input_path = sys.argv[1]
-    except IndexError:
-        input_path = os.path.join("smartspace", "blocks")
-    try:
-        output_dir = sys.argv[2]
-    except IndexError:
-        output_dir = os.path.join("docs", "block-reference")
-    generate_block_docs(input_path, output_dir)
+    # generate block docs files
+    # try:
+    #     input_path = sys.argv[1]
+    # except IndexError:
+    #     input_path = os.path.join("smartspace", "blocks")
+    # try:
+    #     output_dir = sys.argv[2]
+    # except IndexError:
+    #     output_dir = os.path.join("docs", "block-reference")
+    # generate_block_docs(input_path, output_dir)
+
+    # generate from temp_files
+    input_path = os.path.join("docs", "utils", "smartspace_blocks")
+    output_dir = os.path.join("docs", "block-reference")
+    generate_block_docs_temp(input_path, output_dir)
+
+    # generate_block_markdown_details("Cast", True)

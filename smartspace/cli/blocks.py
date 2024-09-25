@@ -34,9 +34,9 @@ def publish(name: str, path: str = ""):
     block_set = smartspace.blocks.load(path, force_reload=True)
 
     print("Publishing the following blocks:")
-    for name, versions in block_set.all.items():
+    for block_name, versions in block_set.all.items():
         for version, block_type in versions.items():
-            print(f"{name} ({version})")
+            print(f"{block_name} ({version})")
 
     zf = zipfile.ZipFile(file_name, "w")
     for dirname, subdirs, files in os.walk(path):
@@ -107,7 +107,9 @@ def debug(path: str = "", poll: bool = False):
                 return JSONProtocol.encode(self, message)
 
     client = SignalRClient(
-        url=f"{config['config_api_url']}/debug",
+        url=f"{config['config_api_url']}debug"
+        if config["config_api_url"].endswith("/")
+        else f"{config['config_api_url']}/debug",
         access_token_factory=smartspace.cli.auth.get_token,
         headers={"Authorization": f"Bearer {smartspace.cli.auth.get_token()}"},
         protocol=MyJSONProtocol(),

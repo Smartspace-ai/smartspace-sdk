@@ -167,14 +167,15 @@ class Slice(Block):
     async def slice(self, items: list[Any] | str) -> list[Any] | str:
         return items[self.start : self.end]
 
+firstItemT = TypeVar("firstItemT")
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Gets the first item from a list",
 )
-class First(Block):
+class First(Block, Generic[firstItemT]):
     @step(output_name="item")
-    async def first(self, items: list[Any]) -> Any:
+    async def first(self, items: list[firstItemT]) -> firstItemT:
         return items[0]
 
 

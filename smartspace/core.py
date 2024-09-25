@@ -97,6 +97,18 @@ def check_type_is_input_channel(annotation: type) -> InputInfo:
         return InputInfo(type=annotation, is_channel=False)
 
 
+def _get_generics(t: type) -> list[TypeVar]:
+    bases = getattr(t, "__orig_bases__", None)
+    if bases is None or len(bases) == 0:
+        return []
+
+    for base in bases:
+        if get_origin(base) == Generic:
+            return list(get_args(base))
+
+    return []
+
+
 def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPins:
     signature = inspect.signature(fn)
     inputs: dict[str, InputPinInterface] = {}
@@ -204,7 +216,12 @@ class ToolPins(NamedTuple):
     generics: dict[str, TypeAdapter]
 
 
-def _get_tool_pins(fn: Callable, port_name: str | None = None) -> ToolPins:
+def _get_tool_pins(
+    fn: Callable,
+    port_name: str | None = None,
+    generic_names: list[str] | None = None,
+) -> ToolPins:
+    generic_names = generic_names or []
     signature = inspect.signature(fn)
     outputs: dict[str, OutputPinInterface] = {}
     output_adapters: dict[str, TypeAdapter] = {}
@@ -223,19 +240,26 @@ def _get_tool_pins(fn: Callable, port_name: str | None = None) -> ToolPins:
         output_type = param.annotation
 
         type_adapter, schema, _generics = _get_json_schema_with_generics(output_type)
-        generics.update(_generics)
+        pin_generics: dict[str, BlockPinRef] = {}
+
+        for generic_name in _generics.keys():
+            if generic_name in generic_names:
+                pin_generics[generic_name] = BlockPinRef(
+                    port=port_name if port_name else name,
+                    pin=generic_name if port_name else "",
+                )
+                generics[generic_name] = _generics[generic_name]
+            else:
+                pin_generics[generic_name] = BlockPinRef(
+                    port=generic_name,
+                    pin="",
+                )
 
         outputs[name] = OutputPinInterface(
             metadata=metadata,
             json_schema=schema,
             type=_get_pin_type_from_parameter_kind(param.kind),
-            generics={
-                name: BlockPinRef(
-                    port=port_name if port_name else name,
-                    pin=name if port_name else "",
-                )
-                for name in _generics.keys()
-            },
+            generics=pin_generics,
             channel=True,
             channel_group_id=port_name,  # Tool outputs should always be channels so multiple tool calls in a function execution have different scopes
         )
@@ -255,7 +279,20 @@ def _get_tool_pins(fn: Callable, port_name: str | None = None) -> ToolPins:
         input_type_adapter, schema, _generics = _get_json_schema_with_generics(
             input_type
         )
-        generics.update(_generics)
+
+        pin_generics: dict[str, BlockPinRef] = {}
+        for generic_name in _generics.keys():
+            if generic_name in generic_names:
+                pin_generics[generic_name] = BlockPinRef(
+                    port=port_name if port_name else name,
+                    pin=generic_name if port_name else "",
+                )
+                generics[generic_name] = _generics[generic_name]
+            else:
+                pin_generics[generic_name] = BlockPinRef(
+                    port=generic_name,
+                    pin="",
+                )
 
         _input = (
             InputPinInterface(
@@ -265,13 +302,7 @@ def _get_tool_pins(fn: Callable, port_name: str | None = None) -> ToolPins:
                 sticky=False,
                 required=False,
                 default=None,
-                generics={
-                    name: BlockPinRef(
-                        port=port_name if port_name else name,
-                        pin=name if port_name else "",
-                    )
-                    for name in _generics.keys()
-                },
+                generics=pin_generics,
                 channel=is_channel,
                 virtual=True,
             ),
@@ -619,11 +650,15 @@ def _get_pins(
             )
 
     if _issubclass(cls_annotation, Tool):
-        tool_type = cast(Tool, base_type)
+        tool_type = cast(Tool, cls_annotation)
+        generics_on_this_tool = _get_generics(cls_annotation)
 
         (_input, input_adapter), _outputs, output_adapters, _generics = _get_tool_pins(
-            tool_type.run, port_name=port_name
+            tool_type.run,
+            port_name=port_name,
+            generic_names=[t.__name__ for t in generics_on_this_tool],
         )
+
         outputs.update(_outputs)
         for name, adapter in output_adapters.items():
             block_type._set_output_pin_type_adapter(port_name, name, adapter)
@@ -2239,6 +2274,11 @@ UserMessageT = TypeVar("UserMessageT")
 
 class User(Block, Generic[UserMessageT]):
     schema: GenericSchema[UserMessageT] = GenericSchema({"type": "string"})
+    response: Output[UserMessageT]
 
-    @step(output_name="response")
-    async def ask(self, message: str) -> UserMessageT: ...
+    @step()
+    async def ask(self, message: str): ...
+
+    # @callback()
+    # async def handle_response(self, response: UserMessageT):
+    #     self.response.send(response)

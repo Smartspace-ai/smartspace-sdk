@@ -64,6 +64,7 @@ nav:
           - StringTemplate: block-reference/StringTemplate.md
           - StringTruncator: block-reference/StringTruncator.md
       - Misc:
+          - Buffer: block-reference/Buffer.md
           - Cast: block-reference/Cast.md
           - Count: block-reference/Count.md
           - CreateList: block-reference/CreateList.md

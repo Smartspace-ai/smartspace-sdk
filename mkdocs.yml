@@ -25,6 +25,7 @@ theme:
     accent: custom
 
 markdown_extensions:
+  - attr_list
   - toc:
       permalink: true
   - admonition

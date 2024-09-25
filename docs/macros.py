@@ -58,3 +58,7 @@ def define_env(env):
     def block_image_exists(path: str):
         full_path = os.path.join("docs", "block-reference", path)
         return os.path.exists(full_path)
+
+    @env.macro
+    def block_image_sizing():
+        return '{: style="height:150px"}'

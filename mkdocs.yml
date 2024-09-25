@@ -61,14 +61,28 @@ nav:
           - JoinStrings: block-reference/JoinStrings.md
           - RegexMatch: block-reference/RegexMatch.md
           - SplitString: block-reference/SplitString.md
+          - StringTemplate: block-reference/StringTemplate.md
           - StringTruncator: block-reference/StringTruncator.md
       - Misc:
+          - Cast: block-reference/Cast.md
           - Count: block-reference/Count.md
+          - CreateList: block-reference/CreateList.md
+          - CreateObject: block-reference/CreateObject.md
+          - TypeSwitch: block-reference/TypeSwitch.md
+          - UnpackList: block-reference/UnpackList.md
+          - UnpackObject: block-reference/UnpackObject.md
       - SmartSpace Blocks:
           - Data:
+              - GetAllDocuments: block-reference/GetAllDocuments.md
               - GetFileContent: block-reference/GetFileContent.md
+          - LLM:
+              - Analyzer: block-reference/Analyzer.md
+              - LLM: block-reference/LLM.md
+              - LLMSelect: block-reference/LLMSelect.md
+              - LLMWithTools: block-reference/LLMWithTools.md
           - Utils:
               - Cast: block-reference/Cast.md
+              - CreateResponseWithSources: block-reference/CreateResponseWithSources.md
       - Obsolete:
           - GetJsonField: block-reference/GetJsonField.md
       # - Agent:

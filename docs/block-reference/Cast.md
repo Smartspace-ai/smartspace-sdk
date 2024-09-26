@@ -6,7 +6,7 @@
 ## Overview
 The `Cast` Block converts an input into the specified type based on a provided schema. This is useful for ensuring that inputs conform to a specific structure or type.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details(page.title) }}
 
 ## Example(s)
 

@@ -6,7 +6,7 @@
 ## Overview
 The `CreateObject` Block constructs an object (dictionary) from the given key-value pairs. This is useful when you need to dynamically build an object with properties.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details(page.title) }}
 
 ## Example(s)
 

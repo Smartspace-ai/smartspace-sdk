@@ -6,7 +6,7 @@
 ## Overview
 The `CreateList` Block creates a list from the provided items. This is useful when you need to build a list dynamically from multiple inputs.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details(page.title) }}
 
 ## Example(s)
 

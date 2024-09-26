@@ -6,7 +6,7 @@
 ## Overview
 The `TypeSwitch` Block allows you to select different outputs based on the schema of the input. This is useful when you need to handle multiple types of inputs and route them to different outputs based on their type.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details(page.title) }}
 
 ## Example(s)
 

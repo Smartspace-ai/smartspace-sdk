@@ -6,7 +6,7 @@
 ## Overview
 The `UnpackObject` Block extracts the properties of an object and sends them to the corresponding outputs. This is useful when you need to access individual properties of an object.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details(page.title) }}
 
 ## Example(s)
 

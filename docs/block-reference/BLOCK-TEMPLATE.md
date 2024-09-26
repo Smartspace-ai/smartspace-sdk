@@ -5,7 +5,7 @@
 
 ## Overview
 
-{{ generate_block_details_smartspace(page.title) }}    
+{{ generate_block_details(page.title) }}    
 
 ## Example(s)
 

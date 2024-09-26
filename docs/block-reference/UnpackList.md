@@ -6,7 +6,7 @@
 ## Overview
 The `UnpackList` Block extracts elements from a list and sends them to the corresponding outputs. This is useful when you need to access individual elements of a list.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details(page.title) }}
 
 ## Example(s)
 

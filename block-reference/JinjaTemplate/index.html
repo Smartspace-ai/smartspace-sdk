@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/block-reference/HTTPRequest/">
+        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/block-reference/JinjaTemplate/">
       
       
-        <link rel="prev" href="../ForEach/">
+        <link rel="prev" href="../ParseJson/">
       
       
-        <link rel="next" href="../Map/">
+        <link rel="next" href="../JoinStrings/">
       
       
       <link rel="icon" href="../../assets/smartspace-favicon.webp">
@@ -22,7 +22,7 @@
     
     
       
-        <title>HTTPRequest - Smartspace Workflow Documentation</title>
+        <title>JinjaTemplate - Smartspace Workflow Documentation</title>
       
     
     
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HTTPRequest
+              JinjaTemplate
             
           </span>
         </div>
@@ -550,8 +550,6 @@
                 
   
   
-    
-  
   
   
     
@@ -566,11 +564,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
@@ -584,7 +584,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Function
@@ -700,28 +700,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    HTTPRequest
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../HTTPRequest/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -730,147 +712,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metadata
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#outputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Outputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      State Variables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example(s)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Example(s)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-1-perform-a-get-request" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 1: Perform a GET request
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-2-perform-a-post-request-with-a-json-body" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 2: Perform a POST request with a JSON body
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-3-handle-request-headers-and-query-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 3: Handle request headers and query parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Error Handling
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#faq" class="md-nav__link">
-    <span class="md-ellipsis">
-      FAQ
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1046,8 +887,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -1060,13 +903,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
         
           
           <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
@@ -1080,7 +921,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             Text
@@ -1091,10 +932,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../JinjaTemplate/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    JinjaTemplate
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1103,6 +962,129 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      State Variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example(s)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example(s)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-build-a-string-with-dynamic-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 1: Build a string with dynamic values
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2175,27 +2157,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example-1-perform-a-get-request" class="md-nav__link">
+  <a href="#example-1-build-a-string-with-dynamic-values" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 1: Perform a GET request
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-2-perform-a-post-request-with-a-json-body" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 2: Perform a POST request with a JSON body
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-3-handle-request-headers-and-query-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 3: Handle request headers and query parameters
+      Example 1: Build a string with dynamic values
     </span>
   </a>
   
@@ -2242,17 +2206,15 @@
   
 
 
-  <h1>HTTPRequest</h1>
+  <h1>JinjaTemplate</h1>
 
-<p><img alt="HTTPRequest" src="../assets/HTTPRequest-block.png" style="height:150px" /></p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>HTTPRequest</code> Block performs HTTP requests using methods such as GET, POST, PUT, DELETE, and PATCH. It supports passing request parameters, headers, query parameters, and request bodies. The Block outputs a <code>ResponseObject</code> containing the response content, headers, body, and status code.</p>
-<p>By default, the request method is <code>GET</code>, but it can be configured using the available HTTP methods. If any values are not provided during the request, they will be fetched from the Block's configuration.</p>
+<p>The <code>JinjaTemplate</code> Block allows you to generate a string by using a template and dynamically inserting values into it. This is useful when you want to build strings based on inputs with specific formatting. It uses the <a href="https://jinja.palletsprojects.com/en/3.1.x/">jinja2</a> templating engine to render the template.</p>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>Performs HTTP requests such as GET, POST, PUT, DELETE, and more.</p>
+<p>Takes in a template string and renders it with the given inputs</p>
 <h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Category</strong>: Function</li>
+<li><strong>Category</strong>: Misc</li>
 </ul>
 <h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
 <table>
@@ -2266,60 +2228,15 @@
 </thead>
 <tbody>
 <tr>
-<td>timeout</td>
-<td><code>int</code></td>
-<td></td>
-<td><code>30</code></td>
-</tr>
-<tr>
-<td>method</td>
-<td><code>HTTPMethod</code></td>
-<td></td>
-<td><code>GET</code></td>
-</tr>
-<tr>
-<td>url</td>
+<td>template</td>
 <td><code>str</code></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>headers</td>
-<td><code>dict[(str, Any)] or Constant(value=None)</code></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>query_params</td>
-<td><code>dict[(str, Any)] or Constant(value=None)</code></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>body</td>
-<td><code>dict[(str, Any)] or Constant(value=None)</code></td>
 <td></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <h2 id="inputs">Inputs<a class="headerlink" href="#inputs" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Data Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>request</td>
-<td><code>RequestObject</code></td>
-<td>Can accept request parameters (method, url, headers, query_params, and/or body). Any values not specified will use the Config values. Pass an empty dict ({}) to use all Config values</td>
-</tr>
-</tbody>
-</table>
+<p>No inputs available.</p>
 <h2 id="outputs">Outputs<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2331,8 +2248,8 @@
 </thead>
 <tbody>
 <tr>
-<td>response</td>
-<td><code>ResponseObject</code></td>
+<td>string</td>
+<td><code>str</code></td>
 <td></td>
 </tr>
 </tbody>
@@ -2340,52 +2257,21 @@
 <h2 id="state-variables">State Variables<a class="headerlink" href="#state-variables" title="Permanent link">&para;</a></h2>
 <p>No state variables available.</p>
 <h2 id="examples">Example(s)<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="example-1-perform-a-get-request">Example 1: Perform a GET request<a class="headerlink" href="#example-1-perform-a-get-request" title="Permanent link">&para;</a></h3>
+<h3 id="example-1-build-a-string-with-dynamic-values">Example 1: Build a string with dynamic values<a class="headerlink" href="#example-1-build-a-string-with-dynamic-values" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Create an <code>HTTPRequest</code> Block.</li>
-<li>Set the <code>url</code> to <code>"https://api.example.com/data"</code>.</li>
-<li>Leave the method as <code>GET</code>.</li>
-<li>The Block will send a <code>GET</code> request to the provided URL and output the response, including the content, headers, and status code.</li>
-</ul>
-<h3 id="example-2-perform-a-post-request-with-a-json-body">Example 2: Perform a POST request with a JSON body<a class="headerlink" href="#example-2-perform-a-post-request-with-a-json-body" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Set up an <code>HTTPRequest</code> Block.</li>
-<li>Set the <code>method</code> to <code>POST</code>.</li>
-<li>Set the <code>url</code> to <code>"https://api.example.com/create"</code>.</li>
-<li>Provide a body such as <code>{"name": "John", "age": 30}</code>.</li>
-<li>The Block will send the <code>POST</code> request and return the response with the created data.</li>
-</ul>
-<h3 id="example-3-handle-request-headers-and-query-parameters">Example 3: Handle request headers and query parameters<a class="headerlink" href="#example-3-handle-request-headers-and-query-parameters" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Create an <code>HTTPRequest</code> Block.</li>
-<li>Set the <code>url</code> to <code>"https://api.example.com/data"</code>.</li>
-<li>Add headers like <code>{"Authorization": "Bearer token123"}</code>.</li>
-<li>Add query parameters such as <code>{"page": 1, "limit": 10}</code>.</li>
-<li>The Block will send a <code>GET</code> request with the headers and query parameters and return the response.</li>
+<li>Create a <code>JinjaTemplate</code> Block.</li>
+<li>Set the <code>template</code> to <code>"Hello, {{ name }}!"</code>.</li>
+<li>Provide the input: <code>{"name": "John"}</code>.</li>
+<li>The Block will output: <code>"Hello, John!"</code>.</li>
 </ul>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <ul>
-<li>If the <code>URL</code> is missing, the Block will raise a <code>ValueError</code> indicating that the URL is required.</li>
-<li>Network-related errors will raise an <code>HTTPError</code> with a descriptive message, e.g., "Network error occurred".</li>
-<li>If the server responds with an HTTP error (status code 4xx or 5xx), an <code>HTTPError</code> will be raised with the corresponding <code>ResponseObject</code>.</li>
-<li>Any other unexpected exceptions will also raise an <code>HTTPError</code>.</li>
+<li>If the template contains invalid syntax, the Block will raise an error.</li>
 </ul>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
 <details class="question" open="open">
-<summary>What happens if no method is provided?</summary>
-<p>If no method is provided in the request or configuration, the Block will default to the <code>GET</code> method for the request.</p>
-</details>
-<details class="question" open="open">
-<summary>Can I use this Block for asynchronous requests?</summary>
-<p>Yes, the <code>HTTPRequest</code> Block is designed for asynchronous requests. It uses the <code>httpx.AsyncClient</code> to handle the HTTP calls asynchronously.</p>
-</details>
-<details class="question" open="open">
-<summary>What happens if the response is not JSON?</summary>
-<p>If the response's content type is not <code>application/json</code>, the Block will still return the response content, but the <code>body</code> field in the <code>ResponseObject</code> will be <code>None</code>.</p>
-</details>
-<details class="question" open="open">
-<summary>How can I pass headers and query parameters dynamically?</summary>
-<p>Headers and query parameters can be passed either through the <code>RequestObject</code> when making the request or through the Block's configuration. Any values provided in the request will override the configuration values.</p>
+<summary>What happens if a required input is missing?</summary>
+<p>The Block will raise a <code>KeyError</code> if the template expects a variable that is not provided in the inputs.</p>
 </details>
 
 
@@ -2422,7 +2308,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../ForEach/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ForEach">
+          <a href="../ParseJson/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ParseJson">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2432,20 +2318,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                ForEach
+                ParseJson
               </div>
             </div>
           </a>
         
         
           
-          <a href="../Map/" class="md-footer__link md-footer__link--next" aria-label="Next: Map">
+          <a href="../JoinStrings/" class="md-footer__link md-footer__link--next" aria-label="Next: JoinStrings">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Map
+                JoinStrings
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -4,6 +4,7 @@ repo_url: "https://github.com/Smartspace-ai/smartspace-flows"
 
 theme:
   features:
+    - navigation.expand
     - navigation.footer
     - navigation.instant
     - navigation.instant.progress
@@ -38,6 +39,7 @@ extra_css:
   - stylesheets/extra.css
 nav:
   - Home: index.md
+  - CLI: cli.md
   - Block Reference:
       - Overview: block-reference/index.md
       - Chunking:
@@ -77,13 +79,13 @@ nav:
           - Data:
               - GetAllDocuments: block-reference/GetAllDocuments.md
               - GetFileContent: block-reference/GetFileContent.md
+              - VectorSearch: block-reference/VectorSearch.md
           - LLM:
               - Analyzer: block-reference/Analyzer.md
               - LLM: block-reference/LLM.md
               - LLMSelect: block-reference/LLMSelect.md
               - LLMWithTools: block-reference/LLMWithTools.md
           - Utils:
-              - Cast: block-reference/Cast.md
               - CreateResponseWithSources: block-reference/CreateResponseWithSources.md
       - Obsolete:
           - GetJsonField: block-reference/GetJsonField.md
@@ -93,23 +95,16 @@ nav:
           # - SQLServer: block-reference/SQLServer.md
   - Concepts:
       - Channels: concepts/channels.md
-      # - Overview: concepts/index.md
-  #     - Blocks:
-  #         - Overview: concepts/blocks/index.md
-  #         - Inputs: concepts/blocks/block-inputs.md
-  #         - Steps: concepts/blocks/block-steps.md
-  #         - Tools: concepts/blocks/block-tools.md
-  #         - State: concepts/blocks/block-state.md
-  #         - Outputs: concepts/blocks/block-outputs.md
-  #     - Custom Blocks:
-  #         - Building Your Own Blocks: concepts/custom-blocks/index.md
-  #         - Deploying Custom Blocks: concepts/custom-blocks/deploying.md
-  #     - Connections:
-  #         - Linking blocks: concepts/connections/index.md
+      - Blocks:
+          - Overview: concepts/blocks/index.md
+          - Custom Blocks: concepts/blocks/custom-blocks-building.md
+          - Connections: concepts/blocks/connections.md
+#     - Connections:
   #     - Building Flows:
   #         - Flow Definition: concepts/flows/flow-definition.md
   #         - Flow Deployment: concepts/flows/flow-deployment.md
   #         - Flow Execution: concepts/flows/flow-execution.md
+      # - Overview: concepts/index.md
   # - Getting Started: getting-started/index.md
   # - Examples: examples/index.md
   # - API Reference: api/index.md

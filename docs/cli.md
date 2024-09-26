@@ -2,19 +2,27 @@ This documentation will help users understand how to use the SmartSpace CLI tool
 
 ## 1. Installation
 
-Ensure you have `typer`, `msal`, `requests`, `watchdog`, and `pysignalr` installed. If not, install them via:
-
+pip
 ```bash
-pip install typer msal requests watchdog pysignalr
+pip install smartspace-ai
 ```
 
-Once the dependencies are installed, clone or download the repository and run the tool from the terminal.
+poetry
+```bash
+poetry add smartspace-ai
+```
+
+Once installed, you can use the `smartspace` command in your terminal to interact with the SmartSpace API.
 
 ---
 
 ## 2. Configuration
 
 The CLI tool requires configuration settings for interacting with the SmartSpace API. You can configure the tool using the `config` command.
+
+???+ info "Configuration Details"
+
+    You can find the configuration ids in the SmartSpace Admin portal in the "Config API" section.
 
 ### Command:
 ```bash

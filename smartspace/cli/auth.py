@@ -8,6 +8,10 @@ def login(deviceCode: bool):
     config = _get_config()
     scope = f"api://{config['client_id']}/smartspaceapi.config.access"
 
+    accounts = msal_app.get_accounts()
+    for account in accounts:
+        msal_app.remove_account(account)
+
     if deviceCode:
         flow = msal_app.initiate_device_flow(
             scopes=[scope],

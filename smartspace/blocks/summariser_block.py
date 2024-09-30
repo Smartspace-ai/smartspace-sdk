@@ -1,4 +1,6 @@
-from typing import Any, List
+# block warnings
+import warnings
+from typing import Annotated, List
 
 import torch
 from llama_index.core import PromptTemplate
@@ -7,7 +9,9 @@ from transformers import AutoConfig, AutoTokenizer
 
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
-from smartspace.models import ContentItem, InMemorySearchResult
+from smartspace.models import ContentItem, InMemorySearchResult, SearchResult
+
+warnings.filterwarnings("ignore")
 
 
 @metadata(
@@ -28,14 +32,16 @@ from smartspace.models import ContentItem, InMemorySearchResult
     """,
 )
 class Summariser(Block):
-    llm_name: Config[str] = "HuggingFaceH4/tiny-random-LlamaForCausalLM"
-    tokenizer_name: Config[str] = "HuggingFaceH4/tiny-random-LlamaForCausalLM"
-    context_window: Config[int] = 4096
-    max_new_tokens: Config[int] = 256
+    llm_name: Annotated[str, Config()] = "HuggingFaceH4/tiny-random-LlamaForCausalLM"
+    tokenizer_name: Annotated[str, Config()] = (
+        "HuggingFaceH4/tiny-random-LlamaForCausalLM"
+    )
+    context_window: Annotated[int, Config()] = 2048
+    max_new_tokens: Annotated[int, Config()] = 256
 
-    temperature: Config[float] = 0.7
-    top_k: Config[int] = 50
-    top_p: Config[float] = 0.95
+    temperature: Annotated[float, Config()] = 0.7
+    top_k: Annotated[int, Config()] = 50
+    top_p: Annotated[float, Config()] = 0.95
 
     # Determine the device map based on the model type
     if torch.cuda.is_available():
@@ -73,18 +79,18 @@ class Summariser(Block):
     @step(output_name="summary")
     async def summarize(
         self, documents: List[InMemorySearchResult], message: List[ContentItem]
-    ) -> list[dict[str, Any]]:
+    ) -> SearchResult:
         # check all file_name, file_content, chunk_content of the documents and the message text
         if any(doc.file_name is None for doc in documents):
-            return [{"image": None, "text": "Document names are missing."}]
+            return SearchResult(content="Document names are missing.", score=0)
         if any(doc.content is None for doc in documents):
-            return [{"image": None, "text": "Document contents are missing."}]
+            return SearchResult(content="Document content is missing.", score=0)
         if any(doc.chunk_content is None for doc in documents):
-            return [{"image": None, "text": "Document chunks are missing."}]
+            return SearchResult(content="Document chunk content is missing.", score=0)
         if not message or len(message) == 0:
-            return [{"image": None, "text": "No message provided."}]
+            return SearchResult(content="No message provided.", score=0)
         if not message[0].text:
-            return [{"image": None, "text": "No message text provided."}]
+            return SearchResult(content="Message text is missing.", score=0)
 
         # using the self.llm to detect whether the message specified document names to answer the question. If specified, get the file names from all_file_names
         # message_text = message[0].text
@@ -131,7 +137,7 @@ class Summariser(Block):
         elif len(specified_file_names) == 0:
             sum_text = "No document names specified in the message."
 
-        return [{"image": None, "text": sum_text}]
+        return SearchResult(content=sum_text, score=1)
 
     async def _summarize_full(self, content: str) -> str:
         prompt_template = PromptTemplate(

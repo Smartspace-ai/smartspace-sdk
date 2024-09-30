@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 
     """,
 )
-class VectoriserDebug(Block):
+class QueryVectoriserDebug(Block):
     emb_model_name: Annotated[str, Config()] = "BAAI/bge-small-en-v1.5"
 
     embed_model = HuggingFaceEmbedding(model_name=emb_model_name)

@@ -279,13 +279,24 @@ def debug(path: str = "", poll: bool = False):
             self._on_any_event(event)
 
     async def main():
-        loop = asyncio.get_event_loop()
-        handler = _EventHandler(loop)
-        observer = PollingObserver() if poll else Observer()
-        observer.schedule(handler, root_path, recursive=True)
-        observer.start()
+        try:
+            loop = asyncio.get_event_loop()
+            handler = _EventHandler(loop)
+            observer = PollingObserver() if poll else Observer()
+            observer.schedule(handler, root_path, recursive=True)
+            observer.start()
 
-        await client.run()
+            await client.run()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            observer.stop()
+            observer.join()
+
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        print(f"An unhandled error occurred: {e}")
 
     with suppress(KeyboardInterrupt, asyncio.CancelledError):
         asyncio.run(main())

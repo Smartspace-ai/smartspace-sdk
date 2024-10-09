@@ -24,15 +24,23 @@ def login(deviceCode: bool):
 
         print(flow["message"])
 
-        msal_app.acquire_token_by_device_flow(
+        result = msal_app.acquire_token_by_device_flow(
             flow=flow,
         )
 
     else:
-        msal_app.acquire_token_interactive(
+        result = msal_app.acquire_token_interactive(
             scopes=[scope],
             prompt=msal.Prompt.SELECT_ACCOUNT,
         )
+
+    if "error" in result:
+        if "error_description" in result:
+            print(f"Login failed with error: '{result['error_description']}'")
+        else:
+            print(f"Login failed with error: '{result['error']}'")
+    else:
+        print("Logged in successfully")
 
 
 def get_msal_app():

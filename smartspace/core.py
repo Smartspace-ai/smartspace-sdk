@@ -1491,6 +1491,7 @@ class Block(metaclass=MetaBlock):
         self._dynamic_ports: dict[str, list[str]] = {}
         self._dynamic_inputs: list[tuple[tuple[str, str], tuple[str, str]]] = []
         self._dynamic_outputs: list[tuple[tuple[str, str], tuple[str, str]]] = []
+        self._tools: list[Tool] = []
 
         for attribute_name in dir(self):
             attribute = getattr(self, attribute_name)
@@ -1769,6 +1770,7 @@ class Block(metaclass=MetaBlock):
                 else:
                     return Output(BlockPinRef(port=port_id, pin=""))
 
+        tool_port = None
         if port_interface.is_function:
             port = getattr(self, port_name)
         else:
@@ -1785,7 +1787,9 @@ class Block(metaclass=MetaBlock):
                     port_type = get_args(annotation)[1]
 
             if _issubclass(port_type, Tool):
-                port = port_type(port_name=port_id)
+                port = port_type(port_name=port_id, input_names=[])
+                self._tools.append(port)
+                tool_port = cast(Tool, port)
             else:
                 port = port_type()
 
@@ -1826,6 +1830,7 @@ class Block(metaclass=MetaBlock):
                     for _input_name, index in dynamic_inputs
                     if _input_name == input_name
                 }
+
                 setattr(port, input_name, input_dict)
 
         for output_name, output_interface in port_interface.outputs.items():
@@ -1836,6 +1841,9 @@ class Block(metaclass=MetaBlock):
                     output = Output(BlockPinRef(port=port_id, pin=output_name))
 
                 setattr(port, output_name, output)
+
+                if tool_port:
+                    tool_port.output_names.append(output_name)
 
             elif output_interface.type == PinType.LIST:
                 _dynamic_outputs = [
@@ -1859,6 +1867,11 @@ class Block(metaclass=MetaBlock):
 
                 setattr(port, output_name, outputs)
 
+                if tool_port:
+                    tool_port.output_names.extend(
+                        [f"{output_name}.{i}" for i, _ in enumerate(outputs)]
+                    )
+
             elif output_interface.type == PinType.DICTIONARY:
                 output_dict: dict[str, Output | OutputChannel] = {
                     index: OutputChannel(BlockPinRef(port=port_id, pin=output_name))
@@ -1868,6 +1881,11 @@ class Block(metaclass=MetaBlock):
                     if _output_name == output_name
                 }
                 setattr(port, output_name, output_dict)
+
+                if tool_port:
+                    tool_port.output_names.extend(
+                        [f"{output_name}.{i}" for i in output_dict.keys()]
+                    )
 
         return port
 
@@ -1938,27 +1956,12 @@ class ToolCall(Generic[R]):
 
     def __await__(self):
         messages = block_messages.get()
+
         messages.put_nowait(
             BlockRunMessage(
                 outputs=self.outputs,
                 inputs=self.inputs,
                 redirects=self.redirects,
-                states=[],
-            )
-        )
-        messages.put_nowait(
-            BlockRunMessage(
-                outputs=[
-                    OutputValue(
-                        source=self.outputs[0].source,
-                        value=OutputChannelMessage(
-                            data=None,
-                            event=ChannelEvent.CLOSE,
-                        ),
-                    )
-                ],
-                inputs=[],
-                redirects=[],
                 states=[],
             )
         )
@@ -1969,9 +1972,9 @@ class ToolCall(Generic[R]):
 class Tool(Generic[P, T], abc.ABC):
     metadata: ClassVar[dict] = {}
 
-    def __init__(self, port_name: str):
+    def __init__(self, port_name: str, input_names: list[str]):
         self.port_name = port_name
-        self._index = 0
+        self.output_names = input_names
 
     @abc.abstractmethod
     def run(self, *args: P.args, **kwargs: P.kwargs) -> T: ...
@@ -2047,12 +2050,17 @@ class BlockFunctionCall:
     ):
         self.values = values
         self.step = step
+        self.result: Any = None
+
+    def _on_done(self, task: asyncio.Task):
+        self.values.put_nowait(BlockControlMessage.DONE)
+        if not task.cancelled() and not task.exception():
+            self.result = task.result()
 
     def __aiter__(self):
         self.step_future = asyncio.tasks.ensure_future(self.step)
-        self.step_future.add_done_callback(
-            lambda _: self.values.put_nowait(BlockControlMessage.DONE)
-        )
+        self.step_future.add_done_callback(self._on_done)
+
         return self
 
     async def __anext__(self):
@@ -2087,42 +2095,14 @@ class BlockFunction(Generic[B, P, T]):
         self._pending_inputs: dict[str, dict[str, Any]] = {}
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
-        if self._block._has_run:
-            raise BlockError(
-                message="Block has already run a function. Each instance of a block can only run once",
-                data={"function_name": self.name},
-            )
+        call = await self._call_inner(*args, **kwargs)
 
-        self._block._has_run = True
+        async for m in call:
+            self._block._messages.append(m)
 
-        messages: asyncio.queues.Queue[BlockRunMessage | BlockControlMessage] = (
-            asyncio.queues.Queue()
-        )
-        block_messages.set(messages)
+        return call.result
 
-        result = await self._fn(self._block, *args, **kwargs)
-
-        while not messages.empty():
-            m = await messages.get()
-            if isinstance(m, BlockRunMessage):
-                self._block._messages.append(m)
-
-        return result
-
-    def _run(self):
-        if self._block._has_run:
-            raise BlockError(
-                message="Block has already run a function. Each instance of a block can only run once",
-                data={"function_name": self.name},
-            )
-
-        self._block._has_run = True
-
-        messages: asyncio.queues.Queue[BlockRunMessage | BlockControlMessage] = (
-            asyncio.queues.Queue()
-        )
-        block_messages.set(messages)
-
+    async def _run(self):
         s = inspect.signature(self._fn)
 
         positional_inputs: list[Any] = []
@@ -2151,16 +2131,36 @@ class BlockFunction(Generic[B, P, T]):
             elif p.kind == p.VAR_KEYWORD:
                 keyword_inputs.update(values)
 
-        async def _inner():
+        return await self._call_inner(
+            *tuple(positional_inputs + var_positional_inputs),
+            **keyword_inputs,
+        )
+
+    async def _call_inner(self, *args: P.args, **kwargs: P.kwargs) -> BlockFunctionCall:
+        if self._block._has_run:
+            raise BlockError(
+                message="Block has already run a function. Each instance of a block can only run once",
+                data={"function_name": self.name},
+            )
+
+        self._block._has_run = True
+
+        messages: asyncio.queues.Queue[BlockRunMessage | BlockControlMessage] = (
+            asyncio.queues.Queue()
+        )
+        block_messages.set(messages)
+
+        async def _inner() -> T:
             result = await self._fn(
                 self._block,
-                *tuple(positional_inputs + var_positional_inputs),
-                **keyword_inputs,
+                *args,
+                **kwargs,
             )
 
             outputs: list[OutputValue] = []
             states: list[StateValue] = []
 
+            s = inspect.signature(self._fn)
             if s.return_annotation is not inspect._empty:
                 outputs = [
                     OutputValue(
@@ -2186,6 +2186,31 @@ class BlockFunction(Generic[B, P, T]):
                     states=states,
                 )
             )
+
+            tool_close_outputs = [
+                OutputValue(
+                    source=BlockPinRef(
+                        port=tool.port_name,
+                        pin=tool.output_names[0],
+                    ),
+                    value=OutputChannelMessage(
+                        data=None,
+                        event=ChannelEvent.CLOSE,
+                    ),
+                )
+                for tool in self._block._tools
+            ]
+
+            messages.put_nowait(
+                BlockRunMessage(
+                    outputs=tool_close_outputs,
+                    inputs=[],
+                    redirects=[],
+                    states=[],
+                )
+            )
+
+            return result
 
         return BlockFunctionCall(
             messages,
@@ -2279,6 +2304,6 @@ class User(Block, Generic[UserMessageT]):
     @step()
     async def ask(self, message: str): ...
 
-    # @callback()
-    # async def handle_response(self, response: UserMessageT):
-    #     self.response.send(response)
+    @callback()
+    async def handle_response(self, response: UserMessageT):
+        self.response.send(response)

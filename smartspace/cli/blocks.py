@@ -1,13 +1,79 @@
+import json
+from typing import List
+
 import pydantic_core
 import requests
 import typer
+from pydantic import TypeAdapter
 
+from smartspace.cli.models import PublishedBlockSet
 from smartspace.core import BlockSet
 from smartspace.models import (
     BlockRunData,
 )
 
 app = typer.Typer()
+
+
+def get_config():
+    import smartspace.cli.auth
+    import smartspace.cli.config
+
+    config = smartspace.cli.config.load_config()
+
+    if not config["config_api_url"]:
+        print(
+            "You must set your API url before using the CLI. Use 'smartspace config --api-url <Your SmartSpace API Url>'"
+        )
+        exit()
+
+    return config
+
+
+@app.command()
+def list():
+    import smartspace.blocks
+    import smartspace.cli.auth
+
+    config = get_config()
+
+    response = requests.get(
+        url=f"{config['config_api_url']}/blocksets",
+        params={"types": "Custom"},
+        headers={"Authorization": f"Bearer {smartspace.cli.auth.get_token()}"},
+    )
+
+    if response.status_code == 200:
+        type_adapter = TypeAdapter(List[PublishedBlockSet])
+        block_sets = type_adapter.validate_json(response.content)
+        for block_set in block_sets:
+            print(f"{block_set.name}:")
+            for block_name, versions in block_set.block_interfaces.items():
+                for version in versions.keys():
+                    print(f"  {block_name} ({version})")
+    else:
+        print(f"Error: {response.text}")
+
+
+@app.command()
+def delete(name: str):
+    import smartspace.blocks
+    import smartspace.cli.auth
+
+    config = get_config()
+
+    response = requests.delete(
+        url=f"{config['config_api_url']}/blocksets/{name}",
+        headers={"Authorization": f"Bearer {smartspace.cli.auth.get_token()}"},
+    )
+
+    if response.status_code >= 200 and response.status_code < 300:
+        print("Successfully deleted")
+    elif response.status_code == 500:
+        print("An internal error occured while trying to delete the block set")
+    else:
+        result = json.loads(response.content)
+        print(result["detail"] if "detail" in result else json.dumps(result, indent=2))
 
 
 @app.command()
@@ -17,15 +83,8 @@ def publish(name: str, path: str = ""):
 
     import smartspace.blocks
     import smartspace.cli.auth
-    import smartspace.cli.config
 
-    config = smartspace.cli.config.load_config()
-
-    if not config["config_api_url"]:
-        print(
-            "You must set your API url before publishing blocks. Use 'smartspace config --api-url <Your SmartSpace API Url>'"
-        )
-        exit()
+    config = get_config()
 
     file_name = "blocks.zip"
     if os.path.exists(file_name):
@@ -80,15 +139,8 @@ def debug(path: str = "", poll: bool = False):
 
     import smartspace.blocks
     import smartspace.cli.auth
-    import smartspace.cli.config
 
-    config = smartspace.cli.config.load_config()
-
-    if not config["config_api_url"]:
-        print(
-            "You must set your API url before creating blocks. Use 'smartspace config --api-url <Your SmartSpace API Url>'"
-        )
-        exit()
+    config = get_config()
 
     root_path = path if path != "" else os.getcwd()
 
@@ -110,49 +162,62 @@ def debug(path: str = "", poll: bool = False):
         url=f"{config['config_api_url']}debug"
         if config["config_api_url"].endswith("/")
         else f"{config['config_api_url']}/debug",
-        access_token_factory=smartspace.cli.auth.get_token,
         headers={"Authorization": f"Bearer {smartspace.cli.auth.get_token()}"},
         protocol=MyJSONProtocol(),
     )
 
     block_set: BlockSet = BlockSet()
 
+    running = (
+        asyncio.Lock()
+    )  # temp fix to deal with server issue when running blocks in parallel
+
     async def on_message_override(message: Message):
         if isinstance(message, InvocationMessage) and message.target == "run_block":
-            request = BlockRunData.model_validate(message.arguments[0])
+            async with running:
+                request = BlockRunData.model_validate(message.arguments[0])
 
-            print(f"Running block {request.name} ({request.version})")
-
-            block_type = block_set.find(request.name, request.version)
-
-            if not block_type:
-                raise Exception(
-                    f"Could not find block with name {request.name} and version {request.version}"
+                print(
+                    f"Running '{request.name}({request.version}).{request.function}()'"
                 )
 
-            block_instance = block_type()
+                block_type = block_set.find(request.name, request.version)
 
-            block_instance._load(
-                context=request.context,
-                state=request.state,
-                inputs=request.inputs,
-                dynamic_ports=request.dynamic_ports,
-                dynamic_output_pins=request.dynamic_output_pins,
-                dynamic_input_pins=request.dynamic_input_pins,
-            )
+                if not block_type:
+                    raise Exception(
+                        f"Could not find block with name {request.name} and version {request.version}"
+                    )
 
-            messages: list[dict] = []
+                block_instance = block_type()
 
-            async for m in block_instance._run_function(request.function):
-                messages.append(m.model_dump(by_alias=True, mode="json"))
+                block_instance._load(
+                    context=request.context,
+                    state=request.state,
+                    inputs=request.inputs,
+                    dynamic_ports=request.dynamic_ports,
+                    dynamic_output_pins=request.dynamic_output_pins,
+                    dynamic_input_pins=request.dynamic_input_pins,
+                )
 
-            message = CompletionMessage(
-                getattr(message, "invocation_id", None)
-                or getattr(message, "invocationId", ""),
-                messages,
-                headers=client._headers,
-            )
-            await client._transport.send(message)
+                messages: List[dict] = []
+
+                async for m in block_instance._run_function(request.function):
+                    messages.append(m.model_dump(by_alias=True, mode="json"))
+
+                invocation_id = getattr(message, "invocation_id", None) or getattr(
+                    message, "invocationId", ""
+                )
+
+                message = CompletionMessage(
+                    invocation_id,
+                    messages,
+                    headers=client._headers,
+                )
+                print(
+                    f"Finished '{request.name}({request.version}).{request.function}()'"
+                )
+                await client._transport.send(message)
+                await asyncio.sleep(5)
         else:
             await SignalRClient._on_message(client, message)
 
@@ -244,8 +309,8 @@ def debug(path: str = "", poll: bool = False):
             data = pydantic_core.to_jsonable_python(new_blocks)
             await client.send("registerblock", [data])
 
-        for block_name, versions in removed_blocks.items():
-            for version in versions:
+        for block_name, removed_versions in removed_blocks.items():
+            for version in removed_versions:
                 print(f"Removing {block_name} ({version})")
                 await client.send(
                     "removeblock", [{"name": block_name, "version": version}]

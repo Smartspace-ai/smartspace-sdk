@@ -7,9 +7,11 @@ filterwarnings = [
 ]
 
 [tool.poetry]
-name = "smartspace"
-version = "0.1.0"
-description = "Smartspace Flows"
+name = "smartspace-ai"
+version = "0.1.2"
+description = "Smartspace SDK"
+readme = "README.md"
+packages = [{ include = "smartspace" }]
 authors = ["David Gentile <david.gentile@smartspace.ai>", "Denver Hayward <denver.hayward@smartspace.ai>"]
 
 
@@ -27,7 +29,7 @@ jsonschema = "^4.23.0"
 typer = "^0.12.3"
 azure-identity = "^1.17.1"
 msal = "^1.29.0"
-pysignalr = {git = "https://github.com/baking-bad/pysignalr"}
+pysignalr = "^1.0.0"
 watchdog = "4.0.1"
 more-itertools = "^10.3.0"
 jsonpath-ng = "^1.6.1"
@@ -40,6 +42,7 @@ llama-index = "^0.11.1"
 llama-index-embeddings-huggingface = "^0.3.0"
 httpx = "^0.27.0"
 neo4j = "^5.24.0"
+types-requests = "^2.32.0.20240914"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.0"

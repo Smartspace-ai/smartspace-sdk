@@ -1,2 +1,2 @@
 
-poetry install
+python -m poetry install

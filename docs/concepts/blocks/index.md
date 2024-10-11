@@ -2,7 +2,7 @@ This document covers the key concepts that underpin **blocks** in the SmartSpace
 
 ---
 
-## 1. What are Blocks?
+## What are Blocks?
 
 In SmartSpace, **blocks** represent individual units of logic or tasks that execute within a workflow. Each block is a self-contained entity with its own inputs, outputs, states, and functionality, and it interacts with other blocks through defined interfaces.
 
@@ -10,7 +10,7 @@ Blocks are designed to be reusable and modular, allowing complex workflows to be
 
 ---
 
-## 2. Block Interfaces
+## Block Interfaces
 
 Every block in SmartSpace exposes an **interface**. The interface defines:
 - The block's **inputs** and **outputs**, including the type and structure of data that the block can accept or produce.
@@ -40,7 +40,7 @@ The block interface serves as a contract for how the block interacts with the re
 
 ---
 
-## 3. Inputs, Outputs, and Pins
+## Inputs, Outputs, and Pins
 
 Blocks interact with each other via **pins**, which represent the connection points for **inputs** and **outputs**. Pins allow data to flow between blocks during the execution of a workflow.
 
@@ -50,7 +50,7 @@ An input is data provided to a block to perform its task. Inputs can be primitiv
 ### Outputs:
 Outputs are the result of a block's execution. They are bound to **output pins** and can send data to other blocks in the workflow. Outputs can be a single value or a collection of values.
 
-### 3.1 Pin Types
+### Pin Types
 
 Pins are of three main types:
 - **Single Pins (PinType.SINGLE):** Handle individual values, such as a single integer or string.
@@ -61,7 +61,7 @@ Each pin type controls how inputs and outputs are structured and connected.
 
 ---
 
-## 4. States
+## States
 
 Blocks can maintain **state**, which represents persistent data stored within the block across different executions. States allow a block to retain information between multiple workflow runs.
 
@@ -77,7 +77,7 @@ In this example, the `total` state retains the sum of items processed across mul
 
 ---
 
-## 5. Ports
+## Ports
 
 **Ports** are logical groupings of inputs and outputs that allow blocks to manage data flow and interaction. A block can have multiple ports, each responsible for handling different inputs and outputs. Ports can be:
 - **Single (PortType.SINGLE):** A port managing a single input/output pair.
@@ -88,7 +88,7 @@ Ports provide an additional level of structure to the inputs and outputs of a bl
 
 ---
 
-## 6. Steps and Callbacks
+## Steps and Callbacks
 
 **Steps** and **Callbacks** are key concepts in defining a block’s behavior.
 
@@ -116,7 +116,7 @@ class Collect(Block):
 
 ---
 
-## 7. Tools
+## Tools
 
 **Tools** are special types of reusable functionality within a block. A tool allows blocks to perform specific tasks and can be dynamically called with different inputs during a block’s execution. Tools are usually associated with the processing logic applied to inputs.
 
@@ -131,7 +131,7 @@ The `Operation` tool is used to double the value of each input item. Tools make 
 
 ---
 
-## 8. Block Metadata
+## Block Metadata
 
 **Metadata** provides descriptive information about a block, such as its category, a human-readable description, and other attributes that help users understand the purpose and behavior of the block.
 
@@ -151,7 +151,7 @@ Metadata is crucial for enabling users to search, categorise, and understand blo
 
 ---
 
-## 9. Dynamic Ports
+## Dynamic Ports
 
 Some blocks may need to handle dynamic numbers of inputs and outputs that are only known at runtime. These are called **dynamic ports**. Dynamic ports allow a block to accept or produce data based on variable conditions or inputs.
 
@@ -172,7 +172,7 @@ In the example above, `dynamic_inputs` and `dynamic_outputs` can handle varying 
 
 ---
 
-## 10. Error Handling in Blocks
+## Error Handling in Blocks
 
 Error handling in blocks is done via the `BlockError` class. This allows blocks to raise and communicate errors during execution. Blocks can define an `error` output pin that emits an error message when a failure occurs.
 

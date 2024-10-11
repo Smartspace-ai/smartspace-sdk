@@ -2,7 +2,7 @@ Connections in SmartSpace are the means by which **blocks** communicate and exch
 
 ---
 
-## 1. What are Connections?
+## What are Connections?
 
 A **connection** in SmartSpace links the **outputs** of one block to the **inputs** of another, allowing data to be passed from one block to another as part of a workflow. Connections are the backbone of how workflows operate, enabling blocks to collaborate and share data efficiently.
 
@@ -12,7 +12,7 @@ Connections ensure that:
 
 ---
 
-## 2. Types of Connections
+## Types of Connections
 
 ### Direct Connections
 **Direct connections** are the simplest form of connection, linking a specific output of one block to the input of another block. Once a block has finished processing, the data it produces is passed directly to the next block in the workflow.
@@ -26,11 +26,11 @@ For example, a block could dynamically decide to send outputs to different block
 
 ---
 
-## 3. Connection Elements
+## Connection Elements
 
 Connections are made up of **pins** and **channels**, which define how data flows between blocks.
 
-### 3.1 Pins
+### Pins
 
 **Pins** are the endpoints of connections, representing the input and output points on a block. There are two main types of pins:
 
@@ -43,13 +43,13 @@ Pins can be of several types:
   - **List Pins (PinType.LIST):** Represent a collection of values (e.g., a list of integers).
   - **Dictionary Pins (PinType.DICTIONARY):** Represent key-value pairs for handling more complex input/output structures.
 
-### 3.2 Channels
+### Channels
 
 **Channels** represent a flow of data between two pins. Channels carry data between the output pin of one block and the input pin of another. Channels can transmit individual data items or continuous streams, depending on the type of connection.
 
 ---
 
-## 4. Data Flow
+## Data Flow
 
 The **data flow** in a SmartSpace workflow is the movement of data between blocks through connections. When a block completes its processing, it sends its outputs through **output pins** via the established connection to the next block’s **input pins**.
 
@@ -58,13 +58,13 @@ The **data flow** in a SmartSpace workflow is the movement of data between block
 
 ---
 
-## 5. Establishing Connections
+## Establishing Connections
 
 Connections between blocks are established by linking output pins of one block to input pins of another. In most cases, this process is straightforward and involves connecting matching input and output types (e.g., an integer output connects to an integer input).
 
 ---
 
-## 6. Managing Multiple Connections
+## Managing Multiple Connections
 
 In complex workflows, blocks may have multiple inputs and outputs. Managing these connections properly ensures that data flows correctly between all the blocks in the workflow.
 

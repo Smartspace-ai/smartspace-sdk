@@ -61,10 +61,10 @@ nav:
           - Get: block-reference/Get.md
           - ParseJson: block-reference/ParseJson.md
       - Text:
-          - JinjaTemplate: block-reference/JinjaTemplate.md
           - JoinStrings: block-reference/JoinStrings.md
           - RegexMatch: block-reference/RegexMatch.md
           - SplitString: block-reference/SplitString.md
+          - StringTemplate: block-reference/StringTemplate.md
           - StringTruncator: block-reference/StringTruncator.md
       - Misc:
           - Append: block-reference/Append.md
@@ -91,7 +91,6 @@ nav:
               - CreateResponseWithSources: block-reference/CreateResponseWithSources.md
       - Obsolete:
           - GetJsonField: block-reference/GetJsonField.md
-          - StringTemplate: block-reference/StringTemplate.md
       # - Agent:
           # - LLM: block-reference/llm.md
       # - Data:

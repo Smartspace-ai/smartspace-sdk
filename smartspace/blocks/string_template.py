@@ -15,7 +15,7 @@ from smartspace.enums import BlockCategory
     description="Takes in a Jinja template string and renders it with the given inputs",
     category=BlockCategory.MISC,
 )
-class JinjaTemplate(Block):
+class StringTemplate(Block):
     template: Annotated[str, Config()]
 
     @step(output_name="string")

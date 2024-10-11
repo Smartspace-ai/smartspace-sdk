@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/block-reference/First/">
+        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/block-reference/Append/">
       
       
-        <link rel="prev" href="../Concat/">
+        <link rel="prev" href="../StringTruncator/">
       
       
-        <link rel="next" href="../Flatten/">
+        <link rel="next" href="../Buffer/">
       
       
       <link rel="icon" href="../../assets/smartspace-favicon.webp">
@@ -22,7 +22,7 @@
     
     
       
-        <title>First - Smartspace Workflow Documentation</title>
+        <title>Append - Smartspace Workflow Documentation</title>
       
     
     
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              First
+              Append
             
           </span>
         </div>
@@ -550,8 +550,6 @@
                 
   
   
-    
-  
   
   
     
@@ -566,11 +564,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
@@ -584,7 +584,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Function
@@ -637,28 +637,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    First
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../First/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -667,147 +649,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metadata
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#outputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Outputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      State Variables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example(s)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Example(s)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-1-get-the-first-item-in-a-list-of-numbers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 1: Get the first item in a list of numbers
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-2-get-the-first-item-in-a-list-of-strings" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 2: Get the first item in a list of strings
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-3-handle-an-empty-list" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 3: Handle an empty list
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Error Handling
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#faq" class="md-nav__link">
-    <span class="md-ellipsis">
-      FAQ
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1204,8 +1045,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -1218,13 +1061,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
         
           
           <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
@@ -1238,7 +1079,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
             Misc
@@ -1249,10 +1090,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../Append/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Append
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1261,6 +1120,147 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      State Variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example(s)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example(s)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-append-an-item-to-a-list-of-integers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 1: Append an item to a list of integers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-append-a-string-to-a-list-of-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 2: Append a string to a list of strings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-dynamically-build-a-list-during-a-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 3: Dynamically build a list during a workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2217,27 +2217,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example-1-get-the-first-item-in-a-list-of-numbers" class="md-nav__link">
+  <a href="#example-1-append-an-item-to-a-list-of-integers" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 1: Get the first item in a list of numbers
+      Example 1: Append an item to a list of integers
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-2-get-the-first-item-in-a-list-of-strings" class="md-nav__link">
+  <a href="#example-2-append-a-string-to-a-list-of-strings" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 2: Get the first item in a list of strings
+      Example 2: Append a string to a list of strings
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-3-handle-an-empty-list" class="md-nav__link">
+  <a href="#example-3-dynamically-build-a-list-during-a-workflow" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 3: Handle an empty list
+      Example 3: Dynamically build a list during a workflow
     </span>
   </a>
   
@@ -2284,17 +2284,16 @@
   
 
 
-  <h1>First</h1>
+  <h1>Append</h1>
 
-<p><img alt="First" src="../assets/First-block.png" style="height:150px" /></p>
+<p><img alt="Append" src="../assets/Append-block.png" style="height:150px" /></p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>First</code> Block retrieves the first item from a given list. It takes a list of any type as input and outputs the first element. If the list is empty, it may raise an error due to attempting to access an index that does not exist.</p>
-<p>This Block is useful when you need to quickly access the first item in a list for further processing.</p>
+<p>The <code>Append</code> Block adds a single item to an existing list of items and outputs the updated list. This Block is useful when you need to dynamically add elements to a list during a workflow, ensuring that each new item is properly appended to the existing list.</p>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>Gets the first item from a list</p>
+<p>Appends item to items and output resulting list</p>
 <h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Category</strong>: Function</li>
+<li><strong>Category</strong>: Misc</li>
 </ul>
 <h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
 <p>No configuration options available.</p>
@@ -2310,7 +2309,12 @@
 <tbody>
 <tr>
 <td>items</td>
-<td><code>list[firstItemT]</code></td>
+<td><code>list[ItemT]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>item</td>
+<td><code>ItemT</code></td>
 <td></td>
 </tr>
 </tbody>
@@ -2326,8 +2330,8 @@
 </thead>
 <tbody>
 <tr>
-<td>item</td>
-<td><code>firstItemT</code></td>
+<td>items</td>
+<td><code>list[ItemT]</code></td>
 <td></td>
 </tr>
 </tbody>
@@ -2335,41 +2339,41 @@
 <h2 id="state-variables">State Variables<a class="headerlink" href="#state-variables" title="Permanent link">&para;</a></h2>
 <p>No state variables available.</p>
 <h2 id="examples">Example(s)<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="example-1-get-the-first-item-in-a-list-of-numbers">Example 1: Get the first item in a list of numbers<a class="headerlink" href="#example-1-get-the-first-item-in-a-list-of-numbers" title="Permanent link">&para;</a></h3>
+<h3 id="example-1-append-an-item-to-a-list-of-integers">Example 1: Append an item to a list of integers<a class="headerlink" href="#example-1-append-an-item-to-a-list-of-integers" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Create a <code>First</code> Block.</li>
-<li>Provide the input list: <code>[10, 20, 30]</code>.</li>
-<li>The Block will output <code>10</code>, the first element in the list.</li>
+<li>Create an <code>Append</code> Block.</li>
+<li>Provide the input list: <code>[1, 2, 3]</code> and an item: <code>4</code>.</li>
+<li>The Block will output: <code>[1, 2, 3, 4]</code>, adding the item to the end of the list.</li>
 </ul>
-<h3 id="example-2-get-the-first-item-in-a-list-of-strings">Example 2: Get the first item in a list of strings<a class="headerlink" href="#example-2-get-the-first-item-in-a-list-of-strings" title="Permanent link">&para;</a></h3>
+<h3 id="example-2-append-a-string-to-a-list-of-strings">Example 2: Append a string to a list of strings<a class="headerlink" href="#example-2-append-a-string-to-a-list-of-strings" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Set up a <code>First</code> Block.</li>
-<li>Provide the input list: <code>["apple", "banana", "cherry"]</code>.</li>
-<li>The Block will output <code>"apple"</code>, the first string in the list.</li>
+<li>Set up an <code>Append</code> Block.</li>
+<li>Provide the input list: <code>["apple", "banana"]</code> and an item: <code>"cherry"</code>.</li>
+<li>The Block will output: <code>["apple", "banana", "cherry"]</code>.</li>
 </ul>
-<h3 id="example-3-handle-an-empty-list">Example 3: Handle an empty list<a class="headerlink" href="#example-3-handle-an-empty-list" title="Permanent link">&para;</a></h3>
+<h3 id="example-3-dynamically-build-a-list-during-a-workflow">Example 3: Dynamically build a list during a workflow<a class="headerlink" href="#example-3-dynamically-build-a-list-during-a-workflow" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Create a <code>First</code> Block.</li>
-<li>Provide an empty list: <code>[]</code>.</li>
-<li>The Block will raise an error since there is no first item to return.</li>
+<li>Use the <code>Append</code> Block in a loop to add multiple items to a list one by one.</li>
+<li>For each iteration, provide the current list and the new item.</li>
+<li>The Block will keep adding each item to the list, resulting in a list with all appended items.</li>
 </ul>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The <code>First</code> Block will raise an <code>IndexError</code> if the input list is empty. Ensure that the list contains at least one item before using this Block.</li>
-<li>The Block assumes that the input is a valid list. If the input is not a list, it may result in undefined behavior or raise an error.</li>
+<li>If the input <code>items</code> is not a list, the Block will raise a <code>TypeError</code>.</li>
+<li>The Block assumes that the <code>item</code> is of the same type as the elements in <code>items</code>.</li>
 </ul>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
 <details class="question" open="open">
-<summary>What happens if the list is empty?</summary>
-<p>If the list is empty, the <code>First</code> Block will raise an <code>IndexError</code> because there is no item at index <code>0</code>. You should ensure that the list contains at least one item before using the Block.</p>
+<summary>What happens if the input list is empty?</summary>
+<p>If the input list is empty, the Block will create a new list with the single provided item as its content.</p>
 </details>
 <details class="question" open="open">
-<summary>Can I use the <code>First</code> Block with different data types in the list?</summary>
-<p>Yes, the <code>First</code> Block works with lists containing any data type. It will return the first item, regardless of its type.</p>
+<summary>Can I append different types of items to the list?</summary>
+<p>The Block is generic and expects that all items in the list are of the same type as the item being appended. Mixing types may result in a type error or unexpected behaviour.</p>
 </details>
 <details class="question" open="open">
-<summary>What if I want to return the first item safely without an error?</summary>
-<p>To avoid errors when the list is empty, you can add a check before using the <code>First</code> Block. Alternatively, you can modify the Block to return <code>None</code> or a default value if the list is empty.</p>
+<summary>How does the Block handle large lists?</summary>
+<p>The Block will append items to lists of any size, but keep in mind that extremely large lists may have performance implications depending on the environment and available memory.</p>
 </details>
 
 
@@ -2406,7 +2410,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../Concat/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Concat">
+          <a href="../StringTruncator/" class="md-footer__link md-footer__link--prev" aria-label="Previous: StringTruncator">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2416,20 +2420,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Concat
+                StringTruncator
               </div>
             </div>
           </a>
         
         
           
-          <a href="../Flatten/" class="md-footer__link md-footer__link--next" aria-label="Next: Flatten">
+          <a href="../Buffer/" class="md-footer__link md-footer__link--next" aria-label="Next: Buffer">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Flatten
+                Buffer
               </div>
             </div>
             <div class="md-footer__button md-icon">

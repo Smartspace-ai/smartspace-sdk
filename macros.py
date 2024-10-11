@@ -60,5 +60,12 @@ def define_env(env):
         return os.path.exists(full_path)
 
     @env.macro
-    def block_image_sizing():
-        return '{: style="height:150px"}'
+    def block_image_sizing(height: int | None = None, width: int | None = None):
+        if height and width:
+            return f'{{: style="height:{height}px; width:{width}px"}}'
+        if height:
+            return f'{{: style="height:{height}px"}}'
+        if width:
+            return f'{{: style="width:{width}px"}}'
+        if height is None and width is None:
+            return '{: style="height:150px"}'

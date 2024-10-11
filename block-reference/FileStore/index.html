@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/block-reference/First/">
+        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/block-reference/FileStore/">
       
       
-        <link rel="prev" href="../Concat/">
+        <link rel="prev" href="../UnpackObject/">
       
       
-        <link rel="next" href="../Flatten/">
+        <link rel="next" href="../GetAllDocuments/">
       
       
       <link rel="icon" href="../../assets/smartspace-favicon.webp">
@@ -22,7 +22,7 @@
     
     
       
-        <title>First - Smartspace Workflow Documentation</title>
+        <title>FileStore - Smartspace Workflow Documentation</title>
       
     
     
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              First
+              FileStore
             
           </span>
         </div>
@@ -550,8 +550,6 @@
                 
   
   
-    
-  
   
   
     
@@ -566,11 +564,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
@@ -584,7 +584,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Function
@@ -637,28 +637,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    First
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../First/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -667,147 +649,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metadata
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#outputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Outputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      State Variables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example(s)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Example(s)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-1-get-the-first-item-in-a-list-of-numbers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 1: Get the first item in a list of numbers
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-2-get-the-first-item-in-a-list-of-strings" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 2: Get the first item in a list of strings
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-3-handle-an-empty-list" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example 3: Handle an empty list
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Error Handling
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#faq" class="md-nav__link">
-    <span class="md-ellipsis">
-      FAQ
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1446,8 +1287,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -1460,13 +1303,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" checked>
         
           
           <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
@@ -1480,7 +1321,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_7">
             <span class="md-nav__icon md-icon"></span>
             SmartSpace Blocks
@@ -1491,8 +1332,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -1502,13 +1345,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1" checked>
         
           
           <label class="md-nav__link" for="__nav_3_7_1" id="__nav_3_7_1_label" tabindex="0">
@@ -1522,7 +1363,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_7_1">
             <span class="md-nav__icon md-icon"></span>
             Data
@@ -1533,10 +1374,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../FileStore/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    FileStore
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1545,6 +1404,147 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outputs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      State Variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example(s)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example(s)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-add-files-and-store-their-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 1: Add files and store their content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-retrieve-file-content-by-filename" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 2: Retrieve file content by filename
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-perform-a-semantic-search-over-stored-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 3: Perform a semantic search over stored content
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2217,27 +2217,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example-1-get-the-first-item-in-a-list-of-numbers" class="md-nav__link">
+  <a href="#example-1-add-files-and-store-their-content" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 1: Get the first item in a list of numbers
+      Example 1: Add files and store their content
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-2-get-the-first-item-in-a-list-of-strings" class="md-nav__link">
+  <a href="#example-2-retrieve-file-content-by-filename" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 2: Get the first item in a list of strings
+      Example 2: Retrieve file content by filename
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-3-handle-an-empty-list" class="md-nav__link">
+  <a href="#example-3-perform-a-semantic-search-over-stored-content" class="md-nav__link">
     <span class="md-ellipsis">
-      Example 3: Handle an empty list
+      Example 3: Perform a semantic search over stored content
     </span>
   </a>
   
@@ -2284,20 +2284,42 @@
   
 
 
-  <h1>First</h1>
+  <h1>FileStore</h1>
 
-<p><img alt="First" src="../assets/First-block.png" style="height:150px" /></p>
+<p><img alt="FileStore" src="../assets/FileStore-block.png" style="width:250px" /></p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>First</code> Block retrieves the first item from a given list. It takes a list of any type as input and outputs the first element. If the list is empty, it may raise an error due to attempting to access an index that does not exist.</p>
-<p>This Block is useful when you need to quickly access the first item in a list for further processing.</p>
+<p>The <code>FileStore</code> Block manages the storage and retrieval of files, allowing for content chunking, embedding generation, and semantic search over the stored files. It uses an in-memory vector database to store the embeddings of file chunks, enabling quick and efficient search based on the semantic similarity between a query and the stored content.</p>
+<p>This Block is useful for applications that require storing documents, generating embeddings for content, and performing similarity-based searches over stored text.</p>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>Gets the first item from a list</p>
+<p>Store and search embeddings in an in-memory vector database.</p>
+<p>Args:
+top_k: The number of results to return in search.</p>
+<p>Steps:
+1: Update index with embeddings.
+2: Search index to return relevant documents.</p>
 <h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Category</strong>: Function</li>
 </ul>
 <h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
-<p>No configuration options available.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Data Type</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>top_k</td>
+<td><code>int</code></td>
+<td></td>
+<td><code>5</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="inputs">Inputs<a class="headerlink" href="#inputs" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2309,8 +2331,18 @@
 </thead>
 <tbody>
 <tr>
-<td>items</td>
-<td><code>list[firstItemT]</code></td>
+<td>files</td>
+<td><code>list[File]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>filename</td>
+<td><code>str</code></td>
+<td></td>
+</tr>
+<tr>
+<td>query</td>
+<td><code>str</code></td>
 <td></td>
 </tr>
 </tbody>
@@ -2326,50 +2358,106 @@
 </thead>
 <tbody>
 <tr>
-<td>item</td>
-<td><code>firstItemT</code></td>
+<td>all_files</td>
+<td><code>list[FileInfo]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>files</td>
+<td><code>list[FileInfo]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>file_content</td>
+<td><code>str</code></td>
+<td></td>
+</tr>
+<tr>
+<td>chunks</td>
+<td><code>list[str]</code></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <h2 id="state-variables">State Variables<a class="headerlink" href="#state-variables" title="Permanent link">&para;</a></h2>
-<p>No state variables available.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>data</td>
+<td><code>Any</code></td>
+<td></td>
+</tr>
+<tr>
+<td>files_state</td>
+<td><code>list[ChunkedFile]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>pending_file_count</td>
+<td><code>int</code></td>
+<td></td>
+</tr>
+<tr>
+<td>all_files_state</td>
+<td><code>list[FileInfo]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>new_files_state</td>
+<td><code>list[FileInfo]</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h2 id="examples">Example(s)<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="example-1-get-the-first-item-in-a-list-of-numbers">Example 1: Get the first item in a list of numbers<a class="headerlink" href="#example-1-get-the-first-item-in-a-list-of-numbers" title="Permanent link">&para;</a></h3>
+<h3 id="example-1-add-files-and-store-their-content">Example 1: Add files and store their content<a class="headerlink" href="#example-1-add-files-and-store-their-content" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Create a <code>First</code> Block.</li>
-<li>Provide the input list: <code>[10, 20, 30]</code>.</li>
-<li>The Block will output <code>10</code>, the first element in the list.</li>
+<li>Create a <code>FileStore</code> Block.</li>
+<li>Provide a list of files to the <code>add_files()</code> step.</li>
+<li>The Block will extract content from each file, convert it into chunks, generate embeddings, and store the results.</li>
+<li>The <code>all_files</code> output will contain information about all stored files, and the <code>files</code> output will contain details about the newly added files.</li>
 </ul>
-<h3 id="example-2-get-the-first-item-in-a-list-of-strings">Example 2: Get the first item in a list of strings<a class="headerlink" href="#example-2-get-the-first-item-in-a-list-of-strings" title="Permanent link">&para;</a></h3>
+<h3 id="example-2-retrieve-file-content-by-filename">Example 2: Retrieve file content by filename<a class="headerlink" href="#example-2-retrieve-file-content-by-filename" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Set up a <code>First</code> Block.</li>
-<li>Provide the input list: <code>["apple", "banana", "cherry"]</code>.</li>
-<li>The Block will output <code>"apple"</code>, the first string in the list.</li>
+<li>Set up a <code>FileStore</code> Block with files already added.</li>
+<li>Use the <code>get()</code> step with a specific filename, such as <code>"document1.txt"</code>.</li>
+<li>The Block will return the full content of the specified file.</li>
 </ul>
-<h3 id="example-3-handle-an-empty-list">Example 3: Handle an empty list<a class="headerlink" href="#example-3-handle-an-empty-list" title="Permanent link">&para;</a></h3>
+<h3 id="example-3-perform-a-semantic-search-over-stored-content">Example 3: Perform a semantic search over stored content<a class="headerlink" href="#example-3-perform-a-semantic-search-over-stored-content" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Create a <code>First</code> Block.</li>
-<li>Provide an empty list: <code>[]</code>.</li>
-<li>The Block will raise an error since there is no first item to return.</li>
+<li>Use a <code>FileStore</code> Block with stored file content and embeddings.</li>
+<li>Provide a query, such as <code>"Find information about AI ethics."</code> to the <code>semantic_search()</code> step.</li>
+<li>The Block will return the most relevant chunks of content based on the semantic similarity between the query and stored chunks.</li>
 </ul>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The <code>First</code> Block will raise an <code>IndexError</code> if the input list is empty. Ensure that the list contains at least one item before using this Block.</li>
-<li>The Block assumes that the input is a valid list. If the input is not a list, it may result in undefined behavior or raise an error.</li>
+<li>If a file is not found when calling the <code>get()</code> step, the Block will return a message indicating that the file was not found.</li>
+<li>If no valid chunks are returned for a file, the Block will handle the missing content gracefully.</li>
+<li>If an unsupported file format is provided, the Block will process the file using a default content extraction method.</li>
 </ul>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
 <details class="question" open="open">
-<summary>What happens if the list is empty?</summary>
-<p>If the list is empty, the <code>First</code> Block will raise an <code>IndexError</code> because there is no item at index <code>0</code>. You should ensure that the list contains at least one item before using the Block.</p>
+<summary>How does the Block handle different file formats?</summary>
+<p>The Block can process files in various formats, including converting certain files to markdown using Pandoc. Unsupported formats are processed using default extraction methods.</p>
 </details>
 <details class="question" open="open">
-<summary>Can I use the <code>First</code> Block with different data types in the list?</summary>
-<p>Yes, the <code>First</code> Block works with lists containing any data type. It will return the first item, regardless of its type.</p>
+<summary>Can I perform searches on large document collections?</summary>
+<p>Yes, the Block is designed to handle large collections of documents by storing content in chunks and generating embeddings for each chunk. Semantic search allows for efficient querying across large datasets.</p>
 </details>
 <details class="question" open="open">
-<summary>What if I want to return the first item safely without an error?</summary>
-<p>To avoid errors when the list is empty, you can add a check before using the <code>First</code> Block. Alternatively, you can modify the Block to return <code>None</code> or a default value if the list is empty.</p>
+<summary>What happens if I add the same file multiple times?</summary>
+<p>The Block treats each file addition independently. If the same file is added multiple times, it will be processed and stored as separate entries.</p>
+</details>
+<details class="question" open="open">
+<summary>How does semantic search work?</summary>
+<p>The Block generates an embedding for the input query and compares it with the embeddings of stored chunks using cosine similarity. The top <code>k</code> most similar chunks are returned based on the <code>top_k</code> configuration.</p>
 </details>
 
 
@@ -2406,7 +2494,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../Concat/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Concat">
+          <a href="../UnpackObject/" class="md-footer__link md-footer__link--prev" aria-label="Previous: UnpackObject">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2416,20 +2504,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Concat
+                UnpackObject
               </div>
             </div>
           </a>
         
         
           
-          <a href="../Flatten/" class="md-footer__link md-footer__link--next" aria-label="Next: Flatten">
+          <a href="../GetAllDocuments/" class="md-footer__link md-footer__link--next" aria-label="Next: GetAllDocuments">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Flatten
+                GetAllDocuments
               </div>
             </div>
             <div class="md-footer__button md-icon">

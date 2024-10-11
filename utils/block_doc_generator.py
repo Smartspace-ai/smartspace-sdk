@@ -2,7 +2,6 @@ import ast
 import logging
 import os
 import re
-import sys
 from typing import Any, TypedDict, cast
 
 logging.basicConfig(level=logging.DEBUG, filename="block_doc_generator.log")
@@ -61,7 +60,7 @@ def get_block_class(
 
 
 def get_value_from_node(node):
-    if isinstance(node, ast.Constant):  # For literals like strings, numbers, etc.
+    if isinstance(node, ast.Constant):  # For literals like strings, numbers, None, etc.
         return node.value
     elif isinstance(node, ast.Str):  # For Python versions < 3.8
         return node.s
@@ -72,6 +71,16 @@ def get_value_from_node(node):
     elif isinstance(node, ast.Attribute):
         value = get_value_from_node(node.value)
         return f"{value}.{node.attr}"
+    elif isinstance(node, ast.Subscript):
+        base = get_value_from_node(node.value)
+        # Handle the slice part, which can be different in various Python versions
+        if isinstance(node.slice, ast.Index):
+            # For Python versions < 3.9
+            subscript = get_value_from_node(node.slice.value)
+        else:
+            # For Python 3.9+, ast.Index was deprecated
+            subscript = get_value_from_node(node.slice)
+        return f"{base}[{subscript}]"
     elif isinstance(node, ast.Call):
         func_name = get_value_from_node(node.func)
         args = [get_value_from_node(arg) for arg in node.args]
@@ -114,8 +123,10 @@ def get_annotation_name(annotation_node):
         return annotation_node.id
     elif isinstance(annotation_node, ast.Subscript):
         base = get_annotation_name(annotation_node.value)
-        sub = get_annotation_name(annotation_node.slice)
-        return f"{base}[{sub}]"
+        slice_elements = get_subscript_slice_elements(annotation_node)
+        subs = [get_annotation_name(el) for el in slice_elements]
+        subs_str = ", ".join(subs)
+        return f"{base}[{subs_str}]"
     elif isinstance(annotation_node, ast.Attribute):
         return f"{get_annotation_name(annotation_node.value)}.{annotation_node.attr}"
     elif isinstance(annotation_node, ast.BinOp):
@@ -177,17 +188,14 @@ def get_metadata_decorator(class_def) -> BlockMetadata:
 
 def get_subscript_slice_elements(subscript_node):
     if isinstance(subscript_node.slice, ast.Tuple):
-        # Python 3.9+, the slice is directly the tuple
         return subscript_node.slice.elts
-    elif isinstance(subscript_node.slice, ast.Index):
-        # Python <3.9, the value is in slice.value
+    elif hasattr(ast, "Index") and isinstance(subscript_node.slice, ast.Index):
         value = subscript_node.slice.value
         if isinstance(value, ast.Tuple):
             return value.elts
         else:
             return [value]
     else:
-        # In some cases, slice might be an expression directly
         return [subscript_node.slice]
 
 
@@ -199,18 +207,23 @@ class BlockAttributes(TypedDict, total=False):
     state: bool
     metadata: dict[str, Any] | None
     default_value: Any | None
+    dynamic_output: bool
+    key_type: str | None
+    value_type: str | None
 
 
 def get_class_attributes(class_def) -> list[BlockAttributes]:
     attributes: list[BlockAttributes] = []
     for node in class_def.body:
         if isinstance(node, ast.AnnAssign):
+            # Extract the attribute name
             if isinstance(node.target, ast.Name):
                 attr_name = node.target.id
             else:
                 continue  # Skip if target is not a simple name
-            attr_annotation = node.annotation
-            attr_info = {
+
+            # Initialize attribute info
+            attr_info: BlockAttributes = {
                 "name": attr_name,
                 "type": None,
                 "config": False,
@@ -218,28 +231,30 @@ def get_class_attributes(class_def) -> list[BlockAttributes]:
                 "state": False,
                 "metadata": None,
                 "default_value": None,
+                "dynamic_output": False,
+                "key_type": None,
+                "value_type": None,
             }
 
-            # Process the annotation to extract type and metadata
+            # Process the annotation
+            attr_annotation = node.annotation
             if (
                 isinstance(attr_annotation, ast.Subscript)
                 and get_annotation_name(attr_annotation.value) == "Annotated"
             ):
-                # It's an Annotated type
+                # Handle Annotated types
                 annotated_args = get_subscript_slice_elements(attr_annotation)
-                attr_type = annotated_args[0]
+                attr_type_node = annotated_args[0]
                 metadata_node = annotated_args[1] if len(annotated_args) > 1 else None
 
-                attr_info["type"] = get_annotation_name(attr_type)
+                attr_info["type"] = get_annotation_name(attr_type_node)
 
-                # Check if metadata_node is Config, Metadata, or State
+                # Check for Config, Metadata, or State
                 if isinstance(metadata_node, ast.Call):
                     func_name = get_annotation_name(metadata_node.func)
                     if func_name == "Config":
                         attr_info["config"] = True
-                        # Extract any Config parameters if needed
                     elif func_name == "Metadata":
-                        # Extract metadata details
                         metadata_details = {}
                         for keyword in metadata_node.keywords:
                             key = keyword.arg
@@ -248,16 +263,12 @@ def get_class_attributes(class_def) -> list[BlockAttributes]:
                         attr_info["metadata"] = metadata_details
                     elif func_name == "State":
                         attr_info["state"] = True
-                        # Extract state details if needed
                         state_details = {}
                         for keyword in metadata_node.keywords:
                             key = keyword.arg
                             value = get_value_from_node(keyword.value)
                             state_details[key] = value
                         attr_info["state_details"] = state_details
-                else:
-                    # Handle cases where metadata_node is not a call (e.g., just a type)
-                    pass
             else:
                 # Non-Annotated attribute
                 attr_info["type"] = get_annotation_name(attr_annotation)
@@ -266,6 +277,32 @@ def get_class_attributes(class_def) -> list[BlockAttributes]:
             if attr_info["type"].startswith("Output"):
                 attr_info["output"] = True
 
+            # Check for dynamic outputs (e.g., dict[str, Output[...]])
+            elif attr_info["type"].startswith("dict[") or attr_info["type"].startswith(
+                "dict["
+            ):
+                # Extract key and value types
+                inner = attr_info["type"][attr_info["type"].find("[") + 1 : -1]
+                key_value_types = [s.strip() for s in inner.split(",", 1)]
+                if len(key_value_types) == 2:
+                    key_type, value_type = key_value_types
+                    attr_info["key_type"] = key_type
+                    attr_info["value_type"] = value_type
+                    if value_type.startswith("Output") or value_type.startswith(
+                        "Output["
+                    ):
+                        attr_info["dynamic_output"] = True
+                        attr_info["output"] = True
+            elif attr_info["type"].startswith("list[") or attr_info["type"].startswith(
+                "list["
+            ):
+                # Extract value types
+                inner = attr_info["type"][attr_info["type"].find("[") + 1 : -1]
+                value_type = inner.strip()
+                if value_type.startswith("Output") or value_type.startswith("Output["):
+                    attr_info["value_type"] = value_type
+                    attr_info["dynamic_output"] = True
+                    attr_info["output"] = True
             # Extract default value if available
             if node.value:
                 attr_info["default_value"] = get_value_from_node(node.value)
@@ -349,6 +386,32 @@ def get_step_functions(class_def) -> list[BlockStep]:
                                     metadata_details[key] = value
                                 input_info["metadata"] = metadata_details
                     step_info["inputs"].append(input_info)
+
+                # Handle *args
+                if node.args.vararg:
+                    arg = node.args.vararg
+                    input_info: BlockStepInput = {
+                        "name": "*" + arg.arg,
+                        "type": None,
+                        "metadata": None,
+                    }
+                    if arg.annotation:
+                        input_info["type"] = get_annotation_name(arg.annotation)
+                    step_info["inputs"].append(input_info)
+                    step_info["dynamic_inputs"] = True  # Mark as dynamic inputs
+
+                # Handle **kwargs
+                if node.args.kwarg:
+                    arg = node.args.kwarg
+                    input_info: BlockStepInput = {
+                        "name": "**" + arg.arg,
+                        "type": None,
+                        "metadata": None,
+                    }
+                    if arg.annotation:
+                        input_info["type"] = get_annotation_name(arg.annotation)
+                    step_info["inputs"].append(input_info)
+                    step_info["dynamic_inputs"] = True  # Mark as dynamic inputs
 
                 # Get return type
                 if node.returns:
@@ -518,8 +581,22 @@ def generate_markdown(block_info):
     outputs = []
 
     # Outputs from class attributes
-    output_attributes = [attr for attr in block_info["attributes"] if attr["output"]]
+    output_attributes = [
+        attr
+        for attr in block_info["attributes"]
+        if attr["output"] or attr["dynamic_output"]
+    ]
     for output_attr in output_attributes:
+        if output_attr["dynamic_output"]:
+            outputs.append(
+                {
+                    "name": output_attr["name"],
+                    "type": output_attr["value_type"],
+                    "description": output_attr["metadata"].get("description", "")
+                    if output_attr["metadata"]
+                    else "",
+                }
+            )
         outputs.append(
             {
                 "name": output_attr["name"],
@@ -659,24 +736,24 @@ def generate_block_docs_temp(input_path: str, output_dir: str):
 # Example usage
 if __name__ == "__main__":
     # generate markdown by class name
-    # block_name = "Slice"
+    # block_name = "UnpackList"
     # markdown_content = generate_block_markdown_details(block_name)
     # pass
 
     # generate block docs files
-    try:
-        input_path = sys.argv[1]
-    except IndexError:
-        input_path = os.path.join("smartspace", "blocks")
-    try:
-        output_dir = sys.argv[2]
-    except IndexError:
-        output_dir = os.path.join("docs", "block-reference")
-    generate_block_docs(input_path, output_dir)
+    # try:
+    #     input_path = sys.argv[1]
+    # except IndexError:
+    #     input_path = os.path.join("smartspace", "blocks")
+    # try:
+    #     output_dir = sys.argv[2]
+    # except IndexError:
+    #     output_dir = os.path.join("docs", "block-reference")
+    # generate_block_docs(input_path, output_dir)
 
     # generate from temp_files
-    # input_path = os.path.join("docs", "utils", "smartspace_blocks")
-    # output_dir = os.path.join("docs", "block-reference")
-    # generate_block_docs_temp(input_path, output_dir)
+    input_path = os.path.join("docs", "utils", "smartspace_blocks")
+    output_dir = os.path.join("docs", "block-reference")
+    generate_block_docs_temp(input_path, output_dir)
 
-    # generate_block_markdown_details("Cast", True)
+    generate_block_markdown_details("Cast", True)

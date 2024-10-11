@@ -78,6 +78,7 @@ nav:
           - UnpackObject: block-reference/UnpackObject.md
       - SmartSpace Blocks:
           - Data:
+              - FileStore: block-reference/FileStore.md
               - GetAllDocuments: block-reference/GetAllDocuments.md
               - GetFileContent: block-reference/GetFileContent.md
               - VectorSearch: block-reference/VectorSearch.md

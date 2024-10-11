@@ -736,9 +736,9 @@ def generate_block_docs_temp(input_path: str, output_dir: str):
 # Example usage
 if __name__ == "__main__":
     # generate markdown by class name
-    block_name = "UnpackList"
-    markdown_content = generate_block_markdown_details(block_name)
-    pass
+    # block_name = "UnpackList"
+    # markdown_content = generate_block_markdown_details(block_name)
+    # pass
 
     # generate block docs files
     # try:
@@ -752,8 +752,8 @@ if __name__ == "__main__":
     # generate_block_docs(input_path, output_dir)
 
     # generate from temp_files
-    # input_path = os.path.join("docs", "utils", "smartspace_blocks")
-    # output_dir = os.path.join("docs", "block-reference")
-    # generate_block_docs_temp(input_path, output_dir)
+    input_path = os.path.join("docs", "utils", "smartspace_blocks")
+    output_dir = os.path.join("docs", "block-reference")
+    generate_block_docs_temp(input_path, output_dir)
 
-    # generate_block_markdown_details("Cast", True)
+    generate_block_markdown_details("Cast", True)

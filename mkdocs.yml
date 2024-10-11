@@ -67,6 +67,7 @@ nav:
           - SplitString: block-reference/SplitString.md
           - StringTruncator: block-reference/StringTruncator.md
       - Misc:
+          - Append: block-reference/Append.md
           - Buffer: block-reference/Buffer.md
           - Cast: block-reference/Cast.md
           - Count: block-reference/Count.md

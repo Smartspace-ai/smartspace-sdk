@@ -741,21 +741,21 @@ if __name__ == "__main__":
     # pass
 
     # generate block docs files
-    import sys
+    # import sys
 
-    try:
-        input_path = sys.argv[1]
-    except IndexError:
-        input_path = os.path.join("smartspace", "blocks")
-    try:
-        output_dir = sys.argv[2]
-    except IndexError:
-        output_dir = os.path.join("docs", "block-reference")
-    generate_block_docs(input_path, output_dir)
+    # try:
+    #     input_path = sys.argv[1]
+    # except IndexError:
+    #     input_path = os.path.join("smartspace", "blocks")
+    # try:
+    #     output_dir = sys.argv[2]
+    # except IndexError:
+    #     output_dir = os.path.join("docs", "block-reference")
+    # generate_block_docs(input_path, output_dir)
 
     # generate from temp_files
-    # input_path = os.path.join("docs", "utils", "smartspace_blocks")
-    # output_dir = os.path.join("docs", "block-reference")
-    # generate_block_docs_temp(input_path, output_dir)
+    input_path = os.path.join("docs", "utils", "smartspace_blocks")
+    output_dir = os.path.join("docs", "block-reference")
+    generate_block_docs_temp(input_path, output_dir)
 
     # generate_block_markdown_details("Cast", True)

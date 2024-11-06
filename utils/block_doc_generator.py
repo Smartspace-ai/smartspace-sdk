@@ -741,6 +741,8 @@ if __name__ == "__main__":
     # pass
 
     # generate block docs files
+    # import sys
+
     # try:
     #     input_path = sys.argv[1]
     # except IndexError:
@@ -756,4 +758,4 @@ if __name__ == "__main__":
     output_dir = os.path.join("docs", "block-reference")
     generate_block_docs_temp(input_path, output_dir)
 
-    generate_block_markdown_details("Cast", True)
+    # generate_block_markdown_details("Cast", True)

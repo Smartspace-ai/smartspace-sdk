@@ -15,7 +15,7 @@ ItemT = TypeVar("ItemT")
 
 
 @metadata(
-    description="Takes in an any input and will atempt to convert the input to the specified schema",
+    description="Takes in any input and will attempt to convert the input to the specified schema",  # Fixed typo
     category=BlockCategory.MISC,
 )
 class Cast(Block, Generic[ItemT]):
@@ -36,6 +36,11 @@ class Cast(Block, Generic[ItemT]):
             return cast(ItemT, [self._cast(i, schema["items"]) for i in item])
 
         if schema["type"] == "object":
+            if isinstance(item, str):
+                item = json.loads(item)
+
+            if len(schema) == 1:
+                return item
 
             class M(BaseModel):
                 model_config = ConfigDict(
@@ -47,7 +52,7 @@ class Cast(Block, Generic[ItemT]):
             elif isinstance(item, str):
                 return M.model_validate_json(item)
             else:
-                raise ValueError(f"Can not cast type '{type(item)}' to object")
+                raise ValueError(f"Cannot cast type '{type(item)}' to object")
 
         elif schema["type"] == "string":
             if isinstance(item, str):
@@ -59,6 +64,9 @@ class Cast(Block, Generic[ItemT]):
             if isinstance(item, (int, float)):
                 return item
             else:
-                return float(item)
+                try:
+                    return float(item)
+                except (TypeError, ValueError) as e:
+                    raise ValueError(f"Cannot convert '{item}' to float.") from e
         else:
             return item

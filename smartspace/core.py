@@ -1497,7 +1497,8 @@ class Block(metaclass=MetaBlock):
             attribute = getattr(self, attribute_name)
 
             if _issubclass(type(attribute), BlockFunction):
-                attribute._block = self
+                new_attribute = attribute.create(self)
+                setattr(self, attribute_name, new_attribute)
 
         self._create_all_ports()
 
@@ -2093,6 +2094,15 @@ class BlockFunction(Generic[B, P, T]):
         self.metadata: dict = {}
         self._block: B
         self._pending_inputs: dict[str, dict[str, Any]] = {}
+
+    def create(self, block: Block) -> "BlockFunction":
+        if isinstance(self, Callback):
+            instance = Callback(self._fn)
+        else:
+            instance = Step(self._fn, self._output_name)
+
+        instance._block = block
+        return instance
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         call = await self._call_inner(*args, **kwargs)

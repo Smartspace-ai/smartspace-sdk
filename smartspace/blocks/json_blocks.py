@@ -1,3 +1,4 @@
+from enum import Enum
 import json
 from typing import Annotated, Any, List, Union
 
@@ -78,6 +79,7 @@ class Get(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Merges objects from two lists by matching on the configured key",
+    obsolete=True
 )
 class MergeLists(Block):
     key: Annotated[str, Config()]
@@ -103,3 +105,105 @@ class MergeLists(Block):
         final_result = list(merged_dict.values())
 
         return final_result
+
+
+
+
+
+
+class JoinType(Enum):
+    INNER = 'inner'    
+    OUTER = 'outer'
+    LEFT_INNER = 'left_inner'
+    LEFT_OUTER = 'left_outer'
+    RIGHT_INNER = 'right_inner'
+    RIGHT_OUTER = 'right_outer'
+
+
+@metadata(
+    category=BlockCategory.FUNCTION,
+    description="""
+The `Join` block performs advanced join operations between two lists of dictionaries based on a specified key. It merges the data according to the selected join type, similar to SQL join operations, allowing for flexible data integration and transformation.
+
+**Key Features**:
+
+- **Flexible Join Types**: Supports multiple join types, including `INNER`, `LEFT_INNER`, `LEFT_OUTER`, `RIGHT_INNER`, `RIGHT_OUTER`, and `OUTER`.
+- **Customizable Key**: Allows specification of the join key.
+- **Data Merging**: Combines fields from both left and right records where applicable.
+- **Error Handling**: Ensures all records contain the specified key.
+
+**Supported Join Types**:
+
+- **INNER**: Records where the key exists in both left and right lists.
+- **LEFT_INNER**: Left records with matching keys in the right list.
+- **LEFT_OUTER**: All left records, merging with right records where keys match.
+- **RIGHT_INNER**: Right records with matching keys in the left list.
+- **RIGHT_OUTER**: All right records, merging with left records where keys match.
+- **OUTER**: All records from both lists, merging where keys match.
+
+**Use Cases**:
+
+- Merging datasets from different sources.
+- Performing SQL-like join operations in Python.
+"""
+)
+class Join(Block):
+    key: Annotated[str, Config()]
+    joinType: Annotated[JoinType, Config()] = JoinType.INNER
+
+    @step(output_name="result")
+    async def Join(
+        self,
+        left: list[dict[str, Any]],
+        right: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        # Create dictionaries mapping key values to records
+        left_dict = {}
+        for item in left:
+            key_value = item.get(self.key)
+            if key_value is None:
+                raise KeyError(f"Left item {item} does not contain the key '{self.key}'")
+            left_dict[key_value] = item
+
+        right_dict = {}
+        for item in right:
+            key_value = item.get(self.key)
+            if key_value is None:
+                raise KeyError(f"Right item {item} does not contain the key '{self.key}'")
+            right_dict[key_value] = item
+
+        # Determine the keys to include based on the join type
+        if self.joinType == JoinType.INNER:
+            keys = set(left_dict.keys()) & set(right_dict.keys())
+        elif self.joinType == JoinType.LEFT_INNER:
+            keys = set(k for k in left_dict.keys() if k in right_dict)
+        elif self.joinType == JoinType.LEFT_OUTER:
+            keys = set(left_dict.keys())
+        elif self.joinType == JoinType.RIGHT_INNER:
+            keys = set(k for k in right_dict.keys() if k in left_dict)
+        elif self.joinType == JoinType.RIGHT_OUTER:
+            keys = set(right_dict.keys())
+        elif self.joinType == JoinType.OUTER:
+            keys = set(left_dict.keys()) | set(right_dict.keys())
+        else:
+            raise ValueError(f"Invalid joinType '{self.joinType}'. Must be one of JoinType.")
+
+        # Merge the records based on the keys
+        result = []
+        for key in keys:
+            merged_item = {}
+            left_item = left_dict.get(key)
+            right_item = right_dict.get(key)
+
+            if self.joinType in (JoinType.LEFT_OUTER, JoinType.LEFT_INNER, JoinType.INNER, JoinType.OUTER):
+                if left_item:
+                    merged_item.update(left_item)
+            if self.joinType in (JoinType.RIGHT_OUTER, JoinType.RIGHT_INNER, JoinType.INNER, JoinType.OUTER):
+                if right_item:
+                    merged_item.update(right_item)
+
+            # Only include items that have data
+            if merged_item:
+                result.append(merged_item)
+
+        return result

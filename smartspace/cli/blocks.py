@@ -201,7 +201,7 @@ def debug(path: str = "", poll: bool = False):
 
                 messages: List[dict] = []
 
-                async for m in block_instance._run_function(request.function):
+                async for m in await block_instance._run_function(request.function):
                     messages.append(m.model_dump(by_alias=True, mode="json"))
 
                 invocation_id = getattr(message, "invocation_id", None) or getattr(

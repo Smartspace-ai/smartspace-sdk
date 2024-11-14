@@ -4,8 +4,8 @@ from typing import Any, Generic, TypeVar, cast
 from pydantic import BaseModel, ConfigDict
 
 from smartspace.core import (
-    Block,
     GenericSchema,
+    OperatorBlock,
     metadata,
     step,
 )
@@ -18,7 +18,7 @@ ItemT = TypeVar("ItemT")
     description="Takes in any input and will attempt to convert the input to the specified schema",  # Fixed typo
     category=BlockCategory.MISC,
 )
-class Cast(Block, Generic[ItemT]):
+class Cast(OperatorBlock, Generic[ItemT]):
     schema: GenericSchema[ItemT]
 
     @step(output_name="result")

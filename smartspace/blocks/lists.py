@@ -7,6 +7,7 @@ from smartspace.core import (
     ChannelEvent,
     Config,
     InputChannel,
+    OperatorBlock,
     Output,
     OutputChannel,
     State,
@@ -77,7 +78,7 @@ class Map(Block, Generic[ItemT, ResultT]):
     category=BlockCategory.FUNCTION,
     description="Collects data from a channel and outputs them as a list once the channel closes",
 )
-class Collect(Block, Generic[ItemT]):
+class Collect(OperatorBlock, Generic[ItemT]):
     items: Output[list[ItemT]]
 
     items_state: Annotated[
@@ -104,7 +105,7 @@ class Collect(Block, Generic[ItemT]):
             self.items.send(self.items_state)
 
 
-class Count(Block):
+class Count(OperatorBlock):
     @step(output_name="output")
     async def count(self, items: list[Any]) -> int:
         return len(items)
@@ -114,7 +115,7 @@ class Count(Block):
     category=BlockCategory.FUNCTION,
     description="Loops through a list of items and outputs them one at a time",
 )
-class ForEach(Block, Generic[ItemT]):
+class ForEach(OperatorBlock, Generic[ItemT]):
     item: OutputChannel[ItemT]
 
     @step()
@@ -167,13 +168,15 @@ class Slice(Block):
     async def slice(self, items: list[Any] | str) -> list[Any] | str:
         return items[self.start : self.end]
 
+
 firstItemT = TypeVar("firstItemT")
+
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Gets the first item from a list",
 )
-class First(Block, Generic[firstItemT]):
+class First(OperatorBlock, Generic[firstItemT]):
     @step(output_name="item")
     async def first(self, items: list[firstItemT]) -> firstItemT:
         return items[0]
@@ -183,7 +186,7 @@ class First(Block, Generic[firstItemT]):
     category=BlockCategory.FUNCTION,
     description="Flattens a list of lists into a single list",
 )
-class Flatten(Block):
+class Flatten(OperatorBlock):
     @step(output_name="list")
     async def flatten(self, lists: list[list[Any]]) -> list[Any]:
         return list(flatten(lists))

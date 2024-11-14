@@ -25,7 +25,8 @@ from smartspace.enums import BlockCategory
 
 @metadata(
     category=BlockCategory.DATA,
-    description=(
+    description="Executes a SQL query using ODBC",
+    documentation=(
         "Executes an asynchronous SQL query on a database using SQLAlchemy. "
         "Supports all types of queries, including SELECT, INSERT, UPDATE, and DELETE. "
         "For data-modifying queries (INSERT, UPDATE, DELETE), the block commits the transaction. "

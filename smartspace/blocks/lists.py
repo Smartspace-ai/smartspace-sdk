@@ -25,6 +25,7 @@ ResultT = TypeVar("ResultT")
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
+    icon="fa-project-diagram",
 )
 class Map(Block, Generic[ItemT, ResultT]):
     class Operation(Tool):
@@ -77,6 +78,7 @@ class Map(Block, Generic[ItemT, ResultT]):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Collects data from a channel and outputs them as a list once the channel closes",
+    icon="fa-boxes",
 )
 class Collect(OperatorBlock, Generic[ItemT]):
     items: Output[list[ItemT]]
@@ -105,6 +107,10 @@ class Collect(OperatorBlock, Generic[ItemT]):
             self.items.send(self.items_state)
 
 
+@metadata(
+    category=BlockCategory.FUNCTION,
+    icon="fa-sort-numeric-up",
+)
 class Count(OperatorBlock):
     @step(output_name="output")
     async def count(self, items: list[Any]) -> int:
@@ -114,6 +120,7 @@ class Count(OperatorBlock):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Loops through a list of items and outputs them one at a time",
+    icon="fa-ellipsis-h	",
 )
 class ForEach(OperatorBlock, Generic[ItemT]):
     item: OutputChannel[ItemT]
@@ -129,6 +136,7 @@ class ForEach(OperatorBlock, Generic[ItemT]):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Joins a list of strings using the configured separator and outputs the resulting string",
+    icon="fa-link",
 )
 class JoinStrings(Block):
     separator: Annotated[str, Config()] = ""
@@ -141,6 +149,7 @@ class JoinStrings(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Splits a string using the configured separator and outputs a list of the substrings",
+    icon="fa-cut",
 )
 class SplitString(Block):
     separator: Annotated[str, Config()] = "\n"
@@ -159,6 +168,7 @@ class SplitString(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Slices a list or string using the configured start and end indexes",
+    icon="fa-cut",
 )
 class Slice(Block):
     start: Annotated[int, Config()] = 0
@@ -175,6 +185,7 @@ firstItemT = TypeVar("firstItemT")
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Gets the first item from a list",
+    icon="fa-arrow-alt-circle-left",
 )
 class First(OperatorBlock, Generic[firstItemT]):
     @step(output_name="item")
@@ -185,6 +196,7 @@ class First(OperatorBlock, Generic[firstItemT]):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Flattens a list of lists into a single list",
+    icon="fa-compress",
 )
 class Flatten(OperatorBlock):
     @step(output_name="list")

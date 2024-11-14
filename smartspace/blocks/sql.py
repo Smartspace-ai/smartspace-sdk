@@ -34,6 +34,7 @@ from smartspace.enums import BlockCategory
         "The connection string should be provided in a format compatible with SQLAlchemy's `create_async_engine`, "
         "such as `'mssql+aioodbc://username:password@host:port/dbname?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'`."
     ),
+    icon="fa-database",
 )
 class SQL(Block):
     """Block that executes an asynchronous SQL query on a database using SQLAlchemy."""

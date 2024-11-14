@@ -17,6 +17,7 @@ ItemT = TypeVar("ItemT")
 @metadata(
     description="Takes in any input and will attempt to convert the input to the specified schema",  # Fixed typo
     category=BlockCategory.MISC,
+    icon="fa-sync-alt",
 )
 class Cast(OperatorBlock, Generic[ItemT]):
     schema: GenericSchema[ItemT]

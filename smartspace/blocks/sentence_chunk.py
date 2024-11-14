@@ -33,6 +33,7 @@ from smartspace.enums import BlockCategory
         2: Combine splits into chunks of size chunk_size (smaller than).
 
     """,
+    icon="fa-paragraph",
 )
 class SentenceChunk(Block):
     chunk_size: Annotated[int, Config()] = 200

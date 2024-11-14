@@ -20,6 +20,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     description="This block takes a JSON string or a list of JSON strings and parses them",
     category=BlockCategory.FUNCTION,
+    icon="fa-code",
 )
 class ParseJson(OperatorBlock):
     @step(output_name="json")
@@ -63,6 +64,7 @@ class GetJsonField(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/",
+    icon="fa-search",
 )
 class Get(OperatorBlock):
     path: Annotated[str, Config()]
@@ -143,6 +145,7 @@ The `Join` block performs advanced join operations between two lists of dictiona
 - Merging datasets from different sources.
 - Performing SQL-like join operations in Python.
 """,
+    icon="fa-link",
 )
 class Join(Block):
     key: Annotated[str, Config()]

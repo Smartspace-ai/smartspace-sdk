@@ -12,6 +12,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     description="Takes in a list and sends each item to the corresponding output",
     category=BlockCategory.MISC,
+    icon="fa-th-list",
 )
 class UnpackList(Block):
     items: list[Output[Any]]

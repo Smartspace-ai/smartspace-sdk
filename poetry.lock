@@ -3251,6 +3251,17 @@ files = [
 ]
 
 [[package]]
+name = "pypandoc"
+version = "1.14"
+description = "Thin wrapper for pandoc."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pypandoc-1.14-py3-none-any.whl", hash = "sha256:1315c7ad7fac7236dacf69a05b521ed2c3f1d0177f70e9b92bfffce6c023df22"},
+    {file = "pypandoc-1.14.tar.gz", hash = "sha256:6b4c45f5f1b9fb5bb562079164806bdbbc3e837b5402bcf3f1139edc5730a197"},
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.2.0"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -5045,4 +5056,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "35e3c5515345404f10659a0dec0ed1ac06b3c66e2231adc218e4885e83ff8f45"
+content-hash = "faf953dc8e720127dfc7fdeb8322e0cbf411dd10bb5b59646747151227c6bb74"

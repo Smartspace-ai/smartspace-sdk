@@ -47,6 +47,7 @@ pyodbc = "^5.2.0"
 sqlalchemy = "^2.0.36"
 aioodbc = "^0.5.0"
 pandoc = "^2.4"
+pypandoc = "^1.14"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.0"

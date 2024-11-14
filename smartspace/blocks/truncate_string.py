@@ -9,6 +9,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     category=BlockCategory.FUNCTION,
     description="takes in a string input and truncates it given a token limit",
+    icon="fa-cut",
 )
 class StringTruncator(Block):
     max_token: Annotated[int, Config()] = 100  # default token limit

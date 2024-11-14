@@ -9,6 +9,11 @@ class BlockCategory(Enum):
     MISC = {"name": "Misc", "description": "Doesnt belong to any category"}
 
 
+class BlockClass(Enum):
+    MODEL = "Model"
+    OPERATOR = "Operator"
+
+
 class ChannelEvent(Enum):
     DATA = "Data"
     CLOSE = "Close"

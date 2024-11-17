@@ -87,7 +87,7 @@ class FunctionInterface(BaseModel):
 class BlockInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    block_class: Annotated[BlockClass | None, Field(alias="class")]
+    block_class: Annotated[BlockClass | None, Field(alias="class")] = None
     metadata: dict[str, Any] = {}
     ports: dict[str, PortInterface]
     state: dict[str, StateInterface]

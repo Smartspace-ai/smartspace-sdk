@@ -149,9 +149,9 @@ class ThreadMessageResponse(BaseModel):
 
 class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-
     id: str
-    name: str | None = None
+    name: str
+    unique_name: Annotated[str | None, Field(alias="uniqueName")] = None
 
 
 class ContentItem(BaseModel):

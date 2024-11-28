@@ -76,6 +76,7 @@ nav:
           - TypeSwitch: block-reference/TypeSwitch.md
           - UnpackList: block-reference/UnpackList.md
           - UnpackObject: block-reference/UnpackObject.md
+          - WebsiteScraper: block-reference/WebsiteScraper.md
       - SmartSpace Blocks:
           - Data:
               - FileStore: block-reference/FileStore.md

@@ -22,3 +22,7 @@ class ChannelEvent(Enum):
 class ChannelState(Enum):
     OPEN = "Open"
     CLOSED = "Closed"
+
+
+class InputDisplayType(Enum):
+    TEMPLATEOBJECT = "TemplateObject"

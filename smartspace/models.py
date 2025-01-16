@@ -87,9 +87,9 @@ class FunctionInterface(BaseModel):
 class BlockInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    block_class: Annotated[BlockClass | None, Field(alias="class")]
-    scopes: list[BlockScope] | None
+    block_class: Annotated[BlockClass | None, Field(alias="class")] = None
     metadata: dict[str, Any] = {}
+    scopes: list[BlockScope] | None = None
     ports: dict[str, PortInterface]
     state: dict[str, StateInterface]
 
@@ -150,9 +150,9 @@ class ThreadMessageResponse(BaseModel):
 
 class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-
     id: str
-    name: str | None = None
+    name: str
+    unique_name: Annotated[str | None, Field(alias="uniqueName")] = None
 
 
 class ContentItem(BaseModel):

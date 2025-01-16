@@ -27,3 +27,7 @@ class ChannelState(Enum):
 class BlockScope(Enum):
     WORKSPACE = "WorkSpace"
     DATASET = "DataSet"
+
+
+class InputDisplayType(Enum):
+    TEMPLATEOBJECT = "TemplateObject"

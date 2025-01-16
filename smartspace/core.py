@@ -29,7 +29,13 @@ from more_itertools import first
 from pydantic import BaseModel, ConfigDict, TypeAdapter, ValidationError
 from pydantic._internal._generics import get_args, get_origin
 
-from smartspace.enums import BlockCategory, BlockClass, BlockScope, ChannelEvent
+from smartspace.enums import (
+    BlockCategory,
+    BlockClass,
+    BlockScope,
+    ChannelEvent,
+    InputDisplayType,
+)
 from smartspace.models import (
     BlockErrorModel,
     BlockInterface,
@@ -2282,6 +2288,7 @@ class Callback(BlockFunction[B, P, None]):
 
 def metadata(
     description: str | None = None,  # short description, for tooltips and things
+    display_type: InputDisplayType | None = None,  # type of display
     documentation: str | None = None,  # long description
     category: BlockCategory | dict[str, Any] | None = None,
     icon: str | None = None,  # fontawesome 5 icon name

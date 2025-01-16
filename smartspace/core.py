@@ -29,7 +29,13 @@ from more_itertools import first
 from pydantic import BaseModel, ConfigDict, TypeAdapter, ValidationError
 from pydantic._internal._generics import get_args, get_origin
 
-from smartspace.enums import BlockCategory, BlockClass, ChannelEvent, InputDisplayType
+from smartspace.enums import (
+    BlockCategory,
+    BlockClass,
+    BlockScope,
+    ChannelEvent,
+    InputDisplayType,
+)
 from smartspace.models import (
     BlockErrorModel,
     BlockInterface,
@@ -1273,6 +1279,7 @@ class MetaBlock(type):
         super().__init__(name, bases, attrs)
 
         self.block_class: BlockClass | None = getattr(self, "block_class", None)
+        self._scopes: list[BlockScope] | None = getattr(self, "_scopes", None)
         self.metadata: dict[str, Any] = {}
         self.name: str
         self._version: str | None = None
@@ -1414,6 +1421,7 @@ class MetaBlock(type):
                                         )
 
             cls._class_interface = BlockInterface(
+                scopes=cls._scopes,
                 metadata=cls.metadata,
                 ports=ports,
                 state=state,
@@ -1899,12 +1907,13 @@ class Block(metaclass=MetaBlock):
 class WorkSpaceBlock(Block):
     workspace: SmartSpaceWorkspace
     message_history: list[ThreadMessage]
+    _scopes = [BlockScope.WORKSPACE]
 
     def _set_context(self, context: FlowContext):
         assert context.workspace is not None, "Workspace is None in a WorkSpaceBlock"
-        assert (
-            context.message_history is not None
-        ), "Workspace is None in a WorkSpaceBlock"
+        assert context.message_history is not None, (
+            "Workspace is None in a WorkSpaceBlock"
+        )
 
         self.workspace = context.workspace
         self.message_history = context.message_history
@@ -2335,7 +2344,7 @@ def callback() -> Callable[[Callable[Concatenate[B, P], Awaitable]], Callback[B,
 UserMessageT = TypeVar("UserMessageT")
 
 
-class User(Block, Generic[UserMessageT]):
+class User(WorkSpaceBlock, Generic[UserMessageT]):
     schema: GenericSchema[UserMessageT] = GenericSchema({"type": "string"})
     response: Output[UserMessageT]
 

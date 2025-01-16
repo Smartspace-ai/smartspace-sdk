@@ -29,7 +29,7 @@ from more_itertools import first
 from pydantic import BaseModel, ConfigDict, TypeAdapter, ValidationError
 from pydantic._internal._generics import get_args, get_origin
 
-from smartspace.enums import BlockCategory, BlockClass, ChannelEvent
+from smartspace.enums import BlockCategory, BlockClass, BlockScope, ChannelEvent
 from smartspace.models import (
     BlockErrorModel,
     BlockInterface,
@@ -1274,6 +1274,7 @@ class MetaBlock(type):
 
         self.block_class: BlockClass | None = getattr(self, "block_class", None)
         self.metadata: dict[str, Any] = {}
+        self._scopes: list[BlockScope] | None = None
         self.name: str
         self._version: str | None = None
         self._semantic_version: semantic_version.Version | None = None
@@ -1414,6 +1415,7 @@ class MetaBlock(type):
                                         )
 
             cls._class_interface = BlockInterface(
+                scopes=cls._scopes,
                 metadata=cls.metadata,
                 ports=ports,
                 state=state,
@@ -1900,11 +1902,16 @@ class WorkSpaceBlock(Block):
     workspace: SmartSpaceWorkspace
     message_history: list[ThreadMessage]
 
+    def __init__(self):
+        super().__init__()
+
+        self._scopes = [BlockScope.WORKSPACE]
+
     def _set_context(self, context: FlowContext):
         assert context.workspace is not None, "Workspace is None in a WorkSpaceBlock"
-        assert (
-            context.message_history is not None
-        ), "Workspace is None in a WorkSpaceBlock"
+        assert context.message_history is not None, (
+            "Workspace is None in a WorkSpaceBlock"
+        )
 
         self.workspace = context.workspace
         self.message_history = context.message_history

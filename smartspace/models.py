@@ -4,7 +4,7 @@ from typing import Annotated, Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from smartspace.enums import BlockClass, ChannelEvent, ChannelState
+from smartspace.enums import BlockClass, BlockScope, ChannelEvent, ChannelState
 from smartspace.utils import _get_type_adapter
 
 
@@ -88,6 +88,7 @@ class BlockInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     block_class: Annotated[BlockClass | None, Field(alias="class")]
+    scopes: list[BlockScope] | None
     metadata: dict[str, Any] = {}
     ports: dict[str, PortInterface]
     state: dict[str, StateInterface]

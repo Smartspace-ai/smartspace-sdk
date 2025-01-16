@@ -22,3 +22,8 @@ class ChannelEvent(Enum):
 class ChannelState(Enum):
     OPEN = "Open"
     CLOSED = "Closed"
+
+
+class BlockScope(Enum):
+    WORKSPACE = "WorkSpace"
+    DATASET = "DataSet"

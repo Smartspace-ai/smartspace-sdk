@@ -1279,8 +1279,8 @@ class MetaBlock(type):
         super().__init__(name, bases, attrs)
 
         self.block_class: BlockClass | None = getattr(self, "block_class", None)
+        self._scopes: list[BlockScope] | None = getattr(self, "_scopes", None)
         self.metadata: dict[str, Any] = {}
-        self._scopes: list[BlockScope] | None = None
         self.name: str
         self._version: str | None = None
         self._semantic_version: semantic_version.Version | None = None
@@ -1907,11 +1907,7 @@ class Block(metaclass=MetaBlock):
 class WorkSpaceBlock(Block):
     workspace: SmartSpaceWorkspace
     message_history: list[ThreadMessage]
-
-    def __init__(self):
-        super().__init__()
-
-        self._scopes = [BlockScope.WORKSPACE]
+    _scopes = [BlockScope.WORKSPACE]
 
     def _set_context(self, context: FlowContext):
         assert context.workspace is not None, "Workspace is None in a WorkSpaceBlock"
@@ -2348,7 +2344,7 @@ def callback() -> Callable[[Callable[Concatenate[B, P], Awaitable]], Callback[B,
 UserMessageT = TypeVar("UserMessageT")
 
 
-class User(Block, Generic[UserMessageT]):
+class User(WorkSpaceBlock, Generic[UserMessageT]):
     schema: GenericSchema[UserMessageT] = GenericSchema({"type": "string"})
     response: Output[UserMessageT]
 

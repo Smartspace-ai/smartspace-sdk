@@ -1,7 +1,7 @@
 import json  # Proper import for JSON handling
 from typing import Annotated, Any
 
-from jinja2 import (  # Added TemplateError for error handling
+from jinja2 import (
     BaseLoader,
     Environment,
     TemplateError,
@@ -36,23 +36,24 @@ class TemplatedObject(Block):
         ],
     ) -> dict[str, Any]:
         try:
+            # Use json.dumps for non-string types to ensure valid JSON formatting
             inputs = {
-                key: f'"{value}"' if isinstance(value, str) else value
+                key: f'"{value}"' if isinstance(value, str) else json.dumps(value)
                 for key, value in inputs.items()
-            }  # Compile the Jinja2 template
+            }
+            
+            # Compile the Jinja2 template
             template = Environment(loader=BaseLoader()).from_string(self.templated_json)
 
             # Render the template with the provided inputs
             rendered_json = template.render(**inputs)
 
             # Parse the rendered template into a JSON object
-            parsed_json = json.loads(rendered_json)  # Proper JSON parsing
+            parsed_json = json.loads(rendered_json)
 
             # Send the parsed JSON as output
             return parsed_json
         except TemplateError as e:
-            # Handle errors in template rendering
             raise ValueError(f"Error in rendering Jinja2 template: {e}")
         except json.JSONDecodeError as e:
-            # Handle errors in JSON parsing
             raise ValueError(f"Error in parsing rendered template to JSON: {e}")

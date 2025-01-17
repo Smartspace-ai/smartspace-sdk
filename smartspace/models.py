@@ -1,6 +1,7 @@
 import enum
 from datetime import datetime
 from typing import Annotated, Any, Generic, TypeVar
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -173,17 +174,31 @@ class ThreadMessage(BaseModel):
     created_by: Annotated[str, Field(..., alias="createdBy")]
 
 
+class SmartSpaceDataSetProperty(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class SmartSpaceDataSet(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: UUID
+    name: str
+    properties: list[SmartSpaceDataSetProperty]
+
+
 class SmartSpaceDataSpace(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    id: str
+    id: UUID
     name: str
+    datasets: list[SmartSpaceDataSet] = []
 
 
 class SmartSpaceWorkspace(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    id: str
+    id: UUID
     name: str
     data_spaces: Annotated[list[SmartSpaceDataSpace], Field(alias="dataSpaces")] = []
     flow_definition: Annotated[
@@ -191,8 +206,21 @@ class SmartSpaceWorkspace(BaseModel):
     ] = None
 
     @property
-    def dataspace_ids(self) -> list[str]:
+    def dataspace_ids(self) -> list[UUID]:
         return [dataspace.id for dataspace in self.data_spaces]
+
+    @property
+    def datasets(self) -> list[SmartSpaceDataSet]:
+        all_datasets = [
+            dataset for dataspace in self.data_spaces for dataset in dataspace.datasets
+        ]
+        result: list[SmartSpaceDataSet] = []
+
+        for dataset in all_datasets:
+            if not any([d.id == dataset.id for d in result]):
+                result.append(dataset)
+
+        return result
 
 
 class FlowPinRef(BaseModel):

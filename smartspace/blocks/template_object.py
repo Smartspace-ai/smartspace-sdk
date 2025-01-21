@@ -1,12 +1,6 @@
 import json  # Proper import for JSON handling
 from typing import Annotated, Any
 
-from jinja2 import (
-    BaseLoader,
-    Environment,
-    TemplateError,
-)
-
 from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory, InputDisplayType
 
@@ -35,13 +29,19 @@ class TemplatedObject(Block):
             Any, Metadata(description="The inputs to fill the Jinja2 template")
         ],
     ) -> dict[str, Any]:
+        from jinja2 import (
+            BaseLoader,
+            Environment,
+            TemplateError,
+        )
+
         try:
             # Use json.dumps for non-string types to ensure valid JSON formatting
             inputs = {
                 key: f'"{value}"' if isinstance(value, str) else json.dumps(value)
                 for key, value in inputs.items()
             }
-            
+
             # Compile the Jinja2 template
             template = Environment(loader=BaseLoader()).from_string(self.templated_json)
 

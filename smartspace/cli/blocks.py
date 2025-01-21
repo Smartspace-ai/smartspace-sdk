@@ -77,7 +77,7 @@ def delete(name: str):
 
 
 @app.command()
-def publish(name: str, path: str = ""):
+async def publish(name: str, path: str = ""):
     import os
     import zipfile
 
@@ -90,7 +90,7 @@ def publish(name: str, path: str = ""):
     if os.path.exists(file_name):
         os.remove(file_name)
 
-    block_set = smartspace.blocks.load(path, force_reload=True)
+    block_set = await smartspace.blocks.load(path, force_reload=True)
 
     print("Publishing the following blocks:")
     for block_name, versions in block_set.all.items():
@@ -236,7 +236,7 @@ def debug(path: str = "", poll: bool = False):
     async def register_blocks(path: str):
         nonlocal block_set
 
-        new_block_set = smartspace.blocks.load(path, force_reload=True)
+        new_block_set = await smartspace.blocks.load(path, force_reload=True)
         old_blocks = block_set.all
 
         found_blocks = {

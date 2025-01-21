@@ -1,11 +1,5 @@
 from typing import Annotated
 
-from llama_index.core import Document
-from llama_index.core.node_parser import (
-    SemanticSplitterNodeParser,
-)
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
@@ -33,6 +27,12 @@ class SemanticChunk(Block):
 
     @step(output_name="result")
     async def semantic_chunk(self, text: str | list[str]) -> list[str]:
+        from llama_index.core import Document
+        from llama_index.core.node_parser import (
+            SemanticSplitterNodeParser,
+        )
+        from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
         if isinstance(text, str):
             doc_text_list = [text]
         else:

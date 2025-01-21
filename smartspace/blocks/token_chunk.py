@@ -1,13 +1,5 @@
 from typing import Annotated
 
-import tiktoken
-from llama_index.core import Document
-from llama_index.core.node_parser import (
-    TokenTextSplitter,
-)
-from tiktoken.model import MODEL_TO_ENCODING
-from transformers import AutoTokenizer
-
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
@@ -44,6 +36,13 @@ class TokenChunk(Block):
 
     @step(output_name="result")
     async def token_chunk(self, text: str | list[str]) -> list[str]:
+        import tiktoken
+        from llama_index.core import Document
+        from llama_index.core.node_parser import (
+            TokenTextSplitter,
+        )
+        from tiktoken.model import MODEL_TO_ENCODING
+
         # get the tokenizer for the model
         tiktoken_models = MODEL_TO_ENCODING.keys()
 
@@ -51,6 +50,8 @@ class TokenChunk(Block):
             tokenizer = tiktoken.encoding_for_model(model_name=self.model_name).encode
         else:
             try:
+                from transformers import AutoTokenizer
+
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name).encode
             except Exception as e:
                 raise RuntimeError(

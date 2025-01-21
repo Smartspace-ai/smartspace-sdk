@@ -91,13 +91,14 @@ async def load(
     # 2. Run in a custom thread pool:
     with concurrent.futures.ThreadPoolExecutor() as pool:
         tasks = []
+        modules = []
 
         for file_path in file_paths:
             if file_path == __file__ or file_path.endswith("__main__.py"):
                 continue
 
             if not force_reload and file_path in existing_modules:
-                module = existing_modules[file_path]
+                modules.append(existing_modules[file_path])
             else:
                 module_path = (
                     file_path.removeprefix(_path).replace("/", ".")[:-3]
@@ -134,7 +135,7 @@ async def load(
                     )
                 )
 
-        modules = await asyncio.gather(*tasks, return_exceptions=True)
+        modules.extend(await asyncio.gather(*tasks, return_exceptions=True))
 
         for module in modules:
             if not module:

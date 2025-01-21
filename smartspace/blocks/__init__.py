@@ -89,7 +89,7 @@ async def load(
     loop = asyncio.get_running_loop()
 
     # 2. Run in a custom thread pool:
-    with concurrent.futures.ThreadPoolExecutor() as pool:
+    with concurrent.futures.ThreadPoolExecutor(1) as pool:
         tasks = []
         modules = []
 

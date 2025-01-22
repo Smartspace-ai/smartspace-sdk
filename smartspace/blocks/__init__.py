@@ -16,61 +16,7 @@ async def load(
     import importlib.util
     import pathlib
     import sys
-    import threading
     from os.path import dirname, isfile
-
-    class ThreadSafeDict:
-        def __init__(self, data: dict | None = None):
-            self.lock = threading.Lock()
-            self.dict = data or {}
-
-        def get(self, key, default=None):
-            with self.lock:
-                return self.dict.get(key, default)
-
-        def set(self, key, value):
-            with self.lock:
-                self.dict[key] = value
-
-        def delete(self, key):
-            with self.lock:
-                if key in self.dict:
-                    del self.dict[key]
-
-        def __iter__(self):
-            with self.lock:
-                # Return an iterator for the keys
-                return iter(self.dict.copy())
-
-        def items(self):
-            with self.lock:
-                return list(self.dict.items())
-
-        def keys(self):
-            with self.lock:
-                return list(self.dict.keys())
-
-        def values(self):
-            with self.lock:
-                return list(self.dict.values())
-
-        def __len__(self):
-            with self.lock:
-                return len(self.dict)
-
-        def __contains__(self, key):
-            with self.lock:
-                return key in self.dict
-
-        def __getitem__(self, key):
-            with self.lock:
-                return self.dict[key]
-
-        def __setitem__(self, key, value):
-            self.set(key, value)
-
-        def __delitem__(self, key):
-            self.delete(key)
 
     block_set = block_set or smartspace.core.BlockSet()
     if not path:
@@ -81,10 +27,6 @@ async def load(
         file_paths = [_path]
     else:
         file_paths = [str(f) for f in pathlib.Path(_path).glob("**/*.py")]
-
-    existing_modules = ThreadSafeDict(
-        {m.__file__: m for m in sys.modules.values() if getattr(m, "__file__", None)}
-    )
 
     loop = asyncio.get_running_loop()
 
@@ -97,8 +39,8 @@ async def load(
             if file_path == __file__ or file_path.endswith("__main__.py"):
                 continue
 
-            if not force_reload and file_path in existing_modules:
-                modules.append(existing_modules[file_path])
+            if not force_reload and file_path in sys.modules:
+                modules.append(sys.modules[file_path])
             else:
                 module_path = (
                     file_path.removeprefix(_path).replace("/", ".")[:-3]
@@ -122,7 +64,6 @@ async def load(
                             if spec and spec.loader:
                                 _module = importlib.util.module_from_spec(spec)
                                 sys.modules[module_name] = _module
-                                existing_modules[file_path] = _module
                                 spec.loader.exec_module(_module)
                                 return _module
 

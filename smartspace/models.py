@@ -243,11 +243,19 @@ class Connection(BaseModel):
     target: FlowPinRef
 
 
+class FlowBlockConstant(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    target: BlockPinRef
+    value: Any
+
+
 class FlowBlock(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     name: str
     version: str
+    constants: list[FlowBlockConstant] = []
     dynamic_ports: Annotated[list[str], Field(alias="dynamicPorts")] = []
     dynamic_output_pins: Annotated[
         list[BlockPinRef], Field(alias="dynamicOutputPins")

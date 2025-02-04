@@ -35,6 +35,16 @@ class Map(Block, Generic[ItemT, ResultT]):
 
     results: Output[list[ResultT]]
 
+    synchronous: Annotated[bool, Config()] = False
+
+    items: Annotated[
+        list[ItemT],
+        State(
+            step_id="map",
+            input_ids=["items"],
+        ),
+    ] = []
+
     count: Annotated[
         int,
         State(
@@ -57,10 +67,14 @@ class Map(Block, Generic[ItemT, ResultT]):
             self.results.send([])
             return
 
+        self.items = items
         self.results_state = [None] * len(items)
         self.count = len(items)
-        for i, item in enumerate(items):
-            await self.run.call(item).then(lambda result: self.collect(result, i))
+        if self.synchronous:
+            await self.run.call(items[0]).then(lambda result: self.collect(result, 0))
+        else:
+            for i, item in enumerate(items):
+                await self.run.call(item).then(lambda result: self.collect(result, i))
 
     @callback()
     async def collect(
@@ -73,6 +87,11 @@ class Map(Block, Generic[ItemT, ResultT]):
 
         if self.count == 0:
             self.results.send(self.results_state)
+        elif self.synchronous:
+            i = len(self.items) - self.count
+            await self.run.call(self.items[i]).then(
+                lambda result: self.collect(result, i)
+            )
 
 
 @metadata(

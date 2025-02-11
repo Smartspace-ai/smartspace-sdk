@@ -1792,7 +1792,7 @@ class Block(metaclass=MetaBlock):
             if port_interface.type == PortType.SINGLE:
                 port_type = annotation
             else:
-                if annotation == Annotated:
+                if get_origin(annotation) == Annotated:
                     annotation = get_args(annotation)[0]
 
                 if port_interface.type == PortType.LIST:

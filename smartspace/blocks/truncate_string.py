@@ -1,7 +1,5 @@
 from typing import Annotated
 
-from litellm.utils import decode, encode
-
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
@@ -9,6 +7,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     category=BlockCategory.FUNCTION,
     description="takes in a string input and truncates it given a token limit",
+    icon="fa-cut",
 )
 class StringTruncator(Block):
     max_token: Annotated[int, Config()] = 100  # default token limit
@@ -16,6 +15,8 @@ class StringTruncator(Block):
 
     @step(output_name="result")
     async def truncate_string(self, input_strings: str) -> str:
+        from litellm.utils import decode, encode
+
         tokens = encode(model=self.model_name, text=input_strings)
 
         if len(tokens) <= self.max_token:

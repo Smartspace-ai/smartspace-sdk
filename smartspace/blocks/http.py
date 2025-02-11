@@ -48,6 +48,7 @@ class HTTPError(Exception):
 @metadata(
     description="Performs HTTP requests such as GET, POST, PUT, DELETE, and more.",
     category=BlockCategory.FUNCTION,
+    icon="fa-cloud-download-alt",
 )
 class HTTPRequest(Block):
     timeout: Annotated[int, Config()] = 30  # Timeout in seconds

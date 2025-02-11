@@ -13,6 +13,7 @@ SequenceT = TypeVar("SequenceT", bound=str | list[Any])
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Concatenates 2 lists or strings",
+    icon="fa-plus",
 )
 class Concat(Block, Generic[SequenceT]):
     @step(output_name="result")

@@ -14,6 +14,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     description="Takes in a Jinja template string and renders it with the given inputs",
     category=BlockCategory.MISC,
+    icon="fa-file-alt",
 )
 class StringTemplate(Block):
     template: Annotated[str, Config()]

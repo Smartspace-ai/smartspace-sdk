@@ -22,6 +22,7 @@ class TypeSwitchOption(Generic[ItemT]):
 @metadata(
     description="Checks the output schemas of the options and sends the input to the first option that matches",
     category=BlockCategory.MISC,
+    icon="fa-random",
 )
 class TypeSwitch(Block):
     options: list[TypeSwitchOption]

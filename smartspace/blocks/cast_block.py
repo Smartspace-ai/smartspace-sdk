@@ -1,13 +1,14 @@
 import json
-from typing import Any, Generic, TypeVar, cast
+from typing import Annotated, Any, Generic, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 
 from smartspace.core import (
-    Block,
     GenericSchema,
+    OperatorBlock,
     metadata,
     step,
+    Config
 )
 from smartspace.enums import BlockCategory
 
@@ -15,14 +16,18 @@ ItemT = TypeVar("ItemT")
 
 
 @metadata(
-    description="Takes in any input and will attempt to convert the input to the specified schema",  # Fixed typo
+    description="Takes in any input and will attempt to convert the input to the specified schema. If the convert config is unticked, it will not attempt to convert the value and will instead just output the input.",
     category=BlockCategory.MISC,
+    icon="fa-sync-alt",
 )
-class Cast(Block, Generic[ItemT]):
+class Cast(OperatorBlock, Generic[ItemT]):
     schema: GenericSchema[ItemT]
+    convert: Annotated[bool, Config()] = True
 
     @step(output_name="result")
     async def cast(self, item: Any) -> ItemT:
+        if not self.convert:
+            return item
         if "type" not in self.schema:
             return item
 

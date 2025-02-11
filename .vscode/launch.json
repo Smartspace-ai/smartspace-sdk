@@ -5,7 +5,7 @@
             "name": "Debug Smartspace blocks",
             "type": "debugpy",
             "request": "launch",
-            "program": "smartspace",
+            "module": "smartspace",
             "args": [
                 "blocks",
                 "debug",

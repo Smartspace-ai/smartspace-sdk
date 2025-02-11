@@ -1,5 +1,5 @@
-from enum import Enum
 import json
+from enum import Enum
 from typing import Annotated, Any, List, Union
 
 from jsonpath_ng import JSONPath
@@ -10,6 +10,7 @@ from smartspace.core import (
     Block,
     Config,
     Metadata,
+    OperatorBlock,
     metadata,
     step,
 )
@@ -19,8 +20,9 @@ from smartspace.enums import BlockCategory
 @metadata(
     description="This block takes a JSON string or a list of JSON strings and parses them",
     category=BlockCategory.FUNCTION,
+    icon="fa-code",
 )
-class ParseJson(Block):
+class ParseJson(OperatorBlock):
     @step(output_name="json")
     async def parse_json(
         self,
@@ -62,8 +64,9 @@ class GetJsonField(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/",
+    icon="fa-search",
 )
-class Get(Block):
+class Get(OperatorBlock):
     path: Annotated[str, Config()]
 
     @step(output_name="result")
@@ -79,7 +82,7 @@ class Get(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Merges objects from two lists by matching on the configured key",
-    obsolete=True
+    obsolete=True,
 )
 class MergeLists(Block):
     key: Annotated[str, Config()]
@@ -107,17 +110,13 @@ class MergeLists(Block):
         return final_result
 
 
-
-
-
-
 class JoinType(Enum):
-    INNER = 'inner'    
-    OUTER = 'outer'
-    LEFT_INNER = 'left_inner'
-    LEFT_OUTER = 'left_outer'
-    RIGHT_INNER = 'right_inner'
-    RIGHT_OUTER = 'right_outer'
+    INNER = "inner"
+    OUTER = "outer"
+    LEFT_INNER = "left_inner"
+    LEFT_OUTER = "left_outer"
+    RIGHT_INNER = "right_inner"
+    RIGHT_OUTER = "right_outer"
 
 
 @metadata(
@@ -145,7 +144,8 @@ The `Join` block performs advanced join operations between two lists of dictiona
 
 - Merging datasets from different sources.
 - Performing SQL-like join operations in Python.
-"""
+""",
+    icon="fa-link",
 )
 class Join(Block):
     key: Annotated[str, Config()]
@@ -162,14 +162,18 @@ class Join(Block):
         for item in left:
             key_value = item.get(self.key)
             if key_value is None:
-                raise KeyError(f"Left item {item} does not contain the key '{self.key}'")
+                raise KeyError(
+                    f"Left item {item} does not contain the key '{self.key}'"
+                )
             left_dict[key_value] = item
 
         right_dict = {}
         for item in right:
             key_value = item.get(self.key)
             if key_value is None:
-                raise KeyError(f"Right item {item} does not contain the key '{self.key}'")
+                raise KeyError(
+                    f"Right item {item} does not contain the key '{self.key}'"
+                )
             right_dict[key_value] = item
 
         # Determine the keys to include based on the join type
@@ -186,7 +190,9 @@ class Join(Block):
         elif self.joinType == JoinType.OUTER:
             keys = set(left_dict.keys()) | set(right_dict.keys())
         else:
-            raise ValueError(f"Invalid joinType '{self.joinType}'. Must be one of JoinType.")
+            raise ValueError(
+                f"Invalid joinType '{self.joinType}'. Must be one of JoinType."
+            )
 
         # Merge the records based on the keys
         result = []
@@ -195,10 +201,20 @@ class Join(Block):
             left_item = left_dict.get(key)
             right_item = right_dict.get(key)
 
-            if self.joinType in (JoinType.LEFT_OUTER, JoinType.LEFT_INNER, JoinType.INNER, JoinType.OUTER):
+            if self.joinType in (
+                JoinType.LEFT_OUTER,
+                JoinType.LEFT_INNER,
+                JoinType.INNER,
+                JoinType.OUTER,
+            ):
                 if left_item:
                     merged_item.update(left_item)
-            if self.joinType in (JoinType.RIGHT_OUTER, JoinType.RIGHT_INNER, JoinType.INNER, JoinType.OUTER):
+            if self.joinType in (
+                JoinType.RIGHT_OUTER,
+                JoinType.RIGHT_INNER,
+                JoinType.INNER,
+                JoinType.OUTER,
+            ):
                 if right_item:
                     merged_item.update(right_item)
 

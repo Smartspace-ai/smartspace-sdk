@@ -1,22 +1,6 @@
 import datetime
 from typing import Annotated, Any, Dict, List, Type, Union
 
-from sqlalchemy import (
-    Boolean,
-    Date,
-    DateTime,
-    Float,
-    Integer,
-    LargeBinary,
-    String,
-    Time,
-    bindparam,
-    text,
-)
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.sql.elements import BindParameter
-from sqlalchemy.types import TypeEngine
-
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
@@ -25,7 +9,8 @@ from smartspace.enums import BlockCategory
 
 @metadata(
     category=BlockCategory.DATA,
-    description=(
+    description="Executes a SQL query using ODBC",
+    documentation=(
         "Executes an asynchronous SQL query on a database using SQLAlchemy. "
         "Supports all types of queries, including SELECT, INSERT, UPDATE, and DELETE. "
         "For data-modifying queries (INSERT, UPDATE, DELETE), the block commits the transaction. "
@@ -34,6 +19,7 @@ from smartspace.enums import BlockCategory
         "The connection string should be provided in a format compatible with SQLAlchemy's `create_async_engine`, "
         "such as `'mssql+aioodbc://username:password@host:port/dbname?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'`."
     ),
+    icon="fa-database",
 )
 class SQL(Block):
     """Block that executes an asynchronous SQL query on a database using SQLAlchemy."""
@@ -43,6 +29,22 @@ class SQL(Block):
 
     @step(output_name="result")
     async def run(self, **params) -> Union[List[Dict[str, Any]], int]:
+        from sqlalchemy import (
+            Boolean,
+            Date,
+            DateTime,
+            Float,
+            Integer,
+            LargeBinary,
+            String,
+            Time,
+            bindparam,
+            text,
+        )
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy.sql.elements import BindParameter
+        from sqlalchemy.types import TypeEngine
+
         """Execute the SQL query with the given parameters and return the result."""
         engine = create_async_engine(self.connection_string)
 

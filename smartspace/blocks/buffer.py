@@ -1,10 +1,13 @@
 from typing import Annotated, Any, Generic, TypeVar
 
-from smartspace.core import Block, Output, State, step
+from smartspace.core import Block, Output, State, metadata, step
 
 ValueT = TypeVar("ValueT")
 
 
+@metadata(
+    icon="fa-database",
+)
 class Buffer(Block, Generic[ValueT]):
     values: Annotated[list[ValueT], State()] = []
     ready: Annotated[bool, State()] = True

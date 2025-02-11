@@ -8,6 +8,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     category=BlockCategory.FUNCTION,
     description="regex-based pattern matching on a string input, returning a list of all matches found.",
+    icon="fa-text-width",
 )
 class RegexMatch(Block):
     """

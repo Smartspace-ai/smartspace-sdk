@@ -7,6 +7,7 @@ from smartspace.core import (
     ChannelEvent,
     Config,
     InputChannel,
+    OperatorBlock,
     Output,
     OutputChannel,
     State,
@@ -24,6 +25,7 @@ ResultT = TypeVar("ResultT")
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
+    icon="fa-project-diagram",
 )
 class Map(Block, Generic[ItemT, ResultT]):
     class Operation(Tool):
@@ -32,6 +34,16 @@ class Map(Block, Generic[ItemT, ResultT]):
     run: Operation
 
     results: Output[list[ResultT]]
+
+    synchronous: Annotated[bool, Config()] = False
+
+    items: Annotated[
+        list[ItemT],
+        State(
+            step_id="map",
+            input_ids=["items"],
+        ),
+    ] = []
 
     count: Annotated[
         int,
@@ -55,10 +67,14 @@ class Map(Block, Generic[ItemT, ResultT]):
             self.results.send([])
             return
 
+        self.items = items
         self.results_state = [None] * len(items)
         self.count = len(items)
-        for i, item in enumerate(items):
-            await self.run.call(item).then(lambda result: self.collect(result, i))
+        if self.synchronous:
+            await self.run.call(items[0]).then(lambda result: self.collect(result, 0))
+        else:
+            for i, item in enumerate(items):
+                await self.run.call(item).then(lambda result: self.collect(result, i))
 
     @callback()
     async def collect(
@@ -71,13 +87,19 @@ class Map(Block, Generic[ItemT, ResultT]):
 
         if self.count == 0:
             self.results.send(self.results_state)
+        elif self.synchronous:
+            i = len(self.items) - self.count
+            await self.run.call(self.items[i]).then(
+                lambda result: self.collect(result, i)
+            )
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Collects data from a channel and outputs them as a list once the channel closes",
+    icon="fa-boxes",
 )
-class Collect(Block, Generic[ItemT]):
+class Collect(OperatorBlock, Generic[ItemT]):
     items: Output[list[ItemT]]
 
     items_state: Annotated[
@@ -104,7 +126,11 @@ class Collect(Block, Generic[ItemT]):
             self.items.send(self.items_state)
 
 
-class Count(Block):
+@metadata(
+    category=BlockCategory.FUNCTION,
+    icon="fa-sort-numeric-up",
+)
+class Count(OperatorBlock):
     @step(output_name="output")
     async def count(self, items: list[Any]) -> int:
         return len(items)
@@ -113,8 +139,9 @@ class Count(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Loops through a list of items and outputs them one at a time",
+    icon="fa-ellipsis-h	",
 )
-class ForEach(Block, Generic[ItemT]):
+class ForEach(OperatorBlock, Generic[ItemT]):
     item: OutputChannel[ItemT]
 
     @step()
@@ -128,6 +155,7 @@ class ForEach(Block, Generic[ItemT]):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Joins a list of strings using the configured separator and outputs the resulting string",
+    icon="fa-link",
 )
 class JoinStrings(Block):
     separator: Annotated[str, Config()] = ""
@@ -140,6 +168,7 @@ class JoinStrings(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Splits a string using the configured separator and outputs a list of the substrings",
+    icon="fa-cut",
 )
 class SplitString(Block):
     separator: Annotated[str, Config()] = "\n"
@@ -158,6 +187,7 @@ class SplitString(Block):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Slices a list or string using the configured start and end indexes",
+    icon="fa-cut",
 )
 class Slice(Block):
     start: Annotated[int, Config()] = 0
@@ -167,13 +197,16 @@ class Slice(Block):
     async def slice(self, items: list[Any] | str) -> list[Any] | str:
         return items[self.start : self.end]
 
+
 firstItemT = TypeVar("firstItemT")
+
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Gets the first item from a list",
+    icon="fa-arrow-alt-circle-left",
 )
-class First(Block, Generic[firstItemT]):
+class First(OperatorBlock, Generic[firstItemT]):
     @step(output_name="item")
     async def first(self, items: list[firstItemT]) -> firstItemT:
         return items[0]
@@ -182,8 +215,9 @@ class First(Block, Generic[firstItemT]):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Flattens a list of lists into a single list",
+    icon="fa-compress",
 )
-class Flatten(Block):
+class Flatten(OperatorBlock):
     @step(output_name="list")
     async def flatten(self, lists: list[list[Any]]) -> list[Any]:
         return list(flatten(lists))

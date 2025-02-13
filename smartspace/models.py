@@ -150,7 +150,7 @@ class ThreadMessageResponse(BaseModel):
 class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     id: str
-    name: str
+    name: str | None = None
     unique_name: Annotated[str | None, Field(alias="uniqueName")] = None
 
 

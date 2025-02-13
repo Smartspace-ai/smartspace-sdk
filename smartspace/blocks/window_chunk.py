@@ -20,6 +20,7 @@ from smartspace.enums import BlockCategory
     Args:
         window_size: The number of sentences on each side of a sentence to capture.
     """,
+    icon="fa-window-maximize",
 )
 class WindowChunk(Block):
     # Sentence Chunking

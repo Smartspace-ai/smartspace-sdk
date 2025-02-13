@@ -7,6 +7,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     description="Takes a dictionary as config and outputs it.",
     category=BlockCategory.MISC,
+    icon="fa-book",
 )
 class DictConst(Block):
     output: Annotated[dict, Config()]
@@ -19,6 +20,7 @@ class DictConst(Block):
 @metadata(
     description="Takes a string as config and outputs it.",
     category=BlockCategory.MISC,
+    icon="fa-quote-right",
 )
 class StringConst(Block):
     output: Annotated[str, Config()]
@@ -31,6 +33,7 @@ class StringConst(Block):
 @metadata(
     description="Takes an integer as config and outputs it.",
     category=BlockCategory.MISC,
+    icon="fa-hashtag",
 )
 class IntegerConst(Block):
     output: Annotated[int, Config()]

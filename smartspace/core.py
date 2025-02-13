@@ -29,7 +29,7 @@ from more_itertools import first
 from pydantic import BaseModel, ConfigDict, TypeAdapter, ValidationError
 from pydantic._internal._generics import get_args, get_origin
 
-from smartspace.enums import ChannelEvent
+from smartspace.enums import BlockCategory, BlockClass, ChannelEvent, InputDisplayType
 from smartspace.models import (
     BlockErrorModel,
     BlockInterface,
@@ -329,7 +329,10 @@ def _get_default(cls, field_name) -> tuple[bool, Any]:
 
 
 class Metadata:
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        **kwargs,
+    ):
         self.data = kwargs
 
 
@@ -1269,6 +1272,7 @@ class MetaBlock(type):
     def __init__(self, name, bases, attrs):
         super().__init__(name, bases, attrs)
 
+        self.block_class: BlockClass | None = getattr(self, "block_class", None)
         self.metadata: dict[str, Any] = {}
         self.name: str
         self._version: str | None = None
@@ -1413,6 +1417,7 @@ class MetaBlock(type):
                 metadata=cls.metadata,
                 ports=ports,
                 state=state,
+                block_class=cls.block_class,
             )
 
         return cls._class_interface
@@ -1905,6 +1910,10 @@ class WorkSpaceBlock(Block):
         self.message_history = context.message_history
 
 
+class OperatorBlock(Block):
+    block_class = BlockClass.OPERATOR
+
+
 class DummyToolValue: ...
 
 
@@ -2264,7 +2273,26 @@ class Callback(BlockFunction[B, P, None]):
         )
 
 
-def metadata(**kwargs):
+def metadata(
+    description: str | None = None,  # short description, for tooltips and things
+    display_type: InputDisplayType | None = None,  # type of display
+    documentation: str | None = None,  # long description
+    category: BlockCategory | dict[str, Any] | None = None,
+    icon: str | None = None,  # fontawesome 5 icon name
+    obsolete: bool | None = None,
+    **kwargs,
+):
+    if description is not None:
+        kwargs["description"] = description
+    if documentation is not None:
+        kwargs["documentation"] = documentation
+    if category is not None:
+        kwargs["category"] = category
+    if icon is not None:
+        kwargs["icon"] = icon
+    if obsolete is not None:
+        kwargs["obsolete"] = obsolete
+
     def _inner(cls):
         setattr(cls, "metadata", kwargs)
         return cls

@@ -22,6 +22,7 @@ from smartspace.enums import BlockCategory
         chunk_model: (BaseEmbedding): embedding model to use, defaults to BAAI/bge-small-en-v1.5
         breakpoint_percentile_threshold: (int): the percentile of cosine dissimilarity that must be exceeded between a group of sentences and the next to form a node. The smaller this number is, the more nodes will be generated
     """,
+    icon="fa-quote-left",
 )
 class SemanticChunk(Block):
     buffer_size: Annotated[int, Config()] = 1

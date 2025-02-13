@@ -32,6 +32,7 @@ from smartspace.enums import BlockCategory
     or even words, which could affect the coherence of each chunk. Consider the
     trade-off between consistent size and semantic coherence when using this method.
     """,
+    icon="fa-tags",
 )
 class TokenChunk(Block):
     chunk_size: Annotated[int, Config()] = 200

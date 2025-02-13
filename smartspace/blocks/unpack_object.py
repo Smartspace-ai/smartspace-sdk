@@ -12,6 +12,7 @@ from smartspace.enums import BlockCategory
 @metadata(
     description="Takes in an object and sends each key-value pair to the corresponding output",
     category=BlockCategory.MISC,
+    icon="fa-th-large",
 )
 class UnpackObject(Block):
     properties: dict[str, Output[dict[str, Any]]]

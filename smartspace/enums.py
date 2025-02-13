@@ -9,6 +9,11 @@ class BlockCategory(Enum):
     MISC = {"name": "Misc", "description": "Doesnt belong to any category"}
 
 
+class BlockClass(Enum):
+    MODEL = "Model"
+    OPERATOR = "Operator"
+
+
 class ChannelEvent(Enum):
     DATA = "Data"
     CLOSE = "Close"
@@ -17,3 +22,7 @@ class ChannelEvent(Enum):
 class ChannelState(Enum):
     OPEN = "Open"
     CLOSED = "Closed"
+
+
+class InputDisplayType(Enum):
+    TEMPLATEOBJECT = "TemplateObject"

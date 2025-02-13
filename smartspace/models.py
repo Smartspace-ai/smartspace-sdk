@@ -4,7 +4,7 @@ from typing import Annotated, Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from smartspace.enums import ChannelEvent, ChannelState
+from smartspace.enums import BlockClass, ChannelEvent, ChannelState
 from smartspace.utils import _get_type_adapter
 
 
@@ -87,6 +87,7 @@ class FunctionInterface(BaseModel):
 class BlockInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
+    block_class: Annotated[BlockClass | None, Field(alias="class")] = None
     metadata: dict[str, Any] = {}
     ports: dict[str, PortInterface]
     state: dict[str, StateInterface]
@@ -148,9 +149,9 @@ class ThreadMessageResponse(BaseModel):
 
 class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-
     id: str
     name: str | None = None
+    unique_name: Annotated[str | None, Field(alias="uniqueName")] = None
 
 
 class ContentItem(BaseModel):

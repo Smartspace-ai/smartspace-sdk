@@ -767,6 +767,30 @@ testing = ["covdefaults (>=2.3)", "coverage (>=7.6.1)", "diff-cover (>=9.2)", "p
 typing = ["typing-extensions (>=4.12.2)"]
 
 [[package]]
+name = "formulas"
+version = "1.2.8"
+description = "Parse and compile Excel formulas and workbooks in python code."
+optional = false
+python-versions = "*"
+files = [
+    {file = "formulas-1.2.8-py2.py3-none-any.whl", hash = "sha256:945dd4c5ed196f636dcef617decc25254633c66ee47f0e19b278b3a51ba3c2be"},
+    {file = "formulas-1.2.8.tar.gz", hash = "sha256:18797a7be313e9daf2ac2b99f0dacc237756c73b1d1b29b66d63450a71208ddd"},
+]
+
+[package.dependencies]
+numpy = ">=1.15"
+numpy-financial = "*"
+python-dateutil = "*"
+regex = "*"
+schedula = ">=1.4.1"
+
+[package.extras]
+all = ["Pygments", "dictdiffer", "docutils", "flask", "graphviz", "jinja2", "openpyxl", "regex"]
+dev = ["Pygments", "coveralls", "ddt", "dictdiffer", "docutils", "flask", "gitchangelog", "graphviz", "jinja2", "mako", "openpyxl", "regex", "setuptools (>=36.0.1)", "sphinx (>=7.2)", "sphinx-rtd-theme", "sphinxcontrib-restbuilder", "twine", "wheel"]
+excel = ["dictdiffer", "openpyxl"]
+plot = ["Pygments", "docutils", "flask", "graphviz", "jinja2", "regex"]
+
+[[package]]
 name = "frozenlist"
 version = "1.5.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -1297,6 +1321,8 @@ optional = false
 python-versions = "*"
 files = [
     {file = "jsonpath-ng-1.7.0.tar.gz", hash = "sha256:f6f5f7fd4e5ff79c785f1573b394043b39849fb2bb47bcead935d12b00beab3c"},
+    {file = "jsonpath_ng-1.7.0-py2-none-any.whl", hash = "sha256:898c93fc173f0c336784a3fa63d7434297544b7198124a68f9a3ef9597b0ae6e"},
+    {file = "jsonpath_ng-1.7.0-py3-none-any.whl", hash = "sha256:f3d7f9e848cba1b6da28c55b1c26ff915dc9e0b1ba7e752a53d6da8d5cbd00b6"},
 ]
 
 [package.dependencies]
@@ -2531,6 +2557,20 @@ files = [
     {file = "numpy-1.26.4-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:7e50d0a0cc3189f9cb0aeb3a6a6af18c16f59f004b866cd2be1c14b36134a4a0"},
     {file = "numpy-1.26.4.tar.gz", hash = "sha256:2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010"},
 ]
+
+[[package]]
+name = "numpy-financial"
+version = "1.0.0"
+description = "Simple financial functions"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "numpy-financial-1.0.0.tar.gz", hash = "sha256:f84341bc62b2485d5604a73d5fac7e91975b4b9cd5f4a5a9cf608902ea00cb40"},
+    {file = "numpy_financial-1.0.0-py3-none-any.whl", hash = "sha256:bae534b357516f12258862d1f0181d911032d0467f215bfcd1c264b4da579047"},
+]
+
+[package.dependencies]
+numpy = ">=1.15"
 
 [[package]]
 name = "nvidia-cublas-cu12"
@@ -4143,6 +4183,27 @@ testing = ["h5py (>=3.7.0)", "huggingface-hub (>=0.12.1)", "hypothesis (>=6.70.2
 torch = ["safetensors[numpy]", "torch (>=1.10)"]
 
 [[package]]
+name = "schedula"
+version = "1.5.54"
+description = "Produce a plan that dispatches calls based on a graph of functions, satisfying data dependencies."
+optional = false
+python-versions = "*"
+files = [
+    {file = "schedula-1.5.54-py2.py3-none-any.whl", hash = "sha256:ab4296fdf1749437027828abc1678b988392473b7e1682498a877829a1e892b1"},
+    {file = "schedula-1.5.54.tar.gz", hash = "sha256:4b70400717021c00cb2481590a26def621c19416bc8eecb7ffbf14cab8185db3"},
+]
+
+[package.extras]
+all = ["Pygments", "asteval", "click", "click-log", "dill (!=0.2.7)", "docutils", "fasteners", "flask", "flask-admin", "flask-babel", "flask-mail", "flask-principal", "flask-security-too[common]", "flask-sqlalchemy", "flask-wtf", "graphviz (>=0.17)", "gunicorn", "itsdangerous", "jinja2", "multiprocess", "python-dateutil", "regex", "requests", "rst2txt", "sherlock", "sphinx (>=7.2)", "sphinx-click", "sqlalchemy", "sqlalchemy-file", "stripe"]
+dev = ["Pygments", "asteval", "click", "click-log", "coveralls", "ddt", "dill (!=0.2.7)", "docutils", "fasteners", "flask", "flask-admin", "flask-babel", "flask-mail", "flask-principal", "flask-security-too[common]", "flask-sqlalchemy", "flask-wtf", "gitchangelog", "graphviz (>=0.17)", "gunicorn", "itsdangerous", "jinja2", "livereload (>=2.6.3)", "mako", "multiprocess", "polib", "python-dateutil", "readthedocs-sphinx-ext", "regex", "requests", "rst2txt", "setuptools (>=36.0.1)", "sherlock", "sphinx (>=7.2)", "sphinx-click", "sphinx-rtd-theme", "sphinxcontrib-restbuilder", "sqlalchemy", "sqlalchemy-file", "stripe", "translators", "twine", "wheel"]
+form = ["asteval", "click", "click-log", "docutils", "fasteners", "flask", "flask-admin", "flask-babel", "flask-mail", "flask-principal", "flask-security-too[common]", "flask-sqlalchemy", "flask-wtf", "gunicorn", "itsdangerous", "python-dateutil", "regex", "requests", "rst2txt", "sherlock", "sqlalchemy", "sqlalchemy-file", "stripe"]
+io = ["dill (!=0.2.7)"]
+parallel = ["multiprocess"]
+plot = ["Pygments", "docutils", "flask", "graphviz (>=0.17)", "jinja2", "regex", "requests"]
+sphinx = ["Pygments", "docutils", "flask", "graphviz (>=0.17)", "jinja2", "regex", "requests", "sphinx (>=7.2)", "sphinx-click"]
+web = ["flask", "regex", "requests"]
+
+[[package]]
 name = "scikit-learn"
 version = "1.5.2"
 description = "A set of python modules for machine learning and data mining"
@@ -5286,4 +5347,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "2d3b8281b846a31b88f747e15b93563551a5b0e15ef7e960bc42cbe8a6344d51"
+content-hash = "659c801c5dd9329fc4225073fc5a4b02fb4a4c37b2685236da079f339ece286e"

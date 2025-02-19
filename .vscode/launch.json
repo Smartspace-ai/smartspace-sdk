@@ -28,6 +28,19 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Pytest - Excel Formula",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${workspaceFolder}/smartspace/tests/test_excel_formula.py",
+                "-v"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

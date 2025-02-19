@@ -186,7 +186,7 @@ class SplitString(Block):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Slices a list or string using the configured start and end indexes",
+    description="Slices a list or string using the configured start and end indexes. If the start and end are the same, the block will output the item at the start index.",
     icon="fa-cut",
 )
 class Slice(Block):
@@ -194,7 +194,9 @@ class Slice(Block):
     end: Annotated[int, Config()] = 0
 
     @step(output_name="items")
-    async def slice(self, items: list[Any] | str) -> list[Any] | str:
+    async def slice(self, items: list[Any] | str) -> list[Any] | Any:
+        if self.start == self.end:
+            return items[self.start]
         return items[self.start : self.end]
 
 
@@ -203,8 +205,9 @@ firstItemT = TypeVar("firstItemT")
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Gets the first item from a list",
+    description="(Deprecated) Gets the first item from a list. Please use the 'Slice' block instead.",
     icon="fa-arrow-alt-circle-left",
+    output_name=True,
 )
 class First(OperatorBlock, Generic[firstItemT]):
     @step(output_name="item")
@@ -221,3 +224,24 @@ class Flatten(OperatorBlock):
     @step(output_name="list")
     async def flatten(self, lists: list[list[Any]]) -> list[Any]:
         return list(flatten(lists))
+
+
+@metadata(
+    description="Combines items or sequences into a single list or string",
+    category=BlockCategory.FUNCTION,
+    icon="fa-object-group",
+)
+class AggregateList(Block):
+    @step(output_name="result")
+    async def aggregate(self, *items: Any) -> list[Any]:
+        if len(items) == 0:
+            return []
+        # If the first item is a list, append the rest of the items to it
+        result = list(flatten([items[0]]) if isinstance(items[0], list) else [items[0]])
+        if len(items) > 1:
+            for item in items[1:]:
+                if isinstance(item, list):
+                    result.extend(item)
+                else:
+                    result.append(item)
+        return result  # type: ignore

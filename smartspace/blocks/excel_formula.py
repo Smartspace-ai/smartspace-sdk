@@ -9,8 +9,6 @@ from formulas.tokens.operand import XlError
 from smartspace.core import Block, metadata, step
 from smartspace.enums import BlockCategory
 
-print(formulas.get_functions())
-
 # formulas.get_functions() returns a list of all functions that are supported by the formulas library
 VALID_FUNCTIONS = [
     "ISERR",

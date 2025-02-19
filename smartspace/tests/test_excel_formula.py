@@ -138,7 +138,7 @@ class TestLogicalFunctions:
         result = await excel_block.evaluate(
             "AND({{a}} > 0, {{b}} < 10)", {"a": 5, "b": 7}
         )
-        assert result == True
+        assert result == True  # noqa: E712
 
     @pytest.mark.asyncio
     async def test_or_function(self):
@@ -147,7 +147,7 @@ class TestLogicalFunctions:
         result = await excel_block.evaluate(
             "OR({{x}} < 0, {{y}} > 10)", {"x": -1, "y": 5}
         )
-        assert result == True
+        assert result == True  # noqa: E712
 
 
 class TestTextFunctions:

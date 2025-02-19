@@ -1,12 +1,12 @@
 import re
-from typing import Any, Dict
+from typing import Annotated, Any, Dict
 
-import formulas  # type: ignore
-import formulas.tokens
-import numpy
-from formulas.tokens.operand import XlError
+import formulas  # type: ignore[import-untyped]
+import formulas.tokens  # type: ignore[import-untyped]
+import numpy  # type: ignore[import-untyped]
+from formulas.tokens.operand import XlError  # type: ignore[import-untyped]
 
-from smartspace.core import Block, metadata, step
+from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
 # formulas.get_functions() returns a list of all functions that are supported by the formulas library
@@ -314,6 +314,8 @@ class ExcelFormula(Block):
     2D arrays: {1,2;3,4}
     """
 
+    formula: Annotated[str, Config()]
+
     def _substitute_variables(self, formula: str, variables: Dict[str, Any]) -> str:
         """Replace variables in the formula with their actual values."""
         pattern = r"\{\{([^}]+)\}\}"
@@ -349,7 +351,7 @@ class ExcelFormula(Block):
         return re.sub(pattern, replace, formula)
 
     @step(output_name="result")
-    async def evaluate(self, formula: str, variables: Dict[str, Any]) -> Any:
+    async def evaluate(self, **variables: Any) -> Any:
         """Evaluate an Excel formula with variable substitution.
 
         Args:
@@ -367,7 +369,7 @@ class ExcelFormula(Block):
         """
         try:
             # Replace variables with their values
-            processed_formula = self._substitute_variables(formula, variables)
+            processed_formula = self._substitute_variables(self.formula, variables)
 
             # Ensure formula starts with =
             if not processed_formula.startswith("="):

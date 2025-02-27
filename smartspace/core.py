@@ -41,10 +41,12 @@ from smartspace.models import (
     BlockInterface,
     BlockPinRef,
     BlockRunMessage,
+    Deprecated,
     FlowContext,
     InputChannel,
     InputPinInterface,
     InputValue,
+    Metadata,
     OutputChannelMessage,
     OutputPinInterface,
     OutputValue,
@@ -127,8 +129,8 @@ def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPi
 
         annotations = getattr(param.annotation, "__metadata__", [])
         metadata = first(
-            (metadata.data for metadata in annotations if type(metadata) is Metadata),
-            {},
+            (annotation for annotation in annotations if type(annotation) is Metadata),
+            Metadata(),
         )
 
         if param.default == inspect._empty:
@@ -167,8 +169,8 @@ def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPi
     if signature.return_annotation != signature.empty:
         annotations = getattr(signature.return_annotation, "__metadata__", [])
         metadata = first(
-            (metadata.data for metadata in annotations if type(metadata) is Metadata),
-            {},
+            (annotation for annotation in annotations if type(annotation) is Metadata),
+            Metadata(),
         )
 
         if get_origin(signature.return_annotation) == OutputChannel:
@@ -187,7 +189,7 @@ def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPi
         )
         generics.update(_generics)
 
-        output = (
+        output: tuple[OutputPinInterface | None, TypeAdapter | None] = (
             OutputPinInterface(
                 metadata=metadata,
                 json_schema=schema,
@@ -239,8 +241,8 @@ def _get_tool_pins(
 
         annotations = getattr(param.annotation, "__metadata__", [])
         metadata = first(
-            (metadata.data for metadata in annotations if type(metadata) is Metadata),
-            {},
+            (annotation for annotation in annotations if type(annotation) is Metadata),
+            Metadata(),
         )
 
         output_type = param.annotation
@@ -275,8 +277,8 @@ def _get_tool_pins(
     if signature.return_annotation != signature.empty:
         annotations = getattr(signature.return_annotation, "__metadata__", [])
         metadata = first(
-            (metadata.data for metadata in annotations if type(metadata) is Metadata),
-            {},
+            (annotation for annotation in annotations if type(annotation) is Metadata),
+            Metadata(),
         )
         input_type, is_channel = check_type_is_input_channel(
             signature.return_annotation
@@ -286,7 +288,6 @@ def _get_tool_pins(
             input_type
         )
 
-        pin_generics: dict[str, BlockPinRef] = {}
         for generic_name in _generics.keys():
             if generic_name in generic_names:
                 pin_generics[generic_name] = BlockPinRef(
@@ -300,7 +301,7 @@ def _get_tool_pins(
                     pin="",
                 )
 
-        _input = (
+        _input: tuple[InputPinInterface | None, TypeAdapter | None] = (
             InputPinInterface(
                 metadata=metadata,
                 json_schema=schema,
@@ -332,14 +333,6 @@ def _get_default(cls, field_name) -> tuple[bool, Any]:
         return (True, default_value)
 
     return (False, None)
-
-
-class Metadata:
-    def __init__(
-        self,
-        **kwargs,
-    ):
-        self.data = kwargs
 
 
 GenericSchemaT = TypeVar("GenericSchemaT")
@@ -380,7 +373,7 @@ def _get_input_pin_from_metadata(
     config: Config | None = None
     _input: Input | None = None
     state: State | None = None
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
 
     is_input_channel = get_origin(field_type) is InputChannel
     args = get_args(field_type)
@@ -402,7 +395,7 @@ def _get_input_pin_from_metadata(
                 state = m
 
             if isinstance(m, Metadata):
-                metadata = m.data
+                metadata = m
 
         matches = len([True for i in [config, _input, state] if i is not None])
 
@@ -417,8 +410,8 @@ def _get_input_pin_from_metadata(
         if state:
             return (None, None), {}
 
-        if config and "config" not in metadata:
-            metadata["config"] = True
+        if config:
+            metadata.config = True
 
     default = None
     required = True
@@ -470,14 +463,14 @@ def _get_state_from_metadata(
     block_type: "type[Block]",
 ) -> StateInterface | None:
     state: State | None = None
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
 
     for m in getattr(field_type, "__metadata__", []):
         if isinstance(m, State):
             state = m
 
         if isinstance(m, Metadata):
-            metadata = m.data
+            metadata = m
 
     if state is None:
         return None
@@ -529,7 +522,7 @@ def _map_type_vars(
         if depth > 10:
             return new_type
 
-        new_args = []
+        new_args: list[type] = []
         args = get_args(new_type)
         if args:
             for arg in args:
@@ -582,7 +575,7 @@ def _get_json_schema_with_generics(t: type) -> JsonSchemaWithGenerics:
     json_schema = TypeAdapter(Any if new_t == inspect._empty else new_t).json_schema()
 
     new_t, _ = _map_type_vars(t, mode="validation")
-    type_adapter = TypeAdapter(Any if new_t == inspect._empty else new_t)
+    type_adapter: TypeAdapter = TypeAdapter(Any if new_t == inspect._empty else new_t)
 
     if "$defs" in json_schema:
         definitions: dict[str, dict[str, Any]] = json_schema["$defs"]
@@ -626,10 +619,12 @@ def _get_pins(
     cls_metadata = getattr(cls_annotation, "__metadata__", [])
     if len(cls_metadata):
         cls = get_args(cls_annotation)[0]
-        metadata = first([a.data for a in cls_metadata if isinstance(a, Metadata)], {})
+        metadata = first(
+            [a for a in cls_metadata if isinstance(a, Metadata)], Metadata()
+        )
     else:
         cls = cls_annotation
-        metadata = {}
+        metadata = Metadata()
 
     all_bases = _get_all_bases(cls) + [cls, cls_annotation]
 
@@ -683,7 +678,7 @@ def _get_pins(
             )
 
             inputs[generic_name] = InputPinInterface(
-                metadata={"generic": True, "hidden": True},
+                metadata=Metadata(generic=True, hidden=True),
                 sticky=True,
                 json_schema=type_adapter.json_schema(),
                 generics={},
@@ -706,7 +701,7 @@ def _get_pins(
         block_type._set_input_pin_type_adapter(port_name, "", input_adapter)
         generics.update(_generics)
 
-    annotations = {}
+    annotations: dict[str, Any] = {}
     for base in all_bases:
         annotations.update(getattr(base, "__annotations__", {}))
     annotations.update(**getattr(cls, "__annotations__", {}))
@@ -716,10 +711,10 @@ def _get_pins(
         if len(field_metadata):
             field_type = get_args(field_annotation)[0]
             metadata = first(
-                [a.data for a in field_metadata if isinstance(a, Metadata)], {}
+                [a for a in field_metadata if isinstance(a, Metadata)], Metadata()
             )
         else:
-            metadata = {}
+            metadata = Metadata()
             field_type = field_annotation
 
         o = get_origin(field_type)
@@ -737,7 +732,7 @@ def _get_pins(
                 )
 
                 inputs[generic_name] = InputPinInterface(
-                    metadata={"generic": True, "hidden": True},
+                    metadata=Metadata(generic=True, hidden=True),
                     sticky=True,
                     json_schema=type_adapter.json_schema(),
                     generics={},
@@ -791,7 +786,7 @@ def _get_pins(
                         )
 
                         inputs[generic_name] = InputPinInterface(
-                            metadata={"generic": True, "hidden": True},
+                            metadata=Metadata(generic=True, hidden=True),
                             sticky=True,
                             json_schema=type_adapter.json_schema(),
                             generics={},
@@ -837,7 +832,7 @@ def _get_pins(
                             )
 
                             inputs[generic_name] = InputPinInterface(
-                                metadata={"generic": True, "hidden": True},
+                                metadata=Metadata(generic=True, hidden=True),
                                 sticky=True,
                                 json_schema=type_adapter.json_schema(),
                                 generics={},
@@ -851,7 +846,7 @@ def _get_pins(
         elif o is list:
             list_args = get_args(field_type)
             if list_args:
-                item_type: type = list_args[0]
+                item_type = list_args[0]
 
                 is_output = _issubclass(item_type, Output)
                 is_output_channel = not is_output and _issubclass(
@@ -877,7 +872,7 @@ def _get_pins(
                         )
 
                         inputs[generic_name] = InputPinInterface(
-                            metadata={"generic": True, "hidden": True},
+                            metadata=Metadata(generic=True, hidden=True),
                             sticky=True,
                             json_schema=type_adapter.json_schema(),
                             generics={},
@@ -923,7 +918,7 @@ def _get_pins(
                             )
 
                             inputs[generic_name] = InputPinInterface(
-                                metadata={"generic": True, "hidden": True},
+                                metadata=Metadata(generic=True, hidden=True),
                                 sticky=True,
                                 json_schema=type_adapter.json_schema(),
                                 generics={},
@@ -951,7 +946,7 @@ def _get_pins(
                 )
 
                 inputs[generic_name] = InputPinInterface(
-                    metadata={"generic": True, "hidden": True},
+                    metadata=Metadata(generic=True, hidden=True),
                     sticky=True,
                     json_schema=type_adapter.json_schema(),
                     generics={},
@@ -967,10 +962,10 @@ def _get_pins(
         if len(field_metadata):
             field_type = get_args(field_annotation)[0]
             metadata = first(
-                [a.data for a in field_metadata if isinstance(a, Metadata)], {}
+                [a for a in field_metadata if isinstance(a, Metadata)], Metadata()
             )
         else:
-            metadata = {}
+            metadata = Metadata()
             field_type = field_annotation
 
         origin = get_origin(field_type)
@@ -986,9 +981,14 @@ def _get_pins(
             if has_default:
                 inputs[field_name].default = default
 
-            inputs[field_name].metadata["hidden"] = False
-            inputs[field_name].metadata["config"] = True
-            inputs[field_name].metadata.update(metadata)
+            inputs[field_name].metadata.hidden = False
+            inputs[field_name].metadata.config = True
+            inputs[field_name].metadata = Metadata(
+                **{
+                    **inputs[field_name].metadata.model_dump(),
+                    **metadata.model_dump(),
+                }
+            )
 
             block_type._input_pin_type_adapters[port_name][field_name] = (
                 block_type._input_pin_type_adapters[port_name][generic_name]
@@ -1013,7 +1013,7 @@ class PortsAndState(NamedTuple):
 
 
 def _get_ports_and_state(block_type: "type[Block]") -> PortsAndState:
-    annotations = {}
+    annotations: dict[str, Any] = {}
     for base in _get_all_bases(block_type):
         base_annotations = getattr(base, "__annotations__", {})
         annotations.update(base_annotations)
@@ -1028,11 +1028,11 @@ def _get_ports_and_state(block_type: "type[Block]") -> PortsAndState:
         if port_annotations:
             field_type = get_args(port_annotation)[0]
             metadata = first(
-                [a.data for a in port_annotations if isinstance(a, Metadata)], {}
+                [a for a in port_annotations if isinstance(a, Metadata)], Metadata()
             )
         else:
             field_type = port_annotation
-            metadata = {}
+            metadata = Metadata()
 
         o = get_origin(field_type)
         if o is dict:
@@ -1063,7 +1063,7 @@ def _get_ports_and_state(block_type: "type[Block]") -> PortsAndState:
         elif o is list:
             list_args = get_args(field_type)
             if list_args:
-                item_type: type = list_args[0]
+                item_type = list_args[0]
 
                 input_pins, output_pins, _generics = _get_pins(
                     item_type, port_name=port_name, block_type=block_type
@@ -1108,10 +1108,10 @@ def _get_ports_and_state(block_type: "type[Block]") -> PortsAndState:
         block_type._set_input_pin_type_adapter(generic_name, "", type_adapter)
 
         ports[generic_name] = PortInterface(
-            metadata={},
+            metadata=Metadata(),
             inputs={
                 "": InputPinInterface(
-                    metadata={"generic": True, "hidden": True},
+                    metadata=Metadata(generic=True, hidden=True),
                     sticky=True,
                     json_schema=type_adapter.json_schema(),
                     generics={},
@@ -1280,7 +1280,7 @@ class MetaBlock(type):
 
         self.block_class: BlockClass | None = getattr(self, "block_class", None)
         self._scopes: list[BlockScope] | None = getattr(self, "_scopes", None)
-        self.metadata: dict[str, Any] = {}
+        self.metadata: Metadata = Metadata()
         self.name: str
         self._version: str | None = None
         self._semantic_version: semantic_version.Version | None = None
@@ -1331,8 +1331,8 @@ class MetaBlock(type):
 
                     metadata = attribute.metadata.copy()
                     if type(attribute) is Callback:
-                        metadata["callback"] = True
-                        metadata["hidden"] = True
+                        metadata.callback = True
+                        metadata.hidden = True
 
                     ports[attribute_name] = PortInterface(
                         metadata=metadata,
@@ -1347,10 +1347,10 @@ class MetaBlock(type):
                         cls._set_input_pin_type_adapter(generic_name, "", type_adapter)
 
                         ports[generic_name] = PortInterface(
-                            metadata={},
+                            metadata=Metadata(),
                             inputs={
                                 "": InputPinInterface(
-                                    metadata={"generic": True, "hidden": True},
+                                    metadata=Metadata(generic=True, hidden=True),
                                     sticky=True,
                                     json_schema=type_adapter.json_schema(),
                                     generics={},
@@ -1377,10 +1377,11 @@ class MetaBlock(type):
                 if len(port_metadata):
                     field_type = get_args(port_annotation)[0]
                     metadata = first(
-                        [a.data for a in port_metadata if isinstance(a, Metadata)], {}
+                        [a for a in port_metadata if isinstance(a, Metadata)],
+                        Metadata(),
                     )
                 else:
-                    metadata = {}
+                    metadata = Metadata()
                     field_type = port_annotation
 
                 origin = get_origin(field_type)
@@ -1397,9 +1398,14 @@ class MetaBlock(type):
                         if has_default:
                             ports[port_name].inputs[""].default = default
 
-                        ports[port_name].inputs[""].metadata["hidden"] = False
-                        ports[port_name].inputs[""].metadata["config"] = True
-                        ports[port_name].inputs[""].metadata.update(metadata)
+                        ports[port_name].inputs[""].metadata.hidden = False
+                        ports[port_name].inputs[""].metadata.config = True
+                        ports[port_name].inputs[""].metadata = Metadata(
+                            **{
+                                **ports[port_name].inputs[""].metadata.model_dump(),
+                                **metadata.model_dump(),
+                            }
+                        )
 
                         cls._input_pin_type_adapters[port_name] = {
                             "": cls._input_pin_type_adapters[generic_name][""]
@@ -1505,6 +1511,7 @@ class Block(metaclass=MetaBlock):
         self._dynamic_inputs: list[tuple[tuple[str, str], tuple[str, str]]] = []
         self._dynamic_outputs: list[tuple[tuple[str, str], tuple[str, str]]] = []
         self._tools: list[Tool] = []
+        self._input_pin_type_adapters: dict[str, dict[str, TypeAdapter]]
 
         for attribute_name in dir(self):
             attribute = getattr(self, attribute_name)
@@ -1573,8 +1580,8 @@ class Block(metaclass=MetaBlock):
                 self._dynamic_ports[port_name] = []
 
         if dynamic_ports:
-            for i in dynamic_ports:
-                port_path = i.split(".")
+            for dynamic_port in dynamic_ports:
+                port_path = dynamic_port.split(".")
                 port_name = port_path[0]
                 port_index = port_path[1] if len(port_path) == 2 else ""
 
@@ -1625,9 +1632,9 @@ class Block(metaclass=MetaBlock):
                 ]
 
                 port_list: list[Any] = [None] * (max(port_indexes, default=-1) + 1)
-                for port_index in port_indexes:
-                    port_list[port_index] = self._create_port(
-                        port_name, str(port_index)
+                for port_index_int in port_indexes:
+                    port_list[port_index_int] = self._create_port(
+                        port_name, str(port_index_int)
                     )
                 setattr(self, port_name, port_list)
 
@@ -1850,7 +1857,9 @@ class Block(metaclass=MetaBlock):
         for output_name, output_interface in port_interface.outputs.items():
             if output_interface.type == PinType.SINGLE:
                 if output_interface.channel:
-                    output = OutputChannel(BlockPinRef(port=port_id, pin=output_name))
+                    output: OutputChannel | Output = OutputChannel(
+                        BlockPinRef(port=port_id, pin=output_name)
+                    )
                 else:
                     output = Output(BlockPinRef(port=port_id, pin=output_name))
 
@@ -2109,7 +2118,7 @@ class BlockFunction(Generic[B, P, T]):
         self.name = fn.__name__
         self._fn = fn
         self._output_name = output_name or ""
-        self.metadata: dict = {}
+        self.metadata: Metadata = Metadata()
         self._block: B
         self._pending_inputs: dict[str, dict[str, Any]] = {}
 
@@ -2119,7 +2128,7 @@ class BlockFunction(Generic[B, P, T]):
         else:
             instance = Step(self._fn, self._output_name)
 
-        instance._block = block
+        instance._block = cast(B, block)
         return instance
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
@@ -2288,7 +2297,7 @@ def metadata(
     documentation: str | None = None,  # long description
     category: BlockCategory | dict[str, Any] | None = None,
     icon: str | None = None,  # fontawesome 5 icon name
-    obsolete: bool | None = None,
+    deprecated: Deprecated | None = None,
     **kwargs,
 ):
     if description is not None:
@@ -2299,11 +2308,13 @@ def metadata(
         kwargs["category"] = category
     if icon is not None:
         kwargs["icon"] = icon
-    if obsolete is not None:
-        kwargs["obsolete"] = obsolete
+    if deprecated is not None:
+        kwargs["deprecated"] = deprecated
+    if display_type is not None:
+        kwargs["display_type"] = display_type
 
-    def _inner(cls):
-        setattr(cls, "metadata", kwargs)
+    def _inner(cls: MetaBlock):
+        cls.metadata = Metadata(**kwargs)
         return cls
 
     return _inner

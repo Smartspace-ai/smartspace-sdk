@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from enum import Enum
 from typing import Annotated, Any, List, Union
 
@@ -9,6 +10,7 @@ from pydantic import BaseModel
 from smartspace.core import (
     Block,
     Config,
+    Deprecated,
     Metadata,
     OperatorBlock,
     metadata,
@@ -42,7 +44,14 @@ class ParseJson(OperatorBlock):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Uses JSONPath to extract data from a JSON object or list",
-    obsolete=True,
+    deprecated=Deprecated(
+        replacement="Get",
+        date=datetime(
+            year=2025,
+            month=2,
+            day=27,
+        ),
+    ),
 )
 class GetJsonField(Block):
     json_field_structure: Annotated[str, Config()]
@@ -82,7 +91,14 @@ class Get(OperatorBlock):
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Merges objects from two lists by matching on the configured key",
-    obsolete=True,
+    deprecated=Deprecated(
+        replacement="Join",
+        date=datetime(
+            year=2025,
+            month=2,
+            day=27,
+        ),
+    ),
 )
 class MergeLists(Block):
     key: Annotated[str, Config()]

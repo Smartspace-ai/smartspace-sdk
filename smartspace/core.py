@@ -1902,9 +1902,9 @@ class WorkSpaceBlock(Block):
 
     def _set_context(self, context: FlowContext):
         assert context.workspace is not None, "Workspace is None in a WorkSpaceBlock"
-        assert (
-            context.message_history is not None
-        ), "Workspace is None in a WorkSpaceBlock"
+        assert context.message_history is not None, (
+            "Workspace is None in a WorkSpaceBlock"
+        )
 
         self.workspace = context.workspace
         self.message_history = context.message_history
@@ -2280,6 +2280,8 @@ def metadata(
     category: BlockCategory | dict[str, Any] | None = None,
     icon: str | None = None,  # fontawesome 5 icon name
     obsolete: bool | None = None,
+    replacement_block: str | list[str] | None = None,
+    label: str | None = None,  # searchable label for the block
     **kwargs,
 ):
     if description is not None:
@@ -2292,6 +2294,10 @@ def metadata(
         kwargs["icon"] = icon
     if obsolete is not None:
         kwargs["obsolete"] = obsolete
+    if replacement_block is not None:
+        kwargs["replacement_block"] = replacement_block
+    if label is not None:
+        kwargs["label"] = label
 
     def _inner(cls):
         setattr(cls, "metadata", kwargs)

@@ -23,6 +23,7 @@ class TypeSwitchOption(Generic[ItemT]):
     description="Checks the output schemas of the options and sends the input to the first option that matches",
     category=BlockCategory.MISC,
     icon="fa-random",
+    label="type switch, schema routing, type routing, data branching, conditional path",
 )
 class TypeSwitch(Block):
     options: list[TypeSwitchOption]

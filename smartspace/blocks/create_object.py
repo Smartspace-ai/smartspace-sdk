@@ -12,6 +12,7 @@ from smartspace.enums import BlockCategory
     description="Takes in inputs and creates an object containing the inputs",
     category=BlockCategory.MISC,
     icon="fa-cube",
+    label="create object, build dictionary, construct object, make key-value map, generate object",
 )
 class CreateObject(Block):
     @step(output_name="object")

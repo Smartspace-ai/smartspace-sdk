@@ -5,7 +5,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from smartspace.enums import BlockClass, BlockScope, ChannelEvent, ChannelState
+from smartspace.enums import (
+    BlockCategory,
+    BlockClass,
+    BlockScope,
+    ChannelEvent,
+    ChannelState,
+    InputDisplayType,
+)
 from smartspace.utils import _get_type_adapter
 
 
@@ -21,6 +28,30 @@ class PortType(enum.Enum):
     DICTIONARY = "Dictionary"
 
 
+class Deprecated(BaseModel):
+    replacement: str
+    date: datetime
+
+
+class Metadata(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    description: str | None = None  # short description, for tooltips and things
+    display_type: InputDisplayType | None = None  # type of display
+    documentation: str | None = None  # long description
+    category: BlockCategory | dict[str, Any] | None = None
+    icon: str | None = None  # fontawesome 5 icon name
+    deprecated: Deprecated | None = None
+    config: bool | None = None
+    generic: bool | None = None
+    hidden: bool | None = None
+    callback: bool | None = None
+
+    def model_dump(self, *args, **kwargs):
+        kwargs.setdefault("exclude_none", True)
+        return super().model_dump(*args, **kwargs)
+
+
 class BlockPinRef(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -31,7 +62,7 @@ class BlockPinRef(BaseModel):
 class InputPinInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
     sticky: bool
     json_schema: Annotated[dict[str, Any], Field(alias="schema")]
     generics: dict[
@@ -47,7 +78,7 @@ class InputPinInterface(BaseModel):
 class OutputPinInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
     json_schema: Annotated[dict[str, Any], Field(alias="schema")]
     generics: dict[
         str, BlockPinRef
@@ -60,7 +91,7 @@ class OutputPinInterface(BaseModel):
 class PortInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
     inputs: dict[str, InputPinInterface]
     outputs: dict[str, OutputPinInterface]
     type: PortType
@@ -76,7 +107,7 @@ class StateInterface(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
     scope: list[BlockPinRef]
     default: Any
 
@@ -89,7 +120,7 @@ class BlockInterface(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     block_class: Annotated[BlockClass | None, Field(alias="class")] = None
-    metadata: dict[str, Any] = {}
+    metadata: Metadata = Metadata()
     scopes: list[BlockScope] | None = None
     ports: dict[str, PortInterface]
     state: dict[str, StateInterface]

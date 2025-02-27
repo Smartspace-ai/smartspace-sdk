@@ -4,6 +4,8 @@ import os
 import re
 from typing import Any, TypedDict, cast
 
+from smartspace.core import Metadata
+
 logging.basicConfig(level=logging.DEBUG, filename="block_doc_generator.log")
 logger = logging.getLogger(__name__)
 
@@ -158,7 +160,7 @@ def get_annotation_name(annotation_node):
 class BlockMetadata(TypedDict, total=False):
     category: str
     description: str
-    obsolete: bool
+    deprecated: bool
 
 
 def clean_metadata_value(value: Any) -> str:
@@ -205,7 +207,7 @@ class BlockAttributes(TypedDict, total=False):
     config: bool
     output: bool
     state: bool
-    metadata: dict[str, Any] | None
+    metadata: Metadata | None
     default_value: Any | None
     dynamic_output: bool
     key_type: str | None
@@ -314,7 +316,7 @@ def get_class_attributes(class_def) -> list[BlockAttributes]:
 class BlockStepInput(TypedDict, total=False):
     name: str
     type: str | None
-    metadata: dict[str, Any] | None
+    metadata: Metadata | None
 
 
 class BlockStep(TypedDict, total=False):

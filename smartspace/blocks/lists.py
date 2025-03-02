@@ -83,7 +83,7 @@ class Map(Block, Generic[ItemT, ResultT]):
     icon="fa-boxes",
     label="collect list, gather items, accumulate data, assemble collection, aggregate entries",
     obsolete=True,
-    deprecated_reason="This block will be deprecated in a future version.",
+    deprecated_reason="This block has been deprecated..",
 )
 class Collect(OperatorBlock, Generic[ItemT]):
     items: Output[list[ItemT]]

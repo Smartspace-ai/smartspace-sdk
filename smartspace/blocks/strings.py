@@ -15,8 +15,9 @@ SequenceT = TypeVar("SequenceT", bound=str | list[Any])
     description="Concatenates 2 lists or strings",
     icon="fa-plus",
     obsolete=True,
-    replacement_block=["AggregateList", "JoinStrings"],
     label="concatenate strings, join strings, merge lists, combine text, append strings",
+    deprecated_reason="This block will be deprecated in a future version. Use Join instead.",
+    use_instead="Join",
 )
 class Concat(Block, Generic[SequenceT]):
     @step(output_name="result")

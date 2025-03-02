@@ -79,9 +79,11 @@ class Map(Block, Generic[ItemT, ResultT]):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Collects data from a channel and outputs them as a list once the channel closes",
+    description="Collects data from a channel and outputs them as a list once the channel closes.",
     icon="fa-boxes",
     label="collect list, gather items, accumulate data, assemble collection, aggregate entries",
+    obsolete=True,
+    deprecated_reason="This block will be deprecated in a future version.",
 )
 class Collect(OperatorBlock, Generic[ItemT]):
     items: Output[list[ItemT]]
@@ -140,9 +142,12 @@ class ForEach(OperatorBlock, Generic[ItemT]):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Joins a list of strings using the configured separator and outputs the resulting string",
+    description="Joins a list of strings using the configured separator and outputs the resulting string.",
     icon="fa-link",
     label="join strings, concatenate text, combine strings, merge text, connect strings",
+    obsolete=True,
+    use_instead="Join",
+    deprecated_reason="This block will be deprecated in a future version. Use Join instead.",
 )
 class JoinStrings(Block):
     separator: Annotated[str, Config()] = ""

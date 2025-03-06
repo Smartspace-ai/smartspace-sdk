@@ -13,6 +13,7 @@ from smartspace.enums import BlockCategory
     description="Takes in a list and sends each item to the corresponding output",
     category=BlockCategory.MISC,
     icon="fa-th-list",
+    label="unpack list, distribute items, extract list elements, spread array, decompose list",
 )
 class UnpackList(Block):
     items: list[Output[Any]]

@@ -49,6 +49,7 @@ class HTTPError(Exception):
     description="Performs HTTP requests such as GET, POST, PUT, DELETE, and more.",
     category=BlockCategory.FUNCTION,
     icon="fa-cloud-download-alt",
+    label="HTTP request, web API call, REST client, API request, web service call",
 )
 class HTTPRequest(Block):
     timeout: Annotated[int, Config()] = 30  # Timeout in seconds

@@ -7,6 +7,7 @@ ValueT = TypeVar("ValueT")
 
 @metadata(
     icon="fa-database",
+    label="buffer, queue, buffer block, queue block, buffer list, queue list",
 )
 class Buffer(Block, Generic[ValueT]):
     values: Annotated[list[ValueT], State()] = []

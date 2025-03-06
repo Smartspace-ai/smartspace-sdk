@@ -21,6 +21,7 @@ class WebsiteDetails(BaseModel):
     description="Scrapes the content of a website. Returns both the raw content and the content with metadata.",
     category=BlockCategory.MISC,
     icon="fa-globe",
+    label="website scraper, web crawler, content extractor, web harvester, site parser",
 )
 class WebsiteScraper(Block):
     website_content: Output[list[str]]

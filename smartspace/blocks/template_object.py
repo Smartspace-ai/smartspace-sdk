@@ -17,6 +17,7 @@ from smartspace.enums import BlockCategory, InputDisplayType
     A block that takes a Jinja2 template string and fills the template, then tries to parse it to JSON.
     """,
     icon="fa-code",
+    label="template object, JSON templating, dynamic JSON, structured template, object generation",
 )
 class TemplatedObject(Block):
     templated_json: Annotated[

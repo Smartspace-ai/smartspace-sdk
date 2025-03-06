@@ -21,6 +21,7 @@ from smartspace.enums import BlockCategory
     description="This block takes a JSON string or a list of JSON strings and parses them",
     category=BlockCategory.FUNCTION,
     icon="fa-code",
+    label="parse JSON, convert JSON string, decode JSON, JSON deserialize, extract JSON data",
 )
 class ParseJson(OperatorBlock):
     @step(output_name="json")
@@ -43,6 +44,8 @@ class ParseJson(OperatorBlock):
     category=BlockCategory.FUNCTION,
     description="Uses JSONPath to extract data from a JSON object or list",
     obsolete=True,
+    replacement_block="Get",
+    label="extract JSON field, get JSON value, access JSON data, retrieve JSON property, JSON path query",
 )
 class GetJsonField(Block):
     json_field_structure: Annotated[str, Config()]
@@ -65,6 +68,7 @@ class GetJsonField(Block):
     category=BlockCategory.FUNCTION,
     description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/",
     icon="fa-search",
+    label="get JSON path, query JSON data, extract JSON values, JSON lookup, search JSON",
 )
 class Get(OperatorBlock):
     path: Annotated[str, Config()]
@@ -83,6 +87,8 @@ class Get(OperatorBlock):
     category=BlockCategory.FUNCTION,
     description="Merges objects from two lists by matching on the configured key",
     obsolete=True,
+    replacement_block="Join",
+    label="merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data",
 )
 class MergeLists(Block):
     key: Annotated[str, Config()]
@@ -146,6 +152,7 @@ The `Join` block performs advanced join operations between two lists of dictiona
 - Performing SQL-like join operations in Python.
 """,
     icon="fa-link",
+    label="join JSON data, SQL-like join, merge datasets, combine JSON lists, data integration",
 )
 class Join(Block):
     key: Annotated[str, Config()]

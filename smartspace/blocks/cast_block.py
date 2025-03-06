@@ -3,13 +3,7 @@ from typing import Annotated, Any, Generic, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 
-from smartspace.core import (
-    GenericSchema,
-    OperatorBlock,
-    metadata,
-    step,
-    Config
-)
+from smartspace.core import Config, GenericSchema, OperatorBlock, metadata, step
 from smartspace.enums import BlockCategory
 
 ItemT = TypeVar("ItemT")
@@ -19,6 +13,7 @@ ItemT = TypeVar("ItemT")
     description="Takes in any input and will attempt to convert the input to the specified schema. If the convert config is unticked, it will not attempt to convert the value and will instead just output the input.",
     category=BlockCategory.MISC,
     icon="fa-sync-alt",
+    label="cast type, convert data, transform format, change type, typecast value",
 )
 class Cast(OperatorBlock, Generic[ItemT]):
     schema: GenericSchema[ItemT]

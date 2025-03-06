@@ -36,6 +36,7 @@ from smartspace.enums import BlockCategory
         "such as `'mssql+aioodbc://username:password@host:port/dbname?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'`."
     ),
     icon="fa-database",
+    label="SQL query, database query, ODBC connection, database operation, SQL execution",
 )
 class SQL(Block):
     """Block that executes an asynchronous SQL query on a database using SQLAlchemy."""

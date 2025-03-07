@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper versioning
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
@@ -30,5 +32,8 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Install library
         run: poetry install --no-interaction --only docs
+      - name: Prepare gh-pages branch
+        run: |
+          git fetch origin gh-pages --depth=1 || true
       - name: Build Docs Website
         run: poetry run mike deploy --push dev

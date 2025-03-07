@@ -1,0 +1,2993 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/dev/concepts/blocks/custom-blocks-building/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../connections/">
+      
+      
+      <link rel="icon" href="../../../assets/smartspace-favicon.webp">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.43">
+    
+    
+      
+        <title>Custom Blocks - Smartspace Workflow Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#block-structure" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Smartspace Workflow Documentation" class="md-header__button md-logo" aria-label="Smartspace Workflow Documentation" data-md-component="logo">
+      
+  <img src="../../../assets/smartspace_small_logo_white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Smartspace Workflow Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custom Blocks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Smartspace-ai/smartspace-flows" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../cli/" class="md-tabs__link">
+        
+  
+    
+  
+  CLI
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../block-reference/" class="md-tabs__link">
+          
+  
+  Block Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../channels/" class="md-tabs__link">
+          
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Smartspace Workflow Documentation" class="md-nav__button md-logo" aria-label="Smartspace Workflow Documentation" data-md-component="logo">
+      
+  <img src="../../../assets/smartspace_small_logo_white.png" alt="logo">
+
+    </a>
+    Smartspace Workflow Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Smartspace-ai/smartspace-flows" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Block Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Block Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Chunking
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Chunking
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/SemanticChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SemanticChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/SentenceChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SentenceChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/TokenChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TokenChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/WindowChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WindowChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Function
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Function
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Collect/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Concat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/First/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    First
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Flatten/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Flatten
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/ForEach/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ForEach
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/HTTPRequest/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HTTPRequest
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Map
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/MergeLists/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MergeLists
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Slice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Slice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    JSON
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            JSON
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Get/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Get
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/ParseJson/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ParseJson
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Text
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Text
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/JoinStrings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    JoinStrings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/RegexMatch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RegexMatch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/SplitString/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SplitString
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/StringTemplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/StringTruncator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringTruncator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Misc
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            Misc
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Append/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Append
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Buffer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Buffer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Cast/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cast
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/CreateList/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CreateList
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/CreateObject/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CreateObject
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/TypeSwitch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeSwitch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/UnpackList/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UnpackList
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/UnpackObject/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UnpackObject
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/WebsiteScraper/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebsiteScraper
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    SmartSpace Blocks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            SmartSpace Blocks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7_1" id="__nav_3_7_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Data
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/FileStore/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FileStore
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/GetAllDocuments/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetAllDocuments
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/GetFileContent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetFileContent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/VectorSearch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VectorSearch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7_2" id="__nav_3_7_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    LLM
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            LLM
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/Analyzer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analyzer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/LLM/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/LLMSelect/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLMSelect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/LLMWithTools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLMWithTools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7_3" id="__nav_3_7_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/CreateResponseWithSources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CreateResponseWithSources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Obsolete
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            Obsolete
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../block-reference/GetJsonField/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetJsonField
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../channels/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Channels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blocks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blocks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Custom Blocks
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Custom Blocks
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#block-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Block Structure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-simple-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Simple Block
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Simple Block">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Metadata
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding Metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-input-and-output-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Input and Output Pins
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Input and Output Pins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Inputs:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Outputs:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with States
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with States">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-block-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Block Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining Block Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-a-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining a Step:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining a Callback:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-dynamic-inputs-and-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Dynamic Inputs and Outputs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handling Dynamic Inputs and Outputs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-map-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Map Block
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-collect-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Collect Block
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-python-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Python Libraries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connections/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connections
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#block-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Block Structure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-simple-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Simple Block
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Simple Block">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Metadata
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding Metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-input-and-output-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Input and Output Pins
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Input and Output Pins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Inputs:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Outputs:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with States
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with States">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-block-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Block Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining Block Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-a-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining a Step:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defining-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining a Callback:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-dynamic-inputs-and-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Dynamic Inputs and Outputs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handling Dynamic Inputs and Outputs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-map-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Map Block
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-collect-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Collect Block
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-python-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Python Libraries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Custom Blocks</h1>
+
+<p>This guide will walk you through the steps of creating new blocks for the SmartSpace platform using the provided core block framework. Blocks are reusable components that perform specific tasks in workflows and can be configured with various inputs, outputs, and states.</p>
+<hr />
+<h2 id="block-structure">Block Structure<a class="headerlink" href="#block-structure" title="Permanent link">&para;</a></h2>
+<p>Blocks are Python classes that inherit from the <code>Block</code> base class and optionally from other generic types to support various input and output types. Each block should:</p>
+<ul>
+<li>Contain inputs and outputs as typed attributes.</li>
+<li>Implement logic in <strong>steps</strong> or <strong>callbacks</strong>.</li>
+<li>Optionally use <strong>states</strong> to store intermediate or persistent values.</li>
+<li>Provide metadata for categorisation and description.</li>
+</ul>
+<hr />
+<h2 id="creating-a-simple-block">Creating a Simple Block<a class="headerlink" href="#creating-a-simple-block" title="Permanent link">&para;</a></h2>
+<p>To create a new block, define a class that extends <code>Block</code> and optionally a generic type if needed. You can define the block’s inputs, outputs, and internal logic within the class.</p>
+<h3 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">smartspace.core</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">step</span>
+
+<span class="k">class</span> <span class="nc">Count</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="nd">@step</span><span class="p">(</span><span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</code></pre></div>
+<p>In this example, the <code>Count</code> block takes a list of items and outputs the count.</p>
+<hr />
+<h2 id="adding-metadata">Adding Metadata<a class="headerlink" href="#adding-metadata" title="Permanent link">&para;</a></h2>
+<p>You can add metadata to a block to provide descriptive information such as the block’s category, description, or other attributes that are important for its usage in the SmartSpace system. Use the <code>@metadata</code> decorator for this purpose.</p>
+<h3 id="example_1">Example:<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">smartspace.core</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">step</span>
+<span class="kn">from</span> <span class="nn">smartspace.enums</span> <span class="kn">import</span> <span class="n">BlockCategory</span>
+
+<span class="nd">@metadata</span><span class="p">(</span>
+    <span class="n">category</span><span class="o">=</span><span class="n">BlockCategory</span><span class="o">.</span><span class="n">FUNCTION</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Counts the number of items in a list.&quot;</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">Count</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="nd">@step</span><span class="p">(</span><span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>@metadata</code> decorator adds useful information for developers and users of the block.</p>
+<hr />
+<h2 id="working-with-input-and-output-pins">Working with Input and Output Pins<a class="headerlink" href="#working-with-input-and-output-pins" title="Permanent link">&para;</a></h2>
+<p>Blocks interact with other blocks via <strong>input</strong> and <strong>output</strong> pins. These pins can be single values, lists, or dictionaries. You can define inputs and outputs using Python type annotations.</p>
+<h3 id="defining-inputs">Defining Inputs:<a class="headerlink" href="#defining-inputs" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">smartspace.core</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">step</span>
+
+<span class="k">class</span> <span class="nc">Count</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="nd">@step</span><span class="p">(</span><span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</code></pre></div>
+Here, the <code>items</code> parameter is the input, which is a list of any type.</p>
+<h3 id="defining-outputs">Defining Outputs:<a class="headerlink" href="#defining-outputs" title="Permanent link">&para;</a></h3>
+<p>Outputs are defined similarly to inputs but are typically sent using the <code>send</code> method.
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Sum</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="n">total</span><span class="p">:</span> <span class="n">Output</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+    <span class="nd">@step</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+</code></pre></div></p>
+<hr />
+<h2 id="working-with-states">Working with States<a class="headerlink" href="#working-with-states" title="Permanent link">&para;</a></h2>
+<p>States in SmartSpace blocks store values that persist across the execution of the block. You can define state variables using the <code>State</code> annotation.</p>
+<h3 id="example_2">Example:<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">smartspace.core</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">State</span>
+
+<span class="k">class</span> <span class="nc">Accumulator</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="n">total</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">State</span><span class="p">(</span><span class="n">step_id</span><span class="o">=</span><span class="s2">&quot;accumulate&quot;</span><span class="p">,</span> <span class="n">input_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@step</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</code></pre></div>
+<p>In this example, the <code>total</code> variable persists across multiple calls to the <code>accumulate</code> method.</p>
+<hr />
+<h2 id="defining-block-functions">Defining Block Functions<a class="headerlink" href="#defining-block-functions" title="Permanent link">&para;</a></h2>
+<p>You can define block functions using the <code>@step</code> and <code>@callback</code> decorators. Steps are core functions of the block, while callbacks are executed in response to specific events.</p>
+<h3 id="defining-a-step">Defining a Step:<a class="headerlink" href="#defining-a-step" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Multiply</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="nd">@step</span><span class="p">(</span><span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;result&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+</code></pre></div>
+Steps are async functions that execute the main logic of the block.</p>
+<h3 id="defining-a-callback">Defining a Callback:<a class="headerlink" href="#defining-a-callback" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MultiplyAndStore</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="nd">@step</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="nd">@callback</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">store_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+Callbacks allow you to define actions that respond to the results of other steps or tools.</p>
+<hr />
+<h2 id="handling-dynamic-inputs-and-outputs">Handling Dynamic Inputs and Outputs<a class="headerlink" href="#handling-dynamic-inputs-and-outputs" title="Permanent link">&para;</a></h2>
+<p>In some cases, blocks may need to dynamically handle inputs and outputs at runtime. For example, a block could process a variable number of inputs or outputs. You can define dynamic ports using lists or dictionaries of inputs and outputs.</p>
+<h3 id="example_3">Example:<a class="headerlink" href="#example_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DynamicBlock</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="n">dynamic_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Input</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+    <span class="n">dynamic_outputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Output</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+
+    <span class="nd">@step</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">input_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_inputs</span><span class="p">:</span>
+            <span class="n">output_value</span> <span class="o">=</span> <span class="n">input_value</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_outputs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">input_value</span><span class="p">)]</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">output_value</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-map-block">Example: Map Block<a class="headerlink" href="#example-map-block" title="Permanent link">&para;</a></h3>
+<p>The <code>Map</code> block applies a tool to each item in a list and collects the results.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">smartspace.core</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Tool</span><span class="p">,</span> <span class="n">Output</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">callback</span>
+
+<span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Operation</span><span class="p">(</span><span class="n">Tool</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="n">results</span><span class="p">:</span> <span class="n">Output</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+
+    <span class="nd">@step</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">])</span>
+</code></pre></div>
+<h3 id="example-collect-block">Example: Collect Block<a class="headerlink" href="#example-collect-block" title="Permanent link">&para;</a></h3>
+<p>The <code>Collect</code> block collects data from a channel and outputs it once the channel closes.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">smartspace.core</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">InputChannel</span><span class="p">,</span> <span class="n">Output</span><span class="p">,</span> <span class="n">step</span>
+
+<span class="k">class</span> <span class="nc">Collect</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+    <span class="n">items</span><span class="p">:</span> <span class="n">Output</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+
+    <span class="nd">@step</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">InputChannel</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">item</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="available-python-libraries">Available Python Libraries<a class="headerlink" href="#available-python-libraries" title="Permanent link">&para;</a></h2>
+<p>Currently (as of October 2024), SmartSpace supports the following Python libraries for use in blocks:</p>
+<div class="highlight"><pre><span></span><code>aiohappyeyeballs==2.4.3
+aiohttp==3.10.8
+aiosignal==1.3.1
+annotated-types==0.5.0
+antlr4-python3-runtime==4.9.3
+anyio==3.7.1
+asgiref==3.8.1
+async-timeout==4.0.3
+attrs==24.2.0
+azure-common==1.1.28
+azure-core==1.31.0
+azure-cosmos==4.7.0
+azure-identity==1.17.1
+azure-monitor-opentelemetry-exporter==1.0.0b19
+azure-search-documents==11.4.0a20230509004
+azure-storage-blob==12.19.0
+azure-storage-queue==12.9.0
+backoff==2.2.1
+beautifulsoup4==4.12.3
+build==1.2.2
+CacheControl==0.14.0
+cachetools==5.5.0
+certifi==2023.7.22
+cffi==1.17.1
+chardet==5.2.0
+charset-normalizer==3.3.2
+cleo==2.1.0
+click==8.1.7
+coloredlogs==15.0.1
+contourpy==1.3.0
+coverage==7.6.1
+crashtest==0.4.1
+cryptography==43.0.1
+cycler==0.12.1
+dataclasses-json==0.6.7
+Deprecated==1.2.14
+dirtyjson==1.0.8
+distlib==0.3.8
+distro==1.9.0
+dnspython==2.4.2
+docx2txt==0.8
+dulwich==0.21.7
+effdet==0.4.1
+email-validator==2.0.0.post2
+emoji==2.13.2
+et-xmlfile==1.1.0
+exceptiongroup==1.1.3
+fastapi==0.101.1
+fastapi-injector==0.5.1
+fastjsonschema==2.20.0
+filelock==3.16.1
+filetype==1.2.0
+fixedint==0.1.6
+flatbuffers==24.3.25
+fonttools==4.54.1
+frozenlist==1.4.1
+fsspec==2024.9.0
+google-ai-generativelanguage==0.6.1
+google-api-core==2.20.0
+google-api-python-client==2.147.0
+google-auth==2.35.0
+google-auth-httplib2==0.2.0
+google-generativeai==0.5.0
+googleapis-common-protos==1.65.0
+greenlet==3.1.1
+grpcio==1.66.2
+grpcio-status==1.62.3
+grpcio-tools==1.62.3
+h11==0.14.0
+h2==4.1.0
+hpack==4.0.0
+httpcore==1.0.6
+httplib2==0.22.0
+httptools==0.6.0
+httpx==0.27.2
+httpx-sse==0.4.0
+huggingface-hub==0.25.1
+humanfriendly==10.0
+hyperframe==6.0.1
+idna==3.4
+importlib-metadata==6.11.0
+iniconfig==2.0.0
+injector==0.21.0
+installer==0.7.0
+iopath==0.1.10
+isodate==0.6.1
+itsdangerous==2.1.2
+jaraco.classes==3.4.0
+jeepney==0.8.0
+Jinja2==3.1.2
+jiter==0.5.0
+joblib==1.4.2
+jsonpath-ng==1.6.1
+jsonschema==4.23.0
+jsonschema-specifications==2023.12.1
+keyring==24.3.1
+kiwisolver==1.4.7
+langdetect==1.0.9
+layoutparser==0.3.4
+litellm==1.48.9
+llama-cloud==0.1.0
+llama-index==0.11.15
+llama-index-agent-openai==0.3.4
+llama-index-cli==0.3.1
+llama-index-core==0.11.15
+llama-index-embeddings-huggingface==0.3.1
+llama-index-embeddings-openai==0.2.5
+llama-index-indices-managed-llama-cloud==0.4.0
+llama-index-legacy==0.9.48.post3
+llama-index-llms-openai==0.2.10
+llama-index-multi-modal-llms-openai==0.2.1
+llama-index-program-openai==0.2.0
+llama-index-question-gen-openai==0.2.0
+llama-index-readers-file==0.2.2
+llama-index-readers-llama-parse==0.3.0
+llama-parse==0.5.6
+lxml==5.3.0
+markdown-it-py==3.0.0
+MarkupSafe==2.1.3
+marshmallow==3.22.0
+matplotlib==3.9.2
+mdurl==0.1.2
+minijinja==2.2.0
+more-itertools==10.5.0
+motor==3.6.0
+mpmath==1.3.0
+msal==1.31.0
+msal-extensions==1.2.0
+msgpack==1.1.0
+msrest==0.7.1
+multidict==6.1.0
+mypy==1.11.2
+mypy-extensions==1.0.0
+neo4j==5.25.0
+nest-asyncio==1.6.0
+networkx==3.3
+nltk==3.9.1
+numpy==1.26.4
+oauthlib==3.2.2
+omegaconf==2.3.0
+onnx==1.17.0
+onnxruntime==1.15.1
+openai==1.51.0
+opencv-python==4.10.0.84
+openpyxl==3.1.2
+opentelemetry-api==1.21.0
+opentelemetry-instrumentation==0.42b0
+opentelemetry-instrumentation-asgi==0.42b0
+opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-instrumentation-logging==0.42b0
+opentelemetry-instrumentation-requests==0.42b0
+opentelemetry-instrumentation-system-metrics==0.42b0
+opentelemetry-sdk==1.21.0
+opentelemetry-semantic-conventions==0.42b0
+opentelemetry-util-http==0.42b0
+orjson==3.9.5
+packaging==24.1
+pandas==2.2.3
+pandas-stubs==2.2.2.240909
+pdf2image==1.17.0
+pdfminer.six==20231228
+pdfplumber==0.11.4
+pexpect==4.9.0
+pillow==10.4.0
+pkginfo==1.11.1
+platformdirs==4.3.6
+pluggy==1.5.0
+ply==3.11
+poetry==1.8.2
+poetry-core==1.9.0
+poetry-plugin-export==1.8.0
+portalocker==2.10.1
+proto-plus==1.24.0
+protobuf==4.25.5
+psutil==5.9.8
+ptyprocess==0.7.0
+pyasn1==0.6.1
+pyasn1_modules==0.4.1
+pycocotools==2.0.8
+pycparser==2.22
+pydantic==2.7.0
+pydantic-extra-types==2.0.0
+pydantic-settings==2.0.3
+pydantic_core==2.18.1
+Pygments==2.18.0
+PyJWT==2.9.0
+pymongo==4.9.2
+pypandoc==1.13
+pyparsing==3.1.4
+pypdf==4.3.1
+PyPDF2==3.0.1
+pypdfium2==4.30.0
+pyproject_hooks==1.2.0
+pysignalr==1.0.0
+pytesseract==0.3.13
+pytest==8.3.3
+pytest-asyncio==0.23.8
+pytest-cov==4.1.0
+pytest-mock==3.14.0
+python-dateutil==2.9.0.post0
+python-docx==1.1.2
+python-dotenv==1.0.1
+python-iso639==2024.4.27
+python-magic==0.4.27
+python-multipart==0.0.6
+pytz==2024.2
+PyYAML==6.0.1
+qdrant-client==1.11.3
+RapidFuzz==3.10.0
+referencing==0.35.1
+regex==2024.9.11
+requests==2.32.3
+requests-oauthlib==2.0.0
+requests-toolbelt==1.0.0
+rich==13.9.1
+rpds-py==0.20.0
+rsa==4.9
+ruff==0.3.7
+safetensors==0.4.5
+scikit-learn==1.5.2
+scipy==1.14.1
+SecretStorage==3.3.3
+semantic-version==2.10.0
+sentence-transformers==3.1.1
+shellingham==1.5.4
+six==1.16.0
+sniffio==1.3.0
+soupsieve==2.6
+SQLAlchemy==2.0.35
+sse-starlette==2.1.3
+starlette==0.27.0
+striprtf==0.0.26
+sympy==1.13.3
+tabulate==0.9.0
+tenacity==8.2.3
+threadpoolctl==3.5.0
+tiktoken==0.7.0
+timm==1.0.9
+tokenizers==0.20.0
+tomli==2.0.1
+tomlkit==0.13.2
+torch==2.4.1
+torchvision==0.19.1
+tqdm==4.66.5
+transformers==4.45.1
+trove-classifiers==2024.9.12
+typer==0.12.5
+types-jsonschema==4.23.0.20240813
+types-openpyxl==3.1.5.20240918
+types-pytz==2024.2.0.20240913
+types-PyYAML==6.0.12.20240917
+types-regex==2023.12.25.20240311
+types-requests==2.32.0.20240914
+typing-inspect==0.9.0
+typing_extensions==4.12.2
+tzdata==2024.2
+ujson==5.8.0
+unstructured==0.10.27
+unstructured-inference==0.7.10
+unstructured.pytesseract==0.3.13
+uritemplate==4.1.1
+urllib3==2.2.3
+uvicorn==0.23.2
+uvloop==0.17.0
+virtualenv==20.26.6
+watchdog==4.0.1
+watchfiles==0.19.0
+websockets==12.0
+wrapt==1.16.0
+yarl==1.13.1
+zipp==3.20.2
+</code></pre></div>
+<p>In future versions, SmartSpace will enable the use of any Python library as the custom blocks will be running in a secure and isolated environment.</p>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>Blocks in SmartSpace are highly customizable and can be tailored to perform specific tasks within workflows. By following the examples above, you can create new blocks to expand the functionality of the SmartSpace platform. Remember to define inputs, outputs, and states clearly, and use the appropriate decorators (<code>@step</code>, <code>@callback</code>, <code>@metadata</code>) to create powerful and reusable components.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../connections/" class="md-footer__link md-footer__link--next" aria-label="Next: Connections">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Connections
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.expand", "navigation.footer", "navigation.instant", "navigation.instant.progress", "navigation.sections", "navigation.tabs", "navigation.top", "toc.follow"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

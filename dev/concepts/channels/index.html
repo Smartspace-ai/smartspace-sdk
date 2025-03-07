@@ -1,0 +1,2456 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://redesigned-happiness-lml15p6.pages.github.io/dev/concepts/channels/">
+      
+      
+        <link rel="prev" href="../../block-reference/GetJsonField/">
+      
+      
+        <link rel="next" href="../blocks/">
+      
+      
+      <link rel="icon" href="../../assets/smartspace-favicon.webp">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.43">
+    
+    
+      
+        <title>Channels - Smartspace Workflow Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#channels-in-flow-system-overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Smartspace Workflow Documentation" class="md-header__button md-logo" aria-label="Smartspace Workflow Documentation" data-md-component="logo">
+      
+  <img src="../../assets/smartspace_small_logo_white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Smartspace Workflow Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Channels
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Smartspace-ai/smartspace-flows" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../cli/" class="md-tabs__link">
+        
+  
+    
+  
+  CLI
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../block-reference/" class="md-tabs__link">
+          
+  
+  Block Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Smartspace Workflow Documentation" class="md-nav__button md-logo" aria-label="Smartspace Workflow Documentation" data-md-component="logo">
+      
+  <img src="../../assets/smartspace_small_logo_white.png" alt="logo">
+
+    </a>
+    Smartspace Workflow Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Smartspace-ai/smartspace-flows" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Block Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Block Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Chunking
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Chunking
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/SemanticChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SemanticChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/SentenceChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SentenceChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/TokenChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TokenChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/WindowChunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WindowChunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Function
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Function
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Collect/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Concat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/First/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    First
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Flatten/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Flatten
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/ForEach/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ForEach
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/HTTPRequest/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HTTPRequest
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Map
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/MergeLists/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MergeLists
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Slice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Slice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    JSON
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            JSON
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Get/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Get
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/ParseJson/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ParseJson
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Text
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Text
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/JoinStrings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    JoinStrings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/RegexMatch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RegexMatch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/SplitString/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SplitString
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/StringTemplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/StringTruncator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringTruncator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Misc
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            Misc
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Append/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Append
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Buffer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Buffer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Cast/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cast
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/CreateList/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CreateList
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/CreateObject/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CreateObject
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/TypeSwitch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeSwitch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/UnpackList/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UnpackList
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/UnpackObject/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UnpackObject
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/WebsiteScraper/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebsiteScraper
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    SmartSpace Blocks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            SmartSpace Blocks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7_1" id="__nav_3_7_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Data
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/FileStore/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FileStore
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/GetAllDocuments/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetAllDocuments
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/GetFileContent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetFileContent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/VectorSearch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VectorSearch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7_2" id="__nav_3_7_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    LLM
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            LLM
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/Analyzer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analyzer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/LLM/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/LLMSelect/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLMSelect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/LLMWithTools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLMWithTools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7_3" id="__nav_3_7_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/CreateResponseWithSources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CreateResponseWithSources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Obsolete
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            Obsolete
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block-reference/GetJsonField/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetJsonField
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Channels
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Channels
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#channels-in-flow-system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Channels in Flow System: Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Channels in Flow System: Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-components-of-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Components of Channels:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-multiple-flows-and-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Multiple Flows and Inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-blocks-and-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Blocks and Channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Case Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#challenges-and-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Challenges and Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq-channels-in-the-flow-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ: Channels in the Flow System
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blocks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blocks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blocks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blocks/custom-blocks-building/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Blocks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blocks/connections/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connections
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#channels-in-flow-system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Channels in Flow System: Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Channels in Flow System: Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-components-of-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Components of Channels:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-multiple-flows-and-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Multiple Flows and Inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-blocks-and-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Blocks and Channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Case Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#challenges-and-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Challenges and Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq-channels-in-the-flow-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ: Channels in the Flow System
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Channels</h1>
+
+<h2 id="channels-in-flow-system-overview">Channels in Flow System: Overview<a class="headerlink" href="#channels-in-flow-system-overview" title="Permanent link">&para;</a></h2>
+<p>In this flow architecture, <strong>channels</strong> are pathways that track how data moves between blocks. Channels ensure that outputs from one part of the system can be correctly processed and synchronized with inputs in another part. When blocks emit multiple values, such as through iterations or conditional logic, channels manage the relationship between these values and ensure they are handled correctly downstream.</p>
+<h3 id="key-components-of-channels">Key Components of Channels:<a class="headerlink" href="#key-components-of-channels" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Output Channels</strong>:</p>
+<ul>
+<li><strong>Tracking and Versioning</strong>: When a block outputs values, it does so through a channel that assigns <strong>indexes</strong> to each value. The first item output will have an index of <code>0</code>, the second <code>1</code>, and so on. These indexes are critical because any subsequent inputs must match the output's index to ensure the correct processing of related data.</li>
+<li><strong>Scope of Values</strong>: When a block processes multiple values (e.g., via a loop like a <code>forEach</code> block), the system ensures that corresponding outputs align with their associated input indexes. For example, if a list of five items is processed, each item is assigned an index (0 to 4). As those items pass through other blocks, they are tracked by these indexes to maintain alignment.</li>
+</ul>
+</li>
+<li>
+<p><strong>Input Channels</strong>:</p>
+<ul>
+<li><strong>Collecting and Matching Inputs</strong>: Channels help collect multiple inputs from various blocks and ensure they align by index. For instance, if a block receives several inputs (e.g., five files), the system waits until all necessary inputs have arrived before proceeding, ensuring each input corresponds to the correct output based on its channel and index.</li>
+</ul>
+</li>
+<li>
+<p><strong>Close Events</strong>:</p>
+<ul>
+<li>Channels can issue a <strong>close event</strong> when all expected values have been output or processed. This event signals the end of data transmission on that channel, allowing downstream blocks to act accordingly, such as by aggregating the results or triggering final operations.</li>
+</ul>
+</li>
+<li>
+<p><strong>Descope Operations</strong>:</p>
+<ul>
+<li>Sometimes, values need to be "descope," meaning they are removed from a particular channel or context. This allows values to be used in other parts of the flow that don’t rely on the channel's context. The descope operation can be applied to specific values to remove them from the channel’s tracking without affecting others, maintaining control over which values are subject to channel indexing.</li>
+<li>If a block like <code>forEach</code> needs to exit after processing all its items, it uses descope mechanisms to remove items from the current channel and ensure they’re treated as fully processed.</li>
+</ul>
+</li>
+</ol>
+<h3 id="handling-multiple-flows-and-inputs">Handling Multiple Flows and Inputs<a class="headerlink" href="#handling-multiple-flows-and-inputs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Root Channel</strong>: When a flow begins, a <strong>root channel</strong> is created to track all inputs. If the flow has multiple runs, each run will have a different index, ensuring that different invocations of the flow don’t interfere with each other.</li>
+<li><strong>Collect Block</strong>: The <code>collect</code> block can aggregate values from multiple channels and output a combined result, ensuring that values from different paths or inputs can be synchronized and processed together.</li>
+</ul>
+<h3 id="custom-blocks-and-channels">Custom Blocks and Channels<a class="headerlink" href="#custom-blocks-and-channels" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Developers can create <strong>custom blocks</strong> that leverage channels, either by emitting data into channels or receiving data from channels. For instance, a block can output several items on a channel, and a downstream block can handle those outputs based on their indexes.</li>
+<li>Channels also support <strong>custom logic</strong> for managing complex flows, such as when a block needs to handle multiple inputs and ensure they are all in sync before processing can continue.</li>
+</ul>
+<h3 id="use-case-example">Use Case Example<a class="headerlink" href="#use-case-example" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Iterative Processing</strong>: A list of items passes through a <code>forEach</code> block. The block outputs each item with an index (e.g., 0 to 4). A downstream block that processes these items must ensure the index of incoming data matches its corresponding output. If not, the system will wait until all items with matching indexes are present before proceeding, ensuring consistent data flow and synchronization.</li>
+<li><strong>De-Scope for Conditional Logic</strong>: In a case where conditional branches are used, the system may need to "descope" values when merging data from different paths. If items were initially processed through a specific channel but must be merged later, removing them from the channel context allows for more flexible processing.</li>
+</ul>
+<h3 id="challenges-and-considerations">Challenges and Considerations<a class="headerlink" href="#challenges-and-considerations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Scalability</strong>: Early versions of the system tracked the entire history of values, which could become unmanageable over time, especially for large datasets or prolonged flows. The newer approach focuses on tracking only essential parts of the flow, significantly improving scalability.</li>
+<li><strong>Complexity</strong>: Channels introduce complexity, especially in scenarios involving multiple inputs, nested channels, or descope operations. It is crucial to design intuitive mechanisms for users to understand and manage channels without overwhelming them.</li>
+</ul>
+<h2 id="faq-channels-in-the-flow-system">FAQ: Channels in the Flow System<a class="headerlink" href="#faq-channels-in-the-flow-system" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>1. What is a Channel?</summary>
+<p>A <strong>Channel</strong> is a mechanism that tracks how data flows between blocks in a system. It ensures that outputs and inputs are synchronized by associating them with indexes, which makes it easier to track the relationship between data as it moves through different parts of the flow.</p>
+</details>
+<details class="question">
+<summary>2. Why are Channels necessary in the flow system?</summary>
+<p>Channels are essential for:</p>
+<ul>
+<li>Ensuring that data passing through different blocks can be tracked, especially when dealing with multiple outputs (e.g., iterations in a loop).</li>
+<li>Allowing different data sources to be processed simultaneously but kept in sync through indexing.</li>
+<li>Handling complex flows that involve conditional logic or multiple branches, where synchronization of data is critical.</li>
+</ul>
+</details>
+<details class="question">
+<summary>3. How does indexing in a Channel work?</summary>
+<p>Each value that a block outputs through a Channel is assigned an <strong>index</strong>. For example, if a block emits five values, they will be indexed as <code>0, 1, 2, 3, 4</code>. When another block downstream processes these values, it uses the indexes to ensure that corresponding inputs and outputs are aligned correctly.</p>
+</details>
+<details class="question">
+<summary>4. What happens if indexes don't match?</summary>
+<p>If the indexes of inputs do not match, the system will wait until all required values with the same index are available before proceeding. For example, if a block is expecting <code>index 1</code> to arrive from two different inputs but only one input arrives, it won’t process until the second input also delivers <code>index 1</code>.</p>
+</details>
+<details class="question">
+<summary>5. What is a “close event” in a Channel?</summary>
+<p>A <strong>close event</strong> signals that no more data will be sent through a particular Channel. After this event, any blocks listening to the Channel know that they can finalize processing or aggregation of the data that has been received.</p>
+</details>
+<details class="question">
+<summary>6. How are Channels scoped?</summary>
+<p>When data passes through a block, it retains the scope of the Channel it was initially part of. If a block processes data from different sources (such as using a <code>forEach</code> loop), the system ensures that only data from the same scope (i.e., same Channel and index) is processed together. This avoids mismatched data being processed.</p>
+</details>
+<details class="question">
+<summary>7. What is “descope” and why is it important?</summary>
+<p><strong>Descope</strong> is the process of removing a value from the context of a Channel. When you descope a value, it is no longer tied to its original Channel, allowing it to be processed or used outside of that context. Descope operations are necessary when:</p>
+<ul>
+<li>You want to combine data from different Channels or inputs.</li>
+<li>Data has passed through conditional logic and now needs to be merged.</li>
+<li>You need to process data without the restrictions imposed by its original Channel.</li>
+</ul>
+</details>
+<details class="question">
+<summary>8. Can I remove a value from all Channels when using descope?</summary>
+<p>Yes, when you descope a value, it can be removed from all Channel contexts if desired. Alternatively, you can descope it from only the most recent or specific Channels, depending on how the descope block is configured.</p>
+</details>
+<details class="question">
+<summary>9. What is the difference between an input Channel and an output Channel?</summary>
+<ul>
+<li><strong>Input Channel</strong>: Receives data from other blocks. It listens for inputs and ensures that data is synchronized based on the Channel’s index.</li>
+<li><strong>Output Channel</strong>: Emits data from a block, associating each output with an index, which allows downstream blocks to synchronize their inputs accordingly.</li>
+</ul>
+</details>
+<details class="question">
+<summary>10. How do output Channels handle multiple messages or values?</summary>
+<p>An output Channel can emit multiple values, such as when processing a list of items. Each value is assigned an index to ensure downstream blocks know which inputs correspond to which outputs. For example, if a <code>forEach</code> block outputs five values, each value will have an index (e.g., <code>0, 1, 2, 3, 4</code>), ensuring downstream blocks process them in sync.</p>
+</details>
+<details class="question">
+<summary>11. What is a root Channel?</summary>
+<p>A <strong>root Channel</strong> is the main Channel created when the flow system starts. All initial inputs to the system are placed inside the root Channel. As the flow progresses, additional Channels may be created to track specific data paths or logic branches, but all of them ultimately relate to the root Channel.</p>
+</details>
+<details class="question">
+<summary>12. How do custom blocks work with Channels?</summary>
+<p>Custom blocks can be programmed to:</p>
+<ul>
+<li>Emit data into a Channel (output).</li>
+<li>Receive data from a Channel (input).</li>
+<li>Handle descope logic or close events.</li>
+</ul>
+<p>Developers creating custom blocks need to ensure they manage Channels correctly, especially when dealing with multiple inputs, outputs, or asynchronous operations.</p>
+</details>
+<details class="question">
+<summary>13. What happens if I process data from multiple Channels?</summary>
+<p>When a block needs to process data from multiple Channels, it waits until all relevant inputs are available, based on their indexes. The system ensures that only data with matching indexes is processed together, preventing mismatches between values that should be synchronized.</p>
+</details>
+<details class="question">
+<summary>14. What is the collect block and how does it work?</summary>
+<p>The <strong>collect block</strong> is a special block used to aggregate data from multiple inputs or Channels. It waits for all expected values (based on the Channel’s index) before combining them into a single output. This is particularly useful when multiple paths of a flow converge and need to be synchronized.</p>
+</details>
+<details class="question">
+<summary>15. How can I debug Channels in my flow?</summary>
+<p>To debug Channels:</p>
+<ul>
+<li>Use visual debugging tools that show the flow of data through Channels.</li>
+<li>Ensure that you are correctly matching inputs and outputs by checking their indexes.</li>
+<li>Monitor when close events occur to verify that all data has been processed before the Channel is closed.</li>
+</ul>
+</details>
+<details class="question">
+<summary>16. What happens if my flow spans across multiple invocations?</summary>
+<p>Each time a flow is invoked, a new root Channel is created with a unique index. If you want to combine data from different invocations, you’ll need to either descope the values or use a block like <code>collect</code> to gather inputs from different Channels.</p>
+</details>
+<details class="question">
+<summary>17. What are some common issues developers face with Channels?</summary>
+<ul>
+<li><strong>Index mismatches</strong>: If blocks receive data with different indexes, they won’t process until matching values are available.</li>
+<li><strong>Overcomplicating scoping</strong>: Sometimes Channels can become too nested or complex, making it hard to manage and track values.</li>
+<li><strong>Forgetting to descope</strong>: If values from different parts of the flow need to be merged, forgetting to descope them can lead to mismatched or unprocessed data.</li>
+</ul>
+</details>
+<details class="question">
+<summary>18. How can I visualize the flow and the Channels involved?</summary>
+<p>There are tools or visual debuggers that can display the Channels in use, showing which values are scoped within which Channel. Some systems may provide color-coding or hierarchical views to show how values propagate through different Channels.</p>
+</details>
+<details class="question">
+<summary>19. Can I programmatically control when Channels are created or closed?</summary>
+<p>Yes, custom blocks or specific flow control mechanisms allow you to manage the lifecycle of Channels. You can program when to create a new Channel, emit a close event, or descope values programmatically to control how the flow behaves dynamically.</p>
+</details>
+<details class="question">
+<summary>20. What is a real-world example of using Channels effectively?</summary>
+<p>Suppose you are processing a list of files in a <code>forEach</code> block. Each file gets processed independently, and the results are output through an output Channel. Downstream blocks ensure that the results are synchronized based on the file index. When all files are processed, a close event is sent, and a <code>collect</code> block aggregates the results for final processing, ensuring all files are handled before moving on.</p>
+</details>
+<details class="question">
+<summary>21. Can Channels be nested, and how do they interact?</summary>
+<p>Yes, Channels can be nested. In these cases, a value may be scoped to multiple Channels. When descoping a value, you can remove it from the innermost Channel (the “leaf” Channel) while leaving it in the outer Channels. This allows for flexible control of data as it passes through various stages of the flow.</p>
+</details>
+<details class="question">
+<summary>22. How can I optimize the performance of Channels in large flows?</summary>
+<ul>
+<li><strong>Minimize unnecessary scoping</strong>: Only create Channels when needed to prevent overloading the system with too many Channels.</li>
+<li><strong>Use descope judiciously</strong>: Make sure you descope values that no longer need to be tied to a specific Channel to avoid unnecessary tracking.</li>
+<li><strong>Monitor long-running flows</strong>: If a flow runs for a long time or processes thousands of items, ensure the system is optimized to handle the Channel’s lifecycle efficiently.</li>
+</ul>
+</details>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>Channels are a fundamental part of controlling and synchronizing data in a flow system. Understanding how to properly use, manage, and debug Channels is crucial for building scalable, reliable, and efficient applications.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../block-reference/GetJsonField/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GetJsonField">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                GetJsonField
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../blocks/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.footer", "navigation.instant", "navigation.instant.progress", "navigation.sections", "navigation.tabs", "navigation.top", "toc.follow"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

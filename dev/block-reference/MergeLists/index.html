@@ -2291,13 +2291,14 @@
 <p>The <code>MergeLists</code> Block merges two lists of objects (dictionaries) based on a matching key. It takes two input lists and combines the dictionaries from both lists where the specified key is equal. If both lists contain objects with the same key, their values are merged, with values from the second list overriding those from the first in case of conflicts.</p>
 <p>This Block is useful for combining datasets or lists where you need to merge records with the same identifier.</p>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>Merges objects from two lists by matching on the configured key</p>
+<p>Merges objects from two lists by matching on the configured key.</p>
 <h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Category</strong>: Function</li>
 <li><strong>Obsolete</strong>: True</li>
-<li><strong>Replacement_block</strong>: Join</li>
 <li><strong>Label</strong>: merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data</li>
+<li><strong>Use_instead</strong>: Concat</li>
+<li><strong>Deprecated_reason</strong>: This block will be deprecated in a future version. Use Concat instead.</li>
 </ul>
 <h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
 <table>

@@ -153,8 +153,6 @@ class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     id: str
     name: str
-    unique_name: Annotated[str | None, Field(alias="uniqueName")] = None
-
 
 class ContentItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

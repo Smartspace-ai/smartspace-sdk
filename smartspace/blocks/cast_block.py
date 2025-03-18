@@ -14,6 +14,8 @@ ItemT = TypeVar("ItemT")
     category=BlockCategory.MISC,
     icon="fa-sync-alt",
     label="cast type, convert data, transform format, change type, typecast value",
+    obsolete=True,
+    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class Cast(OperatorBlock, Generic[ItemT]):
     schema: GenericSchema[ItemT]

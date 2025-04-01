@@ -34,7 +34,9 @@ class ParseJson(OperatorBlock):
             Metadata(description="JSON string or list of JSON strings"),
         ],
     ) -> dict[str, Any] | list[dict[str, Any]]:
-        if isinstance(json_string, list):
+        if isinstance(json_string, dict):
+            return json_string
+        elif isinstance(json_string, list):
             results: list[Any] = [json.loads(item) for item in json_string]
             return results
         else:

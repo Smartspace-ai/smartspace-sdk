@@ -43,6 +43,48 @@ class ParseJson(OperatorBlock):
             result = json.loads(json_string)
             return result
 
+@metadata(
+    description="This block removes a specified key from a JSON schema. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the schema with the key removed.",
+    category=BlockCategory.FUNCTION,
+    icon="fa-code",
+    label="Remove Key from JSON Schema",
+)
+class RemoveProperty(OperatorBlock):
+    key_to_remove: Annotated[str, Config()]
+    recursive: Annotated[bool, Config()] = False
+
+    @step(output_name="json")
+    async def process_schema(
+        self,
+        json: Annotated[dict, Metadata(description="Input JSON schema as a dictionary")]
+    ) -> dict:
+        if self.recursive:
+            def recursive_remove(item: dict):
+                if self.key_to_remove in item:
+                    item.pop(self.key_to_remove)
+                for key, value in list(item.items()):
+                    if isinstance(value, dict):
+                        recursive_remove(value)
+            recursive_remove(json)
+        else:
+            if self.key_to_remove in json:
+                json.pop(self.key_to_remove)
+        return json
+
+@metadata(
+    description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",
+    category=BlockCategory.FUNCTION,
+    icon="fa-code",
+    label="Get Keys from JSON",
+)
+class GetKeys(OperatorBlock):
+    @step(output_name="keys")
+    async def process_json(
+        self,
+        json: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
+    ) -> List[str]:
+        return list(json.keys())
+
 
 @metadata(
     category=BlockCategory.FUNCTION,

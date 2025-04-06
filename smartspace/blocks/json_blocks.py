@@ -44,32 +44,32 @@ class ParseJson(OperatorBlock):
             return result
 
 @metadata(
-    description="This block removes a specified key from a JSON schema. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the schema with the key removed.",
+    description="This block removes a specified key from a JSON object. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the object with the key removed.",
     category=BlockCategory.FUNCTION,
     icon="fa-code",
-    label="Remove Key from JSON Schema",
+    label="Remove Key from any json object",
 )
 class RemoveProperty(OperatorBlock):
-    key_to_remove: Annotated[str, Config()]
+    key: Annotated[str, Config()]
     recursive: Annotated[bool, Config()] = False
 
     @step(output_name="json")
-    async def process_schema(
+    async def process_object(
         self,
-        json: Annotated[dict, Metadata(description="Input JSON schema as a dictionary")]
+        object: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
     ) -> dict:
         if self.recursive:
             def recursive_remove(item: dict):
-                if self.key_to_remove in item:
-                    item.pop(self.key_to_remove)
+                if self.key in item:
+                    item.pop(self.key)
                 for key, value in list(item.items()):
                     if isinstance(value, dict):
                         recursive_remove(value)
-            recursive_remove(json)
+            recursive_remove(object)
         else:
-            if self.key_to_remove in json:
-                json.pop(self.key_to_remove)
-        return json
+            if self.key in object:
+                object.pop(self.key)
+        return object
 
 @metadata(
     description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",

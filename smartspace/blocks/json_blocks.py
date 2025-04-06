@@ -75,15 +75,15 @@ class RemoveProperty(OperatorBlock):
     description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",
     category=BlockCategory.FUNCTION,
     icon="fa-code",
-    label="Get Keys from JSON",
+    label="Get Keys from json object",
 )
 class GetKeys(OperatorBlock):
     @step(output_name="keys")
     async def process_json(
         self,
-        json: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
+        object: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
     ) -> List[str]:
-        return list(json.keys())
+        return list(object.keys())
 
 
 @metadata(

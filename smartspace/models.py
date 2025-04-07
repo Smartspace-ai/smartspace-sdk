@@ -6,10 +6,6 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from smartspace.enums import BlockClass, BlockScope, ChannelEvent, ChannelState
-
-from pydantic import BaseModel, ConfigDict, Field
-
-from smartspace.enums import BlockClass, ChannelEvent, ChannelState
 from smartspace.utils import _get_type_adapter
 
 

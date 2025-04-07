@@ -32,4 +32,4 @@ jobs:
           # Extract major and minor from tag (assuming tag format is semver, e.g., 2.1.1) 
           MAJOR_MINOR=$(echo ${{ github.event.release.tag_name }} | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+/\1/')
           echo "Deploying docs for version $MAJOR_MINOR"
-          mike deploy --push --update-aliases $MAJOR_MINOR latest
+          poetry run mike deploy --push --update-aliases $MAJOR_MINOR latest

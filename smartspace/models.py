@@ -6,6 +6,10 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from smartspace.enums import BlockClass, BlockScope, ChannelEvent, ChannelState
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from smartspace.enums import BlockClass, ChannelEvent, ChannelState
 from smartspace.utils import _get_type_adapter
 
 
@@ -153,8 +157,6 @@ class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     id: str
     name: str
-    unique_name: Annotated[str | None, Field(alias="uniqueName")] = None
-
 
 class ContentItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

@@ -39,16 +39,15 @@ def get_block_classes(module_ast) -> list[ast.ClassDef]:
 def get_block_class(
     block_name: str, is_smartspace: bool = False
 ) -> ast.ClassDef | None:
-    if is_smartspace:
-        files = [
-            os.path.join("docs", "utils", "smartspace_blocks", f)
-            for f in os.listdir(os.path.join("docs", "utils", "smartspace_blocks"))
-        ]
-    else:
-        files = [
-            os.path.join("smartspace", "blocks", f)
-            for f in os.listdir(os.path.join("smartspace", "blocks"))
-            if f.endswith(".py")
+    # if is_smartspace:
+    #     files = [
+    #         os.path.join("docs", "utils", "smartspace_blocks", f)
+    #         for f in os.listdir(os.path.join("docs", "utils", "smartspace_blocks"))
+    #     ]
+    files = [
+        os.path.join("smartspace", "blocks", f)
+        for f in os.listdir(os.path.join("smartspace", "blocks"))
+        if f.endswith(".py")
         ]
     for file_path in files:
         module_ast = parse_module(file_path)

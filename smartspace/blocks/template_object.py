@@ -12,6 +12,7 @@ from smartspace.enums import BlockCategory, InputDisplayType
     and then parses the result into a JSON object.
     """,
     icon="fa-code",
+    label="template object, JSON templating, dynamic JSON, structured template, object generation",
 )
 class TemplatedObject(Block):
     templated_json: Annotated[

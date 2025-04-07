@@ -21,6 +21,9 @@ from smartspace.enums import BlockCategory
     description="This block takes a JSON string or a list of JSON strings and parses them",
     category=BlockCategory.FUNCTION,
     icon="fa-code",
+    label="parse JSON, convert JSON string, decode JSON, JSON deserialize, extract JSON data",
+    obsolete=True,
+    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class ParseJson(OperatorBlock):
     @step(output_name="json")
@@ -31,18 +34,64 @@ class ParseJson(OperatorBlock):
             Metadata(description="JSON string or list of JSON strings"),
         ],
     ) -> dict[str, Any] | list[dict[str, Any]]:
-        if isinstance(json_string, list):
+        if isinstance(json_string, dict):
+            return json_string
+        elif isinstance(json_string, list):
             results: list[Any] = [json.loads(item) for item in json_string]
             return results
         else:
             result = json.loads(json_string)
             return result
 
+@metadata(
+    description="This block removes a specified key from a JSON object. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the object with the key removed.",
+    category=BlockCategory.FUNCTION,
+    icon="fa-code",
+    label="Remove Key from any json object",
+)
+class RemoveProperty(OperatorBlock):
+    key: Annotated[str, Config()]
+    recursive: Annotated[bool, Config()] = False
+
+    @step(output_name="json")
+    async def process_object(
+        self,
+        object: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
+    ) -> dict:
+        if self.recursive:
+            def recursive_remove(item: dict):
+                if self.key in item:
+                    item.pop(self.key)
+                for key, value in list(item.items()):
+                    if isinstance(value, dict):
+                        recursive_remove(value)
+            recursive_remove(object)
+        else:
+            if self.key in object:
+                object.pop(self.key)
+        return object
+
+@metadata(
+    description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",
+    category=BlockCategory.FUNCTION,
+    icon="fa-code",
+    label="Get Keys from json object",
+)
+class GetKeys(OperatorBlock):
+    @step(output_name="keys")
+    async def process_json(
+        self,
+        object: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
+    ) -> List[str]:
+        return list(object.keys())
+
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Uses JSONPath to extract data from a JSON object or list",
+    description="Uses JSONPath to extract data from a JSON object or list. This block will be moved to connection configuration in a future version",
     obsolete=True,
+    label="extract JSON field, get JSON value, access JSON data, retrieve JSON property, JSON path query",
+    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class GetJsonField(Block):
     json_field_structure: Annotated[str, Config()]
@@ -63,8 +112,11 @@ class GetJsonField(Block):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/",
+    description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/.",
     icon="fa-search",
+    label="get JSON path, query JSON data, extract JSON values, JSON lookup, search JSON",
+    obsolete=True,
+    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class Get(OperatorBlock):
     path: Annotated[str, Config()]
@@ -81,8 +133,11 @@ class Get(OperatorBlock):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Merges objects from two lists by matching on the configured key",
+    description="Merges objects from two lists by matching on the configured key.",
     obsolete=True,
+    label="merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data",
+    use_instead="Concat",
+    deprecated_reason="This block will be deprecated in a future version. Use Concat instead.",
 )
 class MergeLists(Block):
     key: Annotated[str, Config()]
@@ -146,6 +201,7 @@ The `Join` block performs advanced join operations between two lists of dictiona
 - Performing SQL-like join operations in Python.
 """,
     icon="fa-link",
+    label="join JSON data, SQL-like join, merge datasets, combine JSON lists, data integration",
 )
 class Join(Block):
     key: Annotated[str, Config()]

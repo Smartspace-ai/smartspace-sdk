@@ -14,6 +14,7 @@ ItemT = TypeVar("ItemT")
     description="Appends item to items and output resulting list",
     category=BlockCategory.MISC,
     icon="fa-plus",
+    label="append item, add item, extend list, insert item, concatenate item",
 )
 class Append(Block, Generic[ItemT]):
     @step(output_name="items")

@@ -2289,6 +2289,9 @@ def metadata(
     category: BlockCategory | dict[str, Any] | None = None,
     icon: str | None = None,  # fontawesome 5 icon name
     obsolete: bool | None = None,
+    label: str | None = None,  # searchable label for the block
+    deprecated_reason: str | None = None,
+    use_instead: str | None = None,  # use this block instead of the current one
     **kwargs,
 ):
     if description is not None:
@@ -2301,6 +2304,12 @@ def metadata(
         kwargs["icon"] = icon
     if obsolete is not None:
         kwargs["obsolete"] = obsolete
+    if label is not None:
+        kwargs["label"] = label
+    if use_instead is not None:
+        kwargs["use_instead"] = use_instead
+    if deprecated_reason is not None:
+        kwargs["deprecated_reason"] = deprecated_reason
 
     def _inner(cls):
         setattr(cls, "metadata", kwargs)

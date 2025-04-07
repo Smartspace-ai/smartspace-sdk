@@ -20,12 +20,14 @@ from smartspace.enums import BlockCategory, ChannelState
 
 ItemT = TypeVar("ItemT")
 ResultT = TypeVar("ResultT")
+SequenceT = TypeVar("SequenceT", bound=list[Any] | str)
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
     icon="fa-project-diagram",
+    label="map function, transform items, process list, iterate collection, apply function to list",
 )
 class Map(Block, Generic[ItemT, ResultT]):
     class Operation(Tool):
@@ -96,8 +98,11 @@ class Map(Block, Generic[ItemT, ResultT]):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Collects data from a channel and outputs them as a list once the channel closes",
+    description="Collects data from a channel and outputs them as a list once the channel closes.",
     icon="fa-boxes",
+    label="collect list, gather items, accumulate data, assemble collection, aggregate entries",
+    obsolete=True,
+    deprecated_reason="This block has been deprecated..",
 )
 class Collect(OperatorBlock, Generic[ItemT]):
     items: Output[list[ItemT]]
@@ -129,6 +134,7 @@ class Collect(OperatorBlock, Generic[ItemT]):
 @metadata(
     category=BlockCategory.FUNCTION,
     icon="fa-sort-numeric-up",
+    label="count items, list length, item count, size of list, total elements",
 )
 class Count(OperatorBlock):
     @step(output_name="output")
@@ -140,6 +146,7 @@ class Count(OperatorBlock):
     category=BlockCategory.FUNCTION,
     description="Loops through a list of items and outputs them one at a time",
     icon="fa-ellipsis-h	",
+    label="for each, iterate items, loop through list, process each item, step through collection",
 )
 class ForEach(OperatorBlock, Generic[ItemT]):
     item: OutputChannel[ItemT]
@@ -154,8 +161,12 @@ class ForEach(OperatorBlock, Generic[ItemT]):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Joins a list of strings using the configured separator and outputs the resulting string",
+    description="Joins a list of strings using the configured separator and outputs the resulting string.",
     icon="fa-link",
+    label="join strings, concatenate text, combine strings, merge text, connect strings",
+    obsolete=True,
+    use_instead="Join",
+    deprecated_reason="This block will be deprecated in a future version. Use Join instead.",
 )
 class JoinStrings(Block):
     separator: Annotated[str, Config()] = ""
@@ -169,6 +180,7 @@ class JoinStrings(Block):
     category=BlockCategory.FUNCTION,
     description="Splits a string using the configured separator and outputs a list of the substrings",
     icon="fa-cut",
+    label="split string, divide text, break string, tokenize text, parse string",
 )
 class SplitString(Block):
     separator: Annotated[str, Config()] = "\n"
@@ -186,8 +198,9 @@ class SplitString(Block):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Slices a list or string using the configured start and end indexes",
+    description="Slices a list or string using the configured start and end indexes.",
     icon="fa-cut",
+    label="slice list, extract portion, get segment, subset sequence, partial list",
 )
 class Slice(Block):
     start: Annotated[int, Config()] = 0
@@ -216,6 +229,7 @@ class First(OperatorBlock, Generic[firstItemT]):
     category=BlockCategory.FUNCTION,
     description="Flattens a list of lists into a single list",
     icon="fa-compress",
+    label="flatten list, merge nested lists, combine nested arrays, unnest lists, simplify nested lists",
 )
 class Flatten(OperatorBlock):
     @step(output_name="list")

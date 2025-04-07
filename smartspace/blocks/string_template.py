@@ -13,6 +13,7 @@ from smartspace.enums import BlockCategory
     description="Takes in a Jinja template string and renders it with the given inputs",
     category=BlockCategory.MISC,
     icon="fa-file-alt",
+    label="string template, text formatting, variable substitution, format string, template interpolation",
 )
 class StringTemplate(Block):
     template: Annotated[str, Config()]

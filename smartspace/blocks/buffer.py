@@ -6,7 +6,11 @@ ValueT = TypeVar("ValueT")
 
 
 @metadata(
+    description="Buffers values in a list and outputs them one at a time.",
     icon="fa-database",
+    label="buffer, queue, buffer block, queue block, buffer list, queue list",
+    obsolete=True,
+    deprecated_reason="This block will be deprecated in a future version. ",
 )
 class Buffer(Block, Generic[ValueT]):
     values: Annotated[list[ValueT], State()] = []

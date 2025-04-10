@@ -43,6 +43,7 @@ class ParseJson(OperatorBlock):
             result = json.loads(json_string)
             return result
 
+
 @metadata(
     description="This block removes a specified key from a JSON object. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the object with the key removed.",
     category=BlockCategory.FUNCTION,
@@ -56,20 +57,25 @@ class RemoveProperty(OperatorBlock):
     @step(output_name="json")
     async def process_object(
         self,
-        object: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
+        object: Annotated[
+            dict, Metadata(description="Input JSON object as a dictionary")
+        ],
     ) -> dict:
         if self.recursive:
+
             def recursive_remove(item: dict):
                 if self.key in item:
                     item.pop(self.key)
                 for key, value in list(item.items()):
                     if isinstance(value, dict):
                         recursive_remove(value)
+
             recursive_remove(object)
         else:
             if self.key in object:
                 object.pop(self.key)
         return object
+
 
 @metadata(
     description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",
@@ -81,7 +87,9 @@ class GetKeys(OperatorBlock):
     @step(output_name="keys")
     async def process_json(
         self,
-        object: Annotated[dict, Metadata(description="Input JSON object as a dictionary")]
+        object: Annotated[
+            dict, Metadata(description="Input JSON object as a dictionary")
+        ],
     ) -> List[str]:
         return list(object.keys())
 
@@ -115,8 +123,6 @@ class GetJsonField(Block):
     description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/.",
     icon="fa-search",
     label="get JSON path, query JSON data, extract JSON values, JSON lookup, search JSON",
-    obsolete=True,
-    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class Get(OperatorBlock):
     path: Annotated[str, Config()]

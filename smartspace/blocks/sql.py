@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 from typing import Annotated, Any, Dict, List, Union
 
+
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
@@ -28,6 +29,7 @@ class SQL(Block):
             Boolean, Date, DateTime, Float, Integer,
             LargeBinary, Numeric, String, Time,
             bindparam, text
+
         )
         from sqlalchemy.ext.asyncio import create_async_engine
         from sqlalchemy.sql.elements import BindParameter
@@ -38,6 +40,7 @@ class SQL(Block):
 
         # Python type → SQLAlchemy type map
         type_mapping: Dict[type, TypeEngine] = {
+
             str: String(),
             int: Integer(),
             float: Float(),

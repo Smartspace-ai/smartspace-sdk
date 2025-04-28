@@ -152,7 +152,7 @@ class ThreadMessageResponse(BaseModel):
 class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     id: str
-    name: str 
+    name: str
 
 class ContentItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

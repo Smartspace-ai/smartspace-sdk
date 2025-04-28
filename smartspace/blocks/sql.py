@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from typing import Annotated, Any, Dict, List, Union
 
 from smartspace.core import Block, Config, metadata, step
@@ -25,7 +26,7 @@ class SQL(Block):
     async def run(self, **params) -> Union[List[Dict[str, Any]], int]:
         from sqlalchemy import (
             Boolean, Date, DateTime, Float, Integer,
-            LargeBinary, String, Time,
+            LargeBinary, Numeric, String, Time,
             bindparam, text
         )
         from sqlalchemy.ext.asyncio import create_async_engine
@@ -42,9 +43,10 @@ class SQL(Block):
             float: Float(),
             bool: Boolean(),
             datetime.datetime: DateTime(),
-            datetime.date: Date(),        # DATE columns
-            datetime.time: Time(),        # TIME columns
+            datetime.date: Date(),
+            datetime.time: Time(),
             bytes: LargeBinary(),
+            Decimal: Numeric(),   # <--- Decimal support added here
         }
 
         try:

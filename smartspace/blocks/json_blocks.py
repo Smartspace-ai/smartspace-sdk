@@ -22,8 +22,6 @@ from smartspace.enums import BlockCategory
     category=BlockCategory.FUNCTION,
     icon="fa-code",
     label="parse JSON, convert JSON string, decode JSON, JSON deserialize, extract JSON data",
-    obsolete=True,
-    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class ParseJson(OperatorBlock):
     @step(output_name="json")
@@ -99,7 +97,7 @@ class GetKeys(OperatorBlock):
     description="Uses JSONPath to extract data from a JSON object or list. This block will be moved to connection configuration in a future version",
     obsolete=True,
     label="extract JSON field, get JSON value, access JSON data, retrieve JSON property, JSON path query",
-    deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
+    use_instead="Get",
 )
 class GetJsonField(Block):
     json_field_structure: Annotated[str, Config()]
@@ -142,8 +140,7 @@ class Get(OperatorBlock):
     description="Merges objects from two lists by matching on the configured key.",
     obsolete=True,
     label="merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data",
-    use_instead="Concat",
-    deprecated_reason="This block will be deprecated in a future version. Use Concat instead.",
+    use_instead="Join",
 )
 class MergeLists(Block):
     key: Annotated[str, Config()]

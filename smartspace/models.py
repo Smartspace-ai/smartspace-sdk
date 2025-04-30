@@ -253,6 +253,7 @@ class FlowBlock(BaseModel):
 
     name: str
     version: str
+    description: str | None = None
     constants: list[FlowBlockConstant] = []
     dynamic_ports: Annotated[list[str], Field(alias="dynamicPorts")] = []
     dynamic_output_pins: Annotated[

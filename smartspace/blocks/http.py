@@ -16,14 +16,6 @@ class HTTPMethod(str, Enum):
     PATCH = "PATCH"
 
 
-class RequestObject(BaseModel):
-    method: HTTPMethod | None = None
-    url: str = ""
-    headers: dict[str, Any] = {}
-    query_params: dict[str, Any] = {}
-    body: dict[str, Any] | None = None
-
-
 class ResponseObject(BaseModel):
     content: str | bytes | Iterable[bytes]
     headers: dict[Any, Any]
@@ -53,46 +45,32 @@ class HTTPError(Exception):
 )
 class HTTPRequest(Block):
     timeout: Annotated[int, Config()] = 30  # Timeout in seconds
-
     method: Annotated[HTTPMethod, Config()] = HTTPMethod.GET
-    url: Annotated[str, Config()] = ""
-    headers: Annotated[dict[str, Any] | None, Config()] = None
-    query_params: Annotated[dict[str, Any] | None, Config()] = None
-    body: Annotated[dict[str, Any] | None, Config()] = None
+    headers: Annotated[dict[str, Any] , Config()] = {}
 
     @step(output_name="response")
     async def make_request(
         self,
-        request: Annotated[
-            RequestObject,
-            Metadata(
-                description="Can accept request parameters (method, url, headers, query_params, and/or body). Any values not specified will use the Config values. Pass an empty dict ({}) to use all Config values"
-            ),
-        ],
+        url: Annotated[str, Metadata(description="The URL to send the request to")],
+        query_params: Annotated[dict[str, Any] , Metadata(description="Query parameters to include in the URL")] = {},
+        body: Annotated[dict[str, Any], Metadata(description="Request body for POST, PUT, or PATCH requests")] = {},
     ) -> ResponseObject:
-        # Helper to get the effective value from request or config
-        def get_effective_value(attr: str):
-            return getattr(request, attr) or getattr(self, attr)
-
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
-                url = get_effective_value("url")
                 if not url:
                     raise ValueError("URL is required")
+                
                 response = await client.request(
-                    method=get_effective_value("method"),
+                    method=self.method,
                     url=url,
-                    headers=get_effective_value("headers") or {},
-                    params=get_effective_value("query_params") or {},
-                    json=get_effective_value("body")
-                    if get_effective_value("method") in ["POST", "PUT", "PATCH"]
-                    else None,
+                    headers=self.headers ,
+                    params=query_params ,
+                    json=body if self.method in ["POST", "PUT", "PATCH"] else None,
                 )
 
                 response.raise_for_status()
 
                 content_type = response.headers.get("content-type", "")
-                body = None
                 if "application/json" in content_type:
                     try:
                         body = response.json()

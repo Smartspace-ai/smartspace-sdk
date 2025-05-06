@@ -24,6 +24,8 @@ class ResponseObject(BaseModel):
     text: str
 
 
+
+
 class HTTPError(Exception):
     def __init__(
         self,
@@ -36,15 +38,16 @@ class HTTPError(Exception):
         self.response = response
         super().__init__(self.message)
 
-
+        
 @metadata(
     description="Performs HTTP requests such as GET, POST, PUT, DELETE, and more.",
     category=BlockCategory.FUNCTION,
     icon="fa-cloud-download-alt",
     label="HTTP request, web API call, REST client, API request, web service call",
 )
-class HTTPRequest(Block):
+class HTTPRequest_2_0_0(Block):
     timeout: Annotated[int, Config()] = 30  # Timeout in seconds
+
     method: Annotated[HTTPMethod, Config()] = HTTPMethod.GET
     headers: Annotated[dict[str, Any] , Config()] = {}
 
@@ -103,3 +106,4 @@ class HTTPRequest(Block):
                 )
             except Exception as e:
                 raise HTTPError(f"Unexpected error occurred: {str(e)}")
+

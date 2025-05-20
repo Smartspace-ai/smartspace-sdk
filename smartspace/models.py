@@ -138,14 +138,14 @@ class PinRedirect(BaseModel):
 class ThreadMessageResponseSource(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    index: int
-    uri: str
+    index: int = 0
+    uri: str = ""
 
 
 class ThreadMessageResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    content: str
+    content: str = ""
     sources: list[ThreadMessageResponseSource] | None = None
 
 

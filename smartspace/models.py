@@ -302,8 +302,6 @@ class FlowVariable(BaseModel):
 
     json_schema: Annotated[dict[str, Any], Field(alias="schema")]
     access: FlowVariableAccess = FlowVariableAccess.NONE
-    default: Any
-    has_default: Annotated[bool, Field(alias="hasDefault")] = False
 
 
 class FlowDefinition(BaseModel):

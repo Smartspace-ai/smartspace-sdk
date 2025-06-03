@@ -5,7 +5,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from smartspace.enums import BlockClass, BlockScope, ChannelEvent, ChannelState
+from smartspace.enums import (
+    BlockClass,
+    BlockScope,
+    ChannelEvent,
+    ChannelState,
+    FlowVariableAccess,
+)
 from smartspace.utils import _get_type_adapter
 
 
@@ -154,6 +160,7 @@ class File(BaseModel):
     id: str
     name: str
 
+
 class ContentItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -290,11 +297,20 @@ class FlowOutput(BaseModel):
         return FlowOutput(json_schema=_get_type_adapter(t).json_schema())
 
 
+class FlowVariable(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    access: FlowVariableAccess = FlowVariableAccess.NONE
+    default: Any
+    has_default: Annotated[bool, Field(alias="hasDefault")] = False
+
+
 class FlowDefinition(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     inputs: dict[str, FlowInput]
     outputs: dict[str, FlowOutput]
+    variables: dict[str, FlowVariable]
     constants: dict[str, FlowConstant]
     blocks: dict[str, FlowBlock]
 

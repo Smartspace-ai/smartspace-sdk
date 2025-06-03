@@ -316,15 +316,24 @@ class FlowDefinition(BaseModel):
 
     connections: list[Connection]
 
-    def get_source_node(self, node: str) -> FlowBlock | FlowInput | FlowConstant | None:
+    def get_source_node(
+        self, node: str
+    ) -> FlowBlock | FlowInput | FlowConstant | FlowVariable | None:
         return (
             self.inputs.get(node, None)
             or self.constants.get(node, None)
             or self.blocks.get(node, None)
+            or self.variables.get(node, None)
         )
 
-    def get_target_node(self, node: str) -> FlowBlock | FlowOutput | None:
-        return self.outputs.get(node, None) or self.blocks.get(node, None)
+    def get_target_node(
+        self, node: str
+    ) -> FlowBlock | FlowOutput | FlowVariable | None:
+        return (
+            self.outputs.get(node, None)
+            or self.blocks.get(node, None)
+            or self.variables.get(node, None)
+        )
 
 
 class BlockRunData(BaseModel):

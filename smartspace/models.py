@@ -300,6 +300,7 @@ class FlowOutput(BaseModel):
 class FlowVariable(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
+    json_schema: Annotated[dict[str, Any], Field(alias="schema")]
     access: FlowVariableAccess = FlowVariableAccess.NONE
     default: Any
     has_default: Annotated[bool, Field(alias="hasDefault")] = False

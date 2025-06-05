@@ -5,7 +5,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from smartspace.enums import BlockClass, BlockScope, ChannelEvent, ChannelState
+from smartspace.enums import (
+    BlockClass,
+    BlockScope,
+    ChannelEvent,
+    ChannelState,
+    FlowVariableAccess,
+)
 from smartspace.utils import _get_type_adapter
 
 
@@ -154,6 +160,7 @@ class File(BaseModel):
     id: str
     name: str
 
+
 class ContentItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -290,25 +297,42 @@ class FlowOutput(BaseModel):
         return FlowOutput(json_schema=_get_type_adapter(t).json_schema())
 
 
+class FlowVariable(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    json_schema: Annotated[dict[str, Any], Field(alias="schema")]
+    access: FlowVariableAccess = FlowVariableAccess.NONE
+
+
 class FlowDefinition(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     inputs: dict[str, FlowInput]
     outputs: dict[str, FlowOutput]
+    variables: dict[str, FlowVariable]
     constants: dict[str, FlowConstant]
     blocks: dict[str, FlowBlock]
 
     connections: list[Connection]
 
-    def get_source_node(self, node: str) -> FlowBlock | FlowInput | FlowConstant | None:
+    def get_source_node(
+        self, node: str
+    ) -> FlowBlock | FlowInput | FlowConstant | FlowVariable | None:
         return (
             self.inputs.get(node, None)
             or self.constants.get(node, None)
             or self.blocks.get(node, None)
+            or self.variables.get(node, None)
         )
 
-    def get_target_node(self, node: str) -> FlowBlock | FlowOutput | None:
-        return self.outputs.get(node, None) or self.blocks.get(node, None)
+    def get_target_node(
+        self, node: str
+    ) -> FlowBlock | FlowOutput | FlowVariable | None:
+        return (
+            self.outputs.get(node, None)
+            or self.blocks.get(node, None)
+            or self.variables.get(node, None)
+        )
 
 
 class BlockRunData(BaseModel):

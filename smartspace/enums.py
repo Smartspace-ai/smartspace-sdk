@@ -9,6 +9,12 @@ class BlockCategory(Enum):
     MISC = {"name": "Misc", "description": "Doesnt belong to any category"}
 
 
+class FlowVariableAccess(Enum):
+    NONE = "None"
+    READ = "Read"
+    WRITE = "Write"
+
+
 class BlockClass(Enum):
     MODEL = "Model"
     OPERATOR = "Operator"

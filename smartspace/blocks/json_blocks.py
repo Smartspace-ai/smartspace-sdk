@@ -1,4 +1,5 @@
 import json
+import re
 from enum import Enum
 from typing import Annotated, Any, List, Union
 
@@ -11,6 +12,8 @@ from smartspace.core import (
     Config,
     Metadata,
     OperatorBlock,
+    Output,
+    State,
     metadata,
     step,
 )
@@ -135,7 +138,6 @@ class Get(OperatorBlock):
             return None if not len(results) else results[0]
 
 
-
 class JoinType(Enum):
     INNER = "inner"
     OUTER = "outer"
@@ -252,7 +254,6 @@ class Join(Block):
         return result
 
 
-
 @metadata(
     description="Merges multiple dictionaries into a single object. Accepts only dicts and combines all key-value pairs into one dictionary.",
     category=BlockCategory.MISC,
@@ -268,7 +269,6 @@ class MergeObjects(Block):
         return merged_object
 
 
-
 @metadata(
     description="Takes in inputs and creates an object containing the inputs",
     category=BlockCategory.MISC,
@@ -281,48 +281,56 @@ class CreateObject(Block):
         return properties
 
 
-@metadata(category=BlockCategory.FUNCTION,
-           label="object builder, json merge, dictionary update, data aggregation, object construction",
-           description="Merges objects using dictionary unpacking (similar to jq's merge). Each new object is merged with the existing accumulated object."
+@metadata(
+    category=BlockCategory.FUNCTION,
+    label="object builder, json merge, dictionary update, data aggregation, object construction",
+    description="Merges objects using dictionary unpacking (similar to jq's merge). Each new object is merged with the existing accumulated object.",
 )
 class BuildObject(Block):
     """
     A block that merges objects using dictionary unpacking (similar to jq's merge).
     Each new object is merged with the existing accumulated object.
     """
-    merged_object: Annotated[Dict[str, Any], State()] = {}
+
+    merged_object: Annotated[dict[str, Any], State()] = {}
 
     @step(output_name="merged_object")
-    async def merge_object(self, obj: Dict[str, Any]) -> Dict[str, Any]:
+    async def merge_object(self, obj: dict[str, Any]) -> dict[str, Any]:
         # If a string is passed, try to parse it as JSON
         if isinstance(obj, str):
             cleaned_str = obj.strip()
-            
+
             # Remove markdown code block syntax if present
-            markdown_pattern = r'```(?:json)?\s*([\s\S]*?)\s*```'
+            markdown_pattern = r"```(?:json)?\s*([\s\S]*?)\s*```"
             markdown_match = re.search(markdown_pattern, cleaned_str)
             if markdown_match:
                 cleaned_str = markdown_match.group(1).strip()
-            
+
             # Remove potential control characters
-            cleaned_str = re.sub(r'[\x00-\x1F\x7F]', '', cleaned_str)
-            
+            cleaned_str = re.sub(r"[\x00-\x1F\x7F]", "", cleaned_str)
+
             # Ensure proper JSON formatting for common issues
-            if not cleaned_str.startswith('{') and not cleaned_str.startswith('['):
+            if not cleaned_str.startswith("{") and not cleaned_str.startswith("["):
                 # Try to find the first occurrence of '{' or '['
                 json_start = min(
-                    (cleaned_str.find('{') if cleaned_str.find('{') >= 0 else float('inf')),
-                    (cleaned_str.find('[') if cleaned_str.find('[') >= 0 else float('inf'))
+                    (
+                        cleaned_str.find("{")
+                        if cleaned_str.find("{") >= 0
+                        else float("inf")
+                    ),
+                    (
+                        cleaned_str.find("[")
+                        if cleaned_str.find("[") >= 0
+                        else float("inf")
+                    ),
                 )
-                if json_start != float('inf'):
+                if json_start != float("inf"):
                     cleaned_str = cleaned_str[json_start:]
-            
+
             obj = json.loads(cleaned_str)
-            
+
         self.merged_object = {**self.merged_object, **obj}
         return self.merged_object
-
-
 
 
 @metadata(

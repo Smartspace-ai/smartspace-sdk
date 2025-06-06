@@ -5,8 +5,8 @@ from more_itertools import flatten
 from smartspace.core import (
     Block,
     Config,
+    OperatorBlock,
     Output,
-    OutputChannel,
     State,
     metadata,
     step,
@@ -16,9 +16,7 @@ from smartspace.enums import BlockCategory
 ItemT = TypeVar("ItemT")
 ResultT = TypeVar("ResultT")
 SequenceT = TypeVar("SequenceT", bound=list[Any] | str)
-
-
-
+firstItemT = TypeVar("firstItemT")
 
 
 @metadata(
@@ -30,8 +28,6 @@ class Count(OperatorBlock):
     @step(output_name="output")
     async def count(self, items: list[Any]) -> int:
         return len(items)
-
-
 
 
 @metadata(
@@ -83,9 +79,6 @@ class Slice(Block):
         return items[self.start : self.end]
 
 
-firstItemT = TypeVar("firstItemT")
-
-
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Gets the first item from a list",
@@ -121,9 +114,10 @@ class CreateList(Block):
         return list(items)
 
 
-@metadata(category=BlockCategory.FUNCTION,
-           description="Appends an item to a list and outputs the updated list. Maintains the list state across calls.",
-           label="list builder, dynamic list, item aggregation, list accumulation, append to list"
+@metadata(
+    category=BlockCategory.FUNCTION,
+    description="Appends an item to a list and outputs the updated list. Maintains the list state across calls.",
+    label="list builder, dynamic list, item aggregation, list accumulation, append to list",
 )
 class BuildList(Block):
     items: Annotated[list[Any], State()] = []
@@ -132,6 +126,7 @@ class BuildList(Block):
     async def create_response(self, item: Any) -> list[Any]:
         self.items.append(item)
         return self.items
+
 
 @metadata(
     category=BlockCategory.FUNCTION,
@@ -165,6 +160,7 @@ class MergeLists(Block):
 
         return final_result
 
+
 @metadata(
     description="Takes in a list and sends each item to the corresponding output",
     category=BlockCategory.MISC,
@@ -179,8 +175,6 @@ class UnpackList(Block):
         for i, v in enumerate(list):
             if len(self.items) > i:
                 self.items[i].send(v)
-
-ItemT = TypeVar("ItemT")
 
 
 @metadata(

@@ -1,4 +1,5 @@
 import json
+import re
 from enum import Enum
 from typing import Annotated, Any, List, Union
 
@@ -11,6 +12,8 @@ from smartspace.core import (
     Config,
     Metadata,
     OperatorBlock,
+    Output,
+    State,
     metadata,
     step,
 )
@@ -135,39 +138,6 @@ class Get(OperatorBlock):
             return None if not len(results) else results[0]
 
 
-@metadata(
-    category=BlockCategory.FUNCTION,
-    description="Merges objects from two lists by matching on the configured key.",
-    obsolete=True,
-    label="merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data",
-    use_instead="Join",
-)
-class MergeLists(Block):
-    key: Annotated[str, Config()]
-
-    @step(output_name="result")
-    async def merge_lists(
-        self,
-        a: list[dict[str, Any]],
-        b: list[dict[str, Any]],
-    ) -> list[dict[str, Any]]:
-        dict1 = {item[self.key]: item for item in a}
-        dict2 = {item[self.key]: item for item in b}
-
-        merged_dict = {}
-        for code in dict1.keys() | dict2.keys():
-            if code in dict1 and code in dict2:
-                merged_dict[code] = {**dict1[code], **dict2[code]}
-            elif code in dict1:
-                merged_dict[code] = dict1[code]
-            elif code in dict2:
-                merged_dict[code] = dict2[code]
-
-        final_result = list(merged_dict.values())
-
-        return final_result
-
-
 class JoinType(Enum):
     INNER = "inner"
     OUTER = "outer"
@@ -282,3 +252,98 @@ class Join(Block):
                 result.append(merged_item)
 
         return result
+
+
+@metadata(
+    description="Merges multiple dictionaries into a single object. Accepts only dicts and combines all key-value pairs into one dictionary.",
+    category=BlockCategory.MISC,
+    icon="fa-cube",
+    label="merge objects, combine dictionaries, build object, aggregate key-value pairs",
+)
+class MergeObjects(Block):
+    @step(output_name="object")
+    async def build(self, *objects: dict[str, Any]) -> dict[str, Any]:
+        merged_object = {}
+        for obj in objects:
+            merged_object.update(obj)
+        return merged_object
+
+
+@metadata(
+    description="Takes in inputs and creates an object containing the inputs",
+    category=BlockCategory.MISC,
+    icon="fa-cube",
+    label="create object, build dictionary, construct object, make key-value map, generate object",
+)
+class CreateObject(Block):
+    @step(output_name="object")
+    async def build(self, **properties: Any) -> dict[str, Any]:
+        return properties
+
+
+@metadata(
+    category=BlockCategory.FUNCTION,
+    label="object builder, json merge, dictionary update, data aggregation, object construction",
+    description="Merges objects using dictionary unpacking (similar to jq's merge). Each new object is merged with the existing accumulated object.",
+)
+class BuildObject(Block):
+    """
+    A block that merges objects using dictionary unpacking (similar to jq's merge).
+    Each new object is merged with the existing accumulated object.
+    """
+
+    merged_object: Annotated[dict[str, Any], State()] = {}
+
+    @step(output_name="merged_object")
+    async def merge_object(self, obj: dict[str, Any]) -> dict[str, Any]:
+        # If a string is passed, try to parse it as JSON
+        if isinstance(obj, str):
+            cleaned_str = obj.strip()
+
+            # Remove markdown code block syntax if present
+            markdown_pattern = r"```(?:json)?\s*([\s\S]*?)\s*```"
+            markdown_match = re.search(markdown_pattern, cleaned_str)
+            if markdown_match:
+                cleaned_str = markdown_match.group(1).strip()
+
+            # Remove potential control characters
+            cleaned_str = re.sub(r"[\x00-\x1F\x7F]", "", cleaned_str)
+
+            # Ensure proper JSON formatting for common issues
+            if not cleaned_str.startswith("{") and not cleaned_str.startswith("["):
+                # Try to find the first occurrence of '{' or '['
+                json_start = min(
+                    (
+                        cleaned_str.find("{")
+                        if cleaned_str.find("{") >= 0
+                        else float("inf")
+                    ),
+                    (
+                        cleaned_str.find("[")
+                        if cleaned_str.find("[") >= 0
+                        else float("inf")
+                    ),
+                )
+                if json_start != float("inf"):
+                    cleaned_str = cleaned_str[json_start:]
+
+            obj = json.loads(cleaned_str)
+
+        self.merged_object = {**self.merged_object, **obj}
+        return self.merged_object
+
+
+@metadata(
+    description="Takes in an object and sends each key-value pair to the corresponding output",
+    category=BlockCategory.MISC,
+    icon="fa-th-large",
+    label="unpack object, extract object properties, decompose dictionary, spread object, distribute fields",
+)
+class UnpackObject(Block):
+    properties: dict[str, Output[dict[str, Any]]]
+
+    @step()
+    async def unpack(self, object: dict[str, Any]):
+        for name, value in object.items():
+            if name in self.properties:
+                self.properties[name].send(value)

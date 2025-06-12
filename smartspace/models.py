@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from typing import Annotated, Any, Generic, TypeVar
+from typing import Annotated, Any, Generic, TypeVar, Union, Literal, Protocol
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -13,6 +13,212 @@ from smartspace.enums import (
     FlowVariableAccess,
 )
 from smartspace.utils import _get_type_adapter
+
+
+
+
+class File(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="File")
+    id: str
+    name: str
+
+    def as_info(self, length: int):
+        return FileWithInfoNew(id=self.id, name=self.name, length=length)
+
+
+class FileWithContent(File):
+    model_config = ConfigDict(populate_by_name=True, title="FileWithContent")
+    content: str
+
+    def as_info(self, length: int | None = None):
+        return FileWithInfoNew(
+            id=self.id,
+            name=self.name,
+            length=length if length is not None else len(self.content),
+        )
+
+    def get_content(self) -> str:
+        return self.content
+
+
+class FileWithInfoNew(File):
+    model_config = ConfigDict(populate_by_name=True, title="FileInfo")
+    length: int
+
+class WebDataInfoBaseModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    id: str
+    url: str
+    title: str
+
+
+class WebDataInfoWithSnippet(WebDataInfoBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    snippet: str
+
+
+class WebDataInfoWithSummary(WebDataInfoBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    summary: str
+
+
+class WebDataInfoComplete(WebDataInfoBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    snippet: str
+    summary: str
+    metadata: dict[str, Any]
+
+
+
+class WebDataBaseModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    content: str
+    url: str
+    title: str
+    id: str | None = None
+
+    def get_content(self) -> str:
+        return self.content
+
+    def as_info(self):
+        raise NotImplementedError("Subclasses must implement as_info()")
+
+
+class WebSiteDetails(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    content: str
+    url: str
+    title: str
+
+    def get_content(self) -> str:
+        return self.content
+
+class WebDataWithSnippet(WebDataBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    snippet: str
+
+    def as_info(self):
+        return WebDataInfoWithSnippet(
+            id=self.id or str(UUID()),
+            title=self.title,
+            url=self.url,
+            snippet=self.snippet,
+        )
+
+
+class WebDataWithSummary(WebDataBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    summary: str
+
+    def as_info(self):
+        return WebDataInfoWithSummary(
+            id=self.id or str(UUID()),
+            title=self.title,
+            url=self.url,
+            summary=self.summary,
+        )
+
+
+class WebDataComplete(WebDataBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    snippet: str
+    summary: str
+    id: str 
+    metadata: dict[str, Any]
+
+    def as_info(self):
+        return WebDataInfoComplete(
+            id=self.id or str(UUID()),
+            title=self.title,
+            url=self.url,
+            snippet=self.snippet,
+            summary=self.summary,
+            metadata=self.metadata,
+        )
+
+
+class GoogleSearchResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    items: list[WebDataWithSnippet]
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class Chunk_v2(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="Chunk")
+    index: int
+    position: int
+    content: str
+
+
+class GenericParentInfo(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    id: str
+    object_structure: dict[str, Any]
+
+
+
+class GenericParent(BaseModel):
+    def get_schema(value):
+        import json
+        if isinstance(value, dict):
+            return {k: self.get_schema(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            if value:
+                return [self.get_schema(value[0])]
+            else:
+                return ["unknown"]
+        else:
+            return type(value).__name__
+
+    model_config = ConfigDict(extra="allow", title="MiscParent")
+    id: str
+    content: Any
+
+    def get_content(self) -> Any:
+        return self.content
+    
+    def as_info(self):
+        return GenericParentInfo(id=self.id, object_structure= self.get_schema(self.content))
+
+
+class GenericChunk(Chunk_v2):
+    model_config = ConfigDict(populate_by_name=True, title="MiscChunk")
+    parentInfo: GenericParentInfo
+
+
+class WebDataChunk(Chunk_v2):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataChunk")
+    parentInfo: WebDataInfoComplete | WebDataInfoWithSnippet | WebDataInfoWithSummary | WebDataInfoBaseModel
+
+
+class FileChunk(Chunk_v2):
+    model_config = ConfigDict(populate_by_name=True, title="FileChunk")
+    parentInfo: FileWithInfoNew
+
+
+class WebChunks(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebChunks")
+    parent: WebDataComplete | WebDataWithSummary | WebDataWithSnippet | WebDataBaseModel
+    chunks: list[WebDataChunk]
+
+
+class FileChunks(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="FileChunks")
+    parent: FileWithContent
+    chunks: list[FileChunk]
+
+
+class GenericChunks(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="GenericChunks")
+    parent: GenericParent
+    chunks: list[GenericChunk]
+
+
+
+
+# === Chunks Union Type ===
+Chunks = Union[WebChunks, FileChunks, GenericChunks]
+
 
 
 class PinType(enum.Enum):
@@ -155,10 +361,6 @@ class ThreadMessageResponse(BaseModel):
     sources: list[ThreadMessageResponseSource] | None = None
 
 
-class File(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-    id: str
-    name: str
 
 
 class ContentItem(BaseModel):

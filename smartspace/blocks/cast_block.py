@@ -3,23 +3,23 @@ from typing import Annotated, Any, Generic, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 
-from smartspace.core import Config, GenericSchema, OperatorBlock, metadata, step
+from smartspace.core import Config, GenericSchema, Metadata, OperatorBlock, metadata, step
 from smartspace.enums import BlockCategory
 
 ItemT = TypeVar("ItemT")
 
 
 @metadata(
-    description="Takes in any input and will attempt to convert the input to the specified schema. If the convert config is unticked, it will not attempt to convert the value and will instead just output the input.",
+    description="Converts data between different types and formats. Validates input against schema and transforms when needed. Use this for type safety and data formatting.",
     category=BlockCategory.MISC,
     icon="fa-sync-alt",
-    label="cast type, convert data, transform format, change type, typecast value",
+    label="type conversion, data casting, format transform, schema validation, convert",
     obsolete=True,
     deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class Cast(OperatorBlock, Generic[ItemT]):
     schema: GenericSchema[ItemT]
-    convert: Annotated[bool, Config()] = True
+    convert: Annotated[bool, Config(), Metadata(description="Enable type conversion validation.")] = True
 
     @step(output_name="result")
     async def cast(self, item: Any) -> ItemT:

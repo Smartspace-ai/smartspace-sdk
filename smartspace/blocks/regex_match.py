@@ -1,15 +1,15 @@
 import re
 from typing import Annotated
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="regex-based pattern matching on a string input, returning a list of all matches found.",
+    description="Finds text patterns using regular expressions. Returns all matches found in the input text as a list. Use this to extract structured data from text.",
     icon="fa-text-width",
-    label="regex match, pattern matching, regular expression, string pattern, text extraction",
+    label="regex, pattern matching, text extraction, regular expression, find patterns",
 )
 class RegexMatch(Block):
     """
@@ -19,7 +19,7 @@ class RegexMatch(Block):
     Output: a list of match results of a regex expression
     """
 
-    regex: Annotated[str, Config()] = (
+    regex: Annotated[str, Config(), Metadata(description="Regular expression pattern to match.")] = (
         r".*"  # Default pattern to match the entire string
     )
 

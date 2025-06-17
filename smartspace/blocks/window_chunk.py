@@ -5,26 +5,19 @@ from llama_index.core.node_parser import (
     SentenceWindowNodeParser,
 )
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="""
-    Sentence window chunk parser.
-
-    Splits a document into Chunks
-    Each chunk contains a window from the surrounding sentences.
-
-    Args:
-        window_size: The number of sentences on each side of a sentence to capture.
-    """,
+    description="Creates overlapping text chunks with surrounding sentence context. Each chunk includes neighboring sentences for better context preservation. Use this for analysis requiring sentence relationships.",
     icon="fa-window-maximize",
+    label="window chunk, context chunk, surrounding sentences, overlapping chunks, sentence context",
 )
 class WindowChunk(Block):
     # Sentence Chunking
-    window_size: Annotated[int, Config()] = 3
+    window_size: Annotated[int, Config(), Metadata(description="Number of surrounding sentences to include.")] = 3
 
     @step(output_name="result")
     async def window_chunk(self, text: str | list[str]) -> list[str]:

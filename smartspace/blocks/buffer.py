@@ -6,9 +6,9 @@ ValueT = TypeVar("ValueT")
 
 
 @metadata(
-    description="Buffers values in a list and outputs them one at a time.",
+    description="Queues values and releases them sequentially on demand. Provides flow control for processing streams. Use this to manage data flow timing.",
     icon="fa-database",
-    label="buffer, queue, buffer block, queue block, buffer list, queue list",
+    label="buffer, queue, flow control, sequential output, data stream",
     obsolete=True,
     deprecated_reason="This block will be deprecated in a future version. ",
 )

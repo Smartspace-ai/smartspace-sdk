@@ -9,10 +9,10 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    description="Takes in inputs and creates an object containing the inputs",
+    description="Combines multiple inputs into a single object. Each input becomes a key-value pair in the resulting object. Use this to structure data.",
     category=BlockCategory.MISC,
     icon="fa-cube",
-    label="create object, build dictionary, construct object, make key-value map, generate object",
+    label="create object, build dictionary, structure data, key-value, aggregate",
 )
 class CreateObject(Block):
     @step(output_name="object")

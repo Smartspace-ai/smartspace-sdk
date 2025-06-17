@@ -7,7 +7,7 @@ import httpx
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
 
-from smartspace.core import Block, Config, Output, metadata, step
+from smartspace.core import Block, Config, Metadata, Output, metadata, step
 from smartspace.enums import BlockCategory
 
 
@@ -18,15 +18,15 @@ class WebsiteDetails(BaseModel):
 
 
 @metadata(
-    description="Scrapes the content of a website. Returns both the raw content and the content with metadata.",
+    description="Extracts text content from websites with automatic crawling. Returns clean text and metadata from multiple pages. Use this to gather web content for analysis.",
     category=BlockCategory.MISC,
     icon="fa-globe",
-    label="website scraper, web crawler, content extractor, web harvester, site parser",
+    label="web scraper, content extraction, website crawler, text harvester, web data",
 )
 class WebsiteScraper(Block):
     website_content: Output[list[str]]
     website_details: Output[list[WebsiteDetails]]
-    page_limit: Annotated[int, Config()] = 3
+    page_limit: Annotated[int, Config(), Metadata(description="Maximum number of pages to scrape.")] = 3
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"

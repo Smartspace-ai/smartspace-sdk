@@ -122,6 +122,8 @@ description="""Number of items to skip from the beginning of results (default: 0
 
 When updating block documentation:
 
+- [ ] **All blocks have descriptions** - Every @metadata decorator must include a description field
+- [ ] **All config parameters have descriptions** - Every Config parameter must include Metadata with description
 - [ ] Description follows 3-4 sentence structure
 - [ ] Language is user-centric and actionable
 - [ ] Configuration parameters are concise (1-2 sentences)
@@ -130,6 +132,20 @@ When updating block documentation:
 - [ ] Examples are simple and practical
 - [ ] No technical jargon without explanation
 - [ ] Focuses on user benefits, not implementation details
+
+## Missing Documentation Guidelines
+
+### When Block Descriptions Are Missing
+If a block's @metadata decorator lacks a description field:
+1. Add a description following the standard 3-4 sentence template
+2. Analyze the block's functionality from its code
+3. Focus on what the block does, how it works, and when to use it
+
+### When Config Parameter Descriptions Are Missing
+If a Config parameter lacks Metadata with description:
+1. Add Metadata(description="...") to the parameter annotation
+2. Follow the 1-2 sentence parameter description format
+3. Explain what the parameter controls and expected values/format
 
 ## Version History
 

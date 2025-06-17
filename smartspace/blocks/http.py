@@ -46,19 +46,19 @@ class HTTPError(Exception):
 
 
 @metadata(
-    description="Performs HTTP requests such as GET, POST, PUT, DELETE, and more.",
+    description="Makes HTTP requests to web APIs and services. Supports all common methods with configurable headers and parameters. Use this to integrate with external services.",
     category=BlockCategory.FUNCTION,
     icon="fa-cloud-download-alt",
-    label="HTTP request, web API call, REST client, API request, web service call",
+    label="http request, api call, web service, rest client, external service",
 )
 class HTTPRequest(Block):
-    timeout: Annotated[int, Config()] = 30  # Timeout in seconds
+    timeout: Annotated[int, Config(), Metadata(description="Request timeout in seconds.")] = 30
 
-    method: Annotated[HTTPMethod, Config()] = HTTPMethod.GET
-    url: Annotated[str, Config()] = ""
-    headers: Annotated[dict[str, Any] | None, Config()] = None
-    query_params: Annotated[dict[str, Any] | None, Config()] = None
-    body: Annotated[dict[str, Any] | None, Config()] = None
+    method: Annotated[HTTPMethod, Config(), Metadata(description="HTTP method for the request.")] = HTTPMethod.GET
+    url: Annotated[str, Config(), Metadata(description="Target URL for the HTTP request.")] = ""
+    headers: Annotated[dict[str, Any] | None, Config(), Metadata(description="HTTP headers to include in request.")] = None
+    query_params: Annotated[dict[str, Any] | None, Config(), Metadata(description="URL query parameters as key-value pairs.")] = None
+    body: Annotated[dict[str, Any] | None, Config(), Metadata(description="Request body data for POST/PUT requests.")] = None
 
     @step(output_name="response")
     async def make_request(
@@ -66,7 +66,7 @@ class HTTPRequest(Block):
         request: Annotated[
             RequestObject,
             Metadata(
-                description="Can accept request parameters (method, url, headers, query_params, and/or body). Any values not specified will use the Config values. Pass an empty dict ({}) to use all Config values"
+                description="Request parameters override config values. Pass empty object to use all config values."
             ),
         ],
     ) -> ResponseObject:

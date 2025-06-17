@@ -31,7 +31,7 @@ class ParseJson(OperatorBlock):
         self,
         json_string: Annotated[
             Union[str, List[str]],
-            Metadata(description="JSON string or list of JSON strings"),
+            Metadata(description="JSON text to parse or list of JSON strings."),
         ],
     ) -> dict[str, Any] | list[dict[str, Any]]:
         if isinstance(json_string, dict):
@@ -45,20 +45,20 @@ class ParseJson(OperatorBlock):
 
 
 @metadata(
-    description="This block removes a specified key from a JSON object. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the object with the key removed.",
+    description="Removes a specified property from JSON objects. Optionally removes the property recursively from nested objects. Use this to clean or filter object data.",
     category=BlockCategory.FUNCTION,
     icon="fa-code",
-    label="Remove Key from any json object",
+    label="remove property, delete key, filter object, clean data, modify json",
 )
 class RemoveProperty(OperatorBlock):
-    key: Annotated[str, Config()]
-    recursive: Annotated[bool, Config()] = False
+    key: Annotated[str, Config(), Metadata(description="Property name to remove from the object.")]
+    recursive: Annotated[bool, Config(), Metadata(description="Remove property from nested objects recursively.")]
 
     @step(output_name="json")
     async def process_object(
         self,
         object: Annotated[
-            dict, Metadata(description="Input JSON object as a dictionary")
+            dict, Metadata(description="JSON object to remove property from.")
         ],
     ) -> dict:
         if self.recursive:
@@ -78,17 +78,17 @@ class RemoveProperty(OperatorBlock):
 
 
 @metadata(
-    description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",
+    description="Extracts all property names from a JSON object. Returns a list of keys for inspection or iteration. Use this to analyze object structure.",
     category=BlockCategory.FUNCTION,
     icon="fa-code",
-    label="Get Keys from json object",
+    label="get keys, object properties, extract keys, list fields, inspect structure",
 )
 class GetKeys(OperatorBlock):
     @step(output_name="keys")
     async def process_json(
         self,
         object: Annotated[
-            dict, Metadata(description="Input JSON object as a dictionary")
+            dict, Metadata(description="JSON object to extract keys from.")
         ],
     ) -> List[str]:
         return list(object.keys())
@@ -102,7 +102,7 @@ class GetKeys(OperatorBlock):
     deprecated_reason="This block will be deprecated and moved to connection configuration in a future version.",
 )
 class GetJsonField(Block):
-    json_field_structure: Annotated[str, Config()]
+    json_field_structure: Annotated[str, Config(), Metadata(description="JSONPath expression for data extraction.")]
 
     @step(output_name="field")
     async def get(self, json_object: Any) -> Any:
@@ -120,12 +120,12 @@ class GetJsonField(Block):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/.",
+    description="Extracts data from JSON using JSONPath queries. Supports complex nested data retrieval with path expressions. Use this for precise data extraction.",
     icon="fa-search",
-    label="get JSON path, query JSON data, extract JSON values, JSON lookup, search JSON",
+    label="json path, extract data, query json, data lookup, search nested",
 )
 class Get(OperatorBlock):
-    path: Annotated[str, Config()]
+    path: Annotated[str, Config(), Metadata(description="JSONPath expression to query data.")]
 
     @step(output_name="result")
     async def get(self, data: list[Any] | dict[str, Any]) -> Any:
@@ -146,7 +146,7 @@ class Get(OperatorBlock):
     deprecated_reason="This block will be deprecated in a future version. Use Concat instead.",
 )
 class MergeLists(Block):
-    key: Annotated[str, Config()]
+    key: Annotated[str, Config(), Metadata(description="Property name to match objects on.")]
 
     @step(output_name="result")
     async def merge_lists(
@@ -182,36 +182,13 @@ class JoinType(Enum):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="""
-The `Join` block performs advanced join operations between two lists of dictionaries based on a specified key. It merges the data according to the selected join type, similar to SQL join operations, allowing for flexible data integration and transformation.
-
-**Key Features**:
-
-- **Flexible Join Types**: Supports multiple join types, including `INNER`, `LEFT_INNER`, `LEFT_OUTER`, `RIGHT_INNER`, `RIGHT_OUTER`, and `OUTER`.
-- **Customizable Key**: Allows specification of the join key.
-- **Data Merging**: Combines fields from both left and right records where applicable.
-- **Error Handling**: Ensures all records contain the specified key.
-
-**Supported Join Types**:
-
-- **INNER**: Records where the key exists in both left and right lists.
-- **LEFT_INNER**: Left records with matching keys in the right list.
-- **LEFT_OUTER**: All left records, merging with right records where keys match.
-- **RIGHT_INNER**: Right records with matching keys in the left list.
-- **RIGHT_OUTER**: All right records, merging with left records where keys match.
-- **OUTER**: All records from both lists, merging where keys match.
-
-**Use Cases**:
-
-- Merging datasets from different sources.
-- Performing SQL-like join operations in Python.
-""",
+    description="Merges two lists of objects using SQL-style join operations. Combines records based on matching key values with configurable join types. Use this to integrate data from multiple sources.",
     icon="fa-link",
-    label="join JSON data, SQL-like join, merge datasets, combine JSON lists, data integration",
+    label="join data, merge lists, sql join, combine objects, data integration",
 )
 class Join(Block):
-    key: Annotated[str, Config()]
-    joinType: Annotated[JoinType, Config()] = JoinType.INNER
+    key: Annotated[str, Config(), Metadata(description="Property name to join objects on.")]
+    joinType: Annotated[JoinType, Config(), Metadata(description="Type of join operation to perform.")]
 
     @step(output_name="result")
     async def Join(

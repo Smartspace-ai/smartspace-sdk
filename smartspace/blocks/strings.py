@@ -12,10 +12,10 @@ SequenceT = TypeVar("SequenceT", bound=str | list[Any])
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Concatenates 2 lists or strings",
+    description="Combines two lists or strings into one. Joins data by appending the second input to the first. Use this to merge collections or text.",
     icon="fa-plus",
     obsolete=True,
-    label="concatenate strings, join strings, merge lists, combine text, append strings",
+    label="concatenate, join, merge, combine, append data",
     deprecated_reason="This block will be deprecated in a future version. Use Join instead.",
     use_instead="Join",
 )

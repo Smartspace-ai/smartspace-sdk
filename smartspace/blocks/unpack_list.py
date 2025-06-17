@@ -10,10 +10,10 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    description="Takes in a list and sends each item to the corresponding output",
+    description="Separates list items into individual outputs. Each item goes to its corresponding output port. Use this to break down lists for parallel processing.",
     category=BlockCategory.MISC,
     icon="fa-th-list",
-    label="unpack list, distribute items, extract list elements, spread array, decompose list",
+    label="unpack list, distribute items, separate elements, spread array, decompose",
 )
 class UnpackList(Block):
     items: list[Output[Any]]

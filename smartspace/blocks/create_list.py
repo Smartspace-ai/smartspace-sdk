@@ -9,10 +9,10 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    description="Takes in inputs and creates a list containing the inputs.",
+    description="Combines multiple inputs into a single list. Each input becomes an item in the resulting list. Use this to group related values together.",
     category=BlockCategory.MISC,
     icon="fa-list-ul",
-    label="create list, build list, construct list, form list, make list",
+    label="create list, combine inputs, group values, build array, aggregate",
 )
 class CreateList(Block):
     @step(output_name="list")

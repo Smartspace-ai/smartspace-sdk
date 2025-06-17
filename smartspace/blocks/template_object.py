@@ -13,11 +13,9 @@ from smartspace.enums import BlockCategory, InputDisplayType
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="""
-    A block that takes a Jinja2 template string and fills the template, then tries to parse it to JSON.
-    """,
+    description="Creates JSON objects from templates with dynamic variables. Renders Jinja2 template with input values and parses result as JSON. Use this for structured data generation.",
     icon="fa-code",
-    label="template object, JSON templating, dynamic JSON, structured template, object generation",
+    label="template object, json template, dynamic object, structured data, generate json",
 )
 class TemplatedObject(Block):
     templated_json: Annotated[
@@ -25,7 +23,7 @@ class TemplatedObject(Block):
         Config(),
         Metadata(
             display_type=InputDisplayType.TEMPLATEOBJECT,
-            description="The Jinja2 template string that is formatted and parsed to JSON",
+            description="Jinja2 template with placeholders that renders to valid JSON.",
         ),
     ]
 
@@ -33,7 +31,7 @@ class TemplatedObject(Block):
     async def add_files(
         self,
         **inputs: Annotated[
-            Any, Metadata(description="The inputs to fill the Jinja2 template")
+            Any, Metadata(description="Variables to substitute in the template.")
         ],
     ) -> dict[str, Any]:
         try:

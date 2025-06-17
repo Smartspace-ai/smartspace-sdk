@@ -8,42 +8,25 @@ from llama_index.core.node_parser import (
 from tiktoken.model import MODEL_TO_ENCODING
 from transformers import AutoTokenizer
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="""
-    Parse text with a preference for complete sentences.
-
-    In general, this class tries to keep sentences and paragraphs together. Therefore
-    compared to the original TokenTextSplitter, there are less likely to be
-    hanging sentences or parts of sentences at the end of the node chunk.
-    
-    Args:
-        chunk_size: The number of tokens to include in each chunk. (default is 200)
-        chunk_overlap: The number of tokens that overlap between consecutive chunks. (default is 10)
-        separator: Default separator for splitting into words. (default is " ")
-        paragraph_separator: Separator between paragraphs. (default is "\\n\\n\\n")
-        secondary_chunking_regex: Backup regex for splitting into sentences.(default is "[^,\\.;]+[,\\.;]?".)
-        
-    Steps: 
-        1: Break text into splits that are smaller than chunk size base on the separators and regex.
-        2: Combine splits into chunks of size chunk_size (smaller than).
-
-    """,
+    description="Splits text into chunks while preserving complete sentences. Maintains sentence integrity and paragraph structure for better readability. Use this for content requiring natural language flow.",
     icon="fa-paragraph",
+    label="sentence chunk, preserve sentences, smart split, readable chunks, text segmentation",
 )
 class SentenceChunk(Block):
-    chunk_size: Annotated[int, Config()] = 200
-    chunk_overlap: Annotated[int, Config()] = 10
+    chunk_size: Annotated[int, Config(), Metadata(description="Maximum tokens per chunk.")] = 200
+    chunk_overlap: Annotated[int, Config(), Metadata(description="Token overlap between consecutive chunks.")] = 10
 
-    separator: Annotated[str, Config()] = " "
-    paragraph_separator: Annotated[str, Config()] = "\n\n\n"
-    model_name: Annotated[str, Config()] = "gpt-3.5-turbo"
+    separator: Annotated[str, Config(), Metadata(description="Word separator for text splitting.")] = " "
+    paragraph_separator: Annotated[str, Config(), Metadata(description="Separator between paragraphs.")] = "\n\n\n"
+    model_name: Annotated[str, Config(), Metadata(description="Tokenizer model for token counting.")] = "gpt-3.5-turbo"
 
-    secondary_chunking_regex: Annotated[str, Config()] = "[^,.;。？！]+[,.;。？！]?"
+    secondary_chunking_regex: Annotated[str, Config(), Metadata(description="Regex pattern for sentence splitting.")] = "[^,.;。？！]+[,.;。？！]?"
 
     @step(output_name="result")
     async def sentence_chunk(self, text: str | list[str]) -> list[str]:

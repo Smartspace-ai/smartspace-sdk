@@ -2,19 +2,19 @@ from typing import Annotated
 
 from litellm.utils import decode, encode
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="takes in a string input and truncates it given a token limit",
+    description="Shortens text to fit within a token limit for AI models. Cuts text at the token boundary while preserving beginning content. Use this to ensure text fits model constraints.",
     icon="fa-cut",
-    label="truncate string, shorten text, cut text, limit tokens, trim text",
+    label="truncate, shorten text, token limit, trim text, model constraints",
 )
 class StringTruncator(Block):
-    max_token: Annotated[int, Config()] = 100  # default token limit
-    model_name: Annotated[str, Config()] = "gpt-3.5-turbo"  # default model
+    max_token: Annotated[int, Config(), Metadata(description="Maximum number of tokens to keep.")] = 100
+    model_name: Annotated[str, Config(), Metadata(description="Tokenizer model for token counting.")] = "gpt-3.5-turbo"
 
     @step(output_name="result")
     async def truncate_string(self, input_strings: str) -> str:

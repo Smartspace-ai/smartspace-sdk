@@ -10,10 +10,10 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    description="Takes in an object and sends each key-value pair to the corresponding output",
+    description="Separates object properties into individual outputs. Each property value goes to its corresponding output port. Use this to break down objects for parallel processing.",
     category=BlockCategory.MISC,
     icon="fa-th-large",
-    label="unpack object, extract object properties, decompose dictionary, spread object, distribute fields",
+    label="unpack object, extract properties, decompose dictionary, spread object, distribute",
 )
 class UnpackObject(Block):
     properties: dict[str, Output[dict[str, Any]]]

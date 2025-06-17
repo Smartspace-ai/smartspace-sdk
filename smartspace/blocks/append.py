@@ -11,10 +11,10 @@ ItemT = TypeVar("ItemT")
 
 
 @metadata(
-    description="Appends item to items and output resulting list",
+    description="Adds a single item to the end of a list. Creates a new list with the original items plus the appended item. Use this to build collections incrementally.",
     category=BlockCategory.MISC,
     icon="fa-plus",
-    label="append item, add item, extend list, insert item, concatenate item",
+    label="append, add item, extend list, build collection, accumulate",
 )
 class Append(Block, Generic[ItemT]):
     @step(output_name="items")

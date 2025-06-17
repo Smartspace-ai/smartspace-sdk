@@ -8,37 +8,21 @@ from llama_index.core.node_parser import (
 from tiktoken.model import MODEL_TO_ENCODING
 from transformers import AutoTokenizer
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="""
-    Parse the document text into chunks with a fixed token size.
-
-    Args:
-    - chunk_size: The number of tokens to include in each chunk. (default is 200)
-    - chunk_overlap: The number of tokens that overlap between consecutive
-                        chunks. (default is 10)
-    - separator: Default separator for splitting into words. (default is " ")
-
-    This chunking method is particularly useful when:
-    - You need precise control over the size of each chunk.
-    - You're working with models that have specific token limits.
-    - You want to ensure consistent chunk sizes across different types of text.
-
-    Note: While this method provides consistent chunk sizes, it may split sentences
-    or even words, which could affect the coherence of each chunk. Consider the
-    trade-off between consistent size and semantic coherence when using this method.
-    """,
+    description="Splits text into fixed-size token chunks regardless of sentence boundaries. Provides precise control over chunk size for AI model processing. Use this when exact token limits are required.",
     icon="fa-tags",
+    label="token chunk, fixed size, token split, precise chunking, model limits",
 )
 class TokenChunk(Block):
-    chunk_size: Annotated[int, Config()] = 200
-    chunk_overlap: Annotated[int, Config()] = 10
-    separator: Annotated[str, Config()] = " "
-    model_name: Annotated[str, Config()] = "gpt-3.5-turbo"
+    chunk_size: Annotated[int, Config(), Metadata(description="Maximum tokens per chunk.")] = 200
+    chunk_overlap: Annotated[int, Config(), Metadata(description="Token overlap between consecutive chunks.")] = 10
+    separator: Annotated[str, Config(), Metadata(description="Word separator for text splitting.")] = " "
+    model_name: Annotated[str, Config(), Metadata(description="Tokenizer model for token counting.")] = "gpt-3.5-turbo"
 
     # backup_separators: Annotated[List] # description="Additional separators for splitting."
 

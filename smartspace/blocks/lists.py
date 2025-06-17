@@ -7,6 +7,7 @@ from smartspace.core import (
     ChannelEvent,
     Config,
     InputChannel,
+    Metadata,
     OperatorBlock,
     Output,
     OutputChannel,
@@ -25,9 +26,9 @@ SequenceT = TypeVar("SequenceT", bound=list[Any] | str)
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
+    description="Transforms each item in a list using a configured operation. Processes all items in parallel and returns transformed results. Use this to apply functions to collections.",
     icon="fa-project-diagram",
-    label="map function, transform items, process list, iterate collection, apply function to list",
+    label="map, transform items, process list, apply function, iterate collection",
 )
 class Map(Block, Generic[ItemT, ResultT]):
     class Operation(Tool):
@@ -114,8 +115,9 @@ class Collect(OperatorBlock, Generic[ItemT]):
 
 @metadata(
     category=BlockCategory.FUNCTION,
+    description="Counts the number of items in a list. Returns the total count as an integer. Use this to get collection size for validation or processing.",
     icon="fa-sort-numeric-up",
-    label="count items, list length, item count, size of list, total elements",
+    label="count, list length, size, total items, number elements",
 )
 class Count(OperatorBlock):
     @step(output_name="output")
@@ -125,9 +127,9 @@ class Count(OperatorBlock):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Loops through a list of items and outputs them one at a time",
+    description="Outputs each item from a list individually. Sends items sequentially to enable downstream processing. Use this to iterate through collections.",
     icon="fa-ellipsis-h	",
-    label="for each, iterate items, loop through list, process each item, step through collection",
+    label="for each, iterate, loop list, process each, step through",
 )
 class ForEach(OperatorBlock, Generic[ItemT]):
     item: OutputChannel[ItemT]
@@ -150,7 +152,7 @@ class ForEach(OperatorBlock, Generic[ItemT]):
     deprecated_reason="This block will be deprecated in a future version. Use Join instead.",
 )
 class JoinStrings(Block):
-    separator: Annotated[str, Config()] = ""
+    separator: Annotated[str, Config(), Metadata(description="Text separator to join strings with.")] = ""
 
     @step(output_name="output")
     async def join(self, strings: list[str]) -> str:
@@ -159,13 +161,13 @@ class JoinStrings(Block):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Splits a string using the configured separator and outputs a list of the substrings",
+    description="Divides text into parts using a separator character. Returns list of substrings for further processing. Use this to parse structured text.",
     icon="fa-cut",
-    label="split string, divide text, break string, tokenize text, parse string",
+    label="split string, divide text, parse text, tokenize, break apart",
 )
 class SplitString(Block):
-    separator: Annotated[str, Config()] = "\n"
-    include_separator: Annotated[bool, Config()] = False
+    separator: Annotated[str, Config(), Metadata(description="Text separator to split string on.")] = "\n"
+    include_separator: Annotated[bool, Config(), Metadata(description="Include separator at end of each part.")] = False
 
     @step(output_name="output")
     async def split(self, string: str) -> list[str]:
@@ -179,13 +181,13 @@ class SplitString(Block):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Slices a list or string using the configured start and end indexes.",
+    description="Extracts a portion of a list or string using start and end positions. Returns subset of original data. Use this for pagination or partial processing.",
     icon="fa-cut",
-    label="slice list, extract portion, get segment, subset sequence, partial list",
+    label="slice, extract portion, get segment, subset, partial data",
 )
 class Slice(Block):
-    start: Annotated[int, Config()] = 0
-    end: Annotated[int, Config()] = 0
+    start: Annotated[int, Config(), Metadata(description="Starting index for slice operation.")] = 0
+    end: Annotated[int, Config(), Metadata(description="Ending index for slice operation.")] = 0
 
     @step(output_name="items")
     async def slice(self, items: list[Any] | str) -> list[Any] | str:
@@ -197,8 +199,9 @@ firstItemT = TypeVar("firstItemT")
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Gets the first item from a list",
+    description="Extracts the first item from a list. Returns the initial element for further processing. Use this to get the primary result from collections.",
     icon="fa-arrow-alt-circle-left",
+    label="first, initial item, head element, primary result, get first",
 )
 class First(OperatorBlock, Generic[firstItemT]):
     @step(output_name="item")
@@ -208,9 +211,9 @@ class First(OperatorBlock, Generic[firstItemT]):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Flattens a list of lists into a single list",
+    description="Converts nested lists into a single flat list. Removes one level of nesting from data structures. Use this to simplify complex collections.",
     icon="fa-compress",
-    label="flatten list, merge nested lists, combine nested arrays, unnest lists, simplify nested lists",
+    label="flatten, merge nested, combine arrays, unnest, simplify structure",
 )
 class Flatten(OperatorBlock):
     @step(output_name="list")

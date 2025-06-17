@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.sql.elements import BindParameter
 from sqlalchemy.types import TypeEngine
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 # Removed Pydantic import and SQLResult model as per requirement
@@ -25,24 +25,16 @@ from smartspace.enums import BlockCategory
 
 @metadata(
     category=BlockCategory.DATA,
-    description="Executes a SQL query using ODBC",
-    documentation=(
-        "Executes an asynchronous SQL query on a database using SQLAlchemy. "
-        "Supports all types of queries, including SELECT, INSERT, UPDATE, and DELETE. "
-        "For data-modifying queries (INSERT, UPDATE, DELETE), the block commits the transaction. "
-        "If the database connection fails (e.g., because the database isn't running yet), "
-        "the block will retry the connection once before raising an error. "
-        "The connection string should be provided in a format compatible with SQLAlchemy's `create_async_engine`, "
-        "such as `'mssql+aioodbc://username:password@host:port/dbname?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'`."
-    ),
+    description="Executes SQL queries on databases with parameter binding. Supports all query types and returns results or row counts. Use this to interact with databases.",
+    documentation="Executes SQL queries using SQLAlchemy with async support. Supports SELECT, INSERT, UPDATE, DELETE with automatic parameter binding and type inference. Connection string format: 'mssql+aioodbc://user:pass@host:port/db?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'.",
     icon="fa-database",
-    label="SQL query, database query, ODBC connection, database operation, SQL execution",
+    label="sql query, database, odbc connection, data operation, sql execution",
 )
 class SQL(Block):
     """Block that executes an asynchronous SQL query on a database using SQLAlchemy."""
 
-    connection_string: Annotated[str, Config()]
-    query: Annotated[str, Config()]
+    connection_string: Annotated[str, Config(), Metadata(description="Database connection string for SQLAlchemy.")]
+    query: Annotated[str, Config(), Metadata(description="SQL query to execute with parameter placeholders.")]
 
     @step(output_name="result")
     async def run(self, **params) -> Union[List[Dict[str, Any]], int]:

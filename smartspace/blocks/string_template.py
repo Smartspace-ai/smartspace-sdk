@@ -5,6 +5,7 @@ from jinja2 import BaseLoader, Environment
 from smartspace.core import (
     Block,
     Config,
+    Metadata,
     metadata,
     step,
 )
@@ -12,13 +13,13 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    description="Takes in a Jinja template string and renders it with the given inputs",
+    description="Renders text templates with dynamic variables. Configure a template with placeholders and fill them with input values. Use this for dynamic text generation.",
     category=BlockCategory.MISC,
     icon="fa-file-alt",
-    label="string template, text formatting, variable substitution, format string, template interpolation",
+    label="template, text formatting, variable substitution, dynamic text, render",
 )
 class StringTemplate(Block):
-    template: Annotated[str, Config()]
+    template: Annotated[str, Config(), Metadata(description="Jinja2 template with placeholders.")]
 
     @step(output_name="string")
     async def build(self, **inputs: Any) -> str:

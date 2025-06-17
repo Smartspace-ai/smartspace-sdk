@@ -20,10 +20,10 @@ class TypeSwitchOption(Generic[ItemT]):
 
 
 @metadata(
-    description="Checks the output schemas of the options and sends the input to the first option that matches",
+    description="Routes input data to different paths based on data type. Checks input against schemas and sends to the first matching option. Use this for conditional processing.",
     category=BlockCategory.MISC,
     icon="fa-random",
-    label="type switch, schema routing, type routing, data branching, conditional path",
+    label="type routing, conditional logic, data branching, schema matching, switch",
 )
 class TypeSwitch(Block):
     options: list[TypeSwitchOption]

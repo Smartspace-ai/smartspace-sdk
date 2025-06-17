@@ -6,30 +6,22 @@ from llama_index.core.node_parser import (
 )
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
-from smartspace.core import Block, Config, metadata, step
+from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="""
-    Semantic chunk parser.
-
-    Splits a document into Chunks, with each node being a group of semantically related sentences.
-
-    Args:
-        buffer_size (int): number of sentences to group together when evaluating semantic similarity
-        chunk_model: (BaseEmbedding): embedding model to use, defaults to BAAI/bge-small-en-v1.5
-        breakpoint_percentile_threshold: (int): the percentile of cosine dissimilarity that must be exceeded between a group of sentences and the next to form a node. The smaller this number is, the more nodes will be generated
-    """,
+    description="Splits text into semantically related chunks using AI embeddings. Groups sentences by meaning rather than size for better context preservation. Use this for content that needs coherent meaning.",
     icon="fa-quote-left",
+    label="semantic chunk, meaning-based split, context splitting, ai chunking, smart divide",
 )
 class SemanticChunk(Block):
-    buffer_size: Annotated[int, Config()] = 1
+    buffer_size: Annotated[int, Config(), Metadata(description="Number of sentences to group for similarity evaluation.")] = 1
 
-    breakpoint_percentile_threshold: Annotated[int, Config()] = 95
+    breakpoint_percentile_threshold: Annotated[int, Config(), Metadata(description="Percentile threshold for semantic break detection.")] = 95
 
-    model_name: Annotated[str, Config()] = "BAAI/bge-small-en-v1.5"
+    model_name: Annotated[str, Config(), Metadata(description="Embedding model for semantic similarity.")] = "BAAI/bge-small-en-v1.5"
 
     @step(output_name="result")
     async def semantic_chunk(self, text: str | list[str]) -> list[str]:

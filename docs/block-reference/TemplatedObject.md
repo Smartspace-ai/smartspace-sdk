@@ -52,7 +52,7 @@ The Block uses Jinja2 templating syntax, allowing for complex logic including co
 
 ???+ question "What Jinja2 features are supported?"
 
-    The `TemplatedObject` Block supports all standard Jinja2 features including variables, filters, conditionals (`{% if %}`), loops (`{% for %}`), macros, and custom filters. You have access to the full Jinja2 templating syntax.
+    The `TemplatedObject` Block supports all standard Jinja2 features including variables, filters, conditionals (`{%raw%}{% if %}{%endraw%}`), loops (`{%raw%}{% for %}{%endraw%}`), macros, and custom filters. You have access to the full Jinja2 templating syntax.
 
 ???+ question "How are different data types handled in the template?"
 
@@ -68,11 +68,11 @@ The Block uses Jinja2 templating syntax, allowing for complex logic including co
 
 ???+ question "Can I use conditional logic to include or exclude fields?"
 
-    Yes, use Jinja2 conditional statements (`{% if condition %}`) to dynamically include or exclude fields based on input values. This is useful for creating objects with optional fields.
+    Yes, use Jinja2 conditional statements (`{%raw%}{% if condition %}{%endraw%}`) to dynamically include or exclude fields based on input values. This is useful for creating objects with optional fields.
 
 ???+ question "How do I handle lists and arrays in the template?"
 
-    Use Jinja2 loops (`{% for item in items %}`) to iterate over input lists. Be careful with JSON syntax, ensuring proper comma placement and array brackets.
+    Use Jinja2 loops (`{%raw%}{% for item in items %}{%endraw%}`) to iterate over input lists. Be careful with JSON syntax, ensuring proper comma placement and array brackets.
 
 ???+ question "Can I apply filters to transform input values?"
 

@@ -8,7 +8,7 @@ filterwarnings = [
 
 [tool.poetry]
 name = "smartspace-ai"
-version = "0.1.5"
+version = "0.1.6"
 description = "Smartspace SDK"
 readme = "README.md"
 packages = [{ include = "smartspace" }]

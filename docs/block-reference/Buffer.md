@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be removed in a future version.** Consider using alternative flow control mechanisms or batch processing blocks instead.
+
 The `Buffer` Block temporarily stores values in a list and releases them one by one when the block is ready. This allows for buffering of data to control the flow of values in a sequence. The block holds incoming values until a signal is received to process the next one. It ensures that only one value is processed at a time, allowing better control over sequential workflows.
 
 {{ generate_block_details(page.title) }}

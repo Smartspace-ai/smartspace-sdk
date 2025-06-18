@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be removed in a future version.** Use the `LLM` block instead, which now includes built-in tool calling capabilities with better performance and features.
+
 The `LLMWithTools` Block allows interaction with a Language Learning Model (LLM) and integrates additional tools to assist the LLM in generating more complex responses. This Block supports multiple tools, which can be invoked by the LLM when needed. It manages both the LLM's responses and the results from tool invocations.
 
 This Block is useful when you want the LLM to dynamically call different tools based on user inputs, allowing for more versatile and context-aware conversations.

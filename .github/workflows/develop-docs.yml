@@ -36,4 +36,6 @@ jobs:
         run: |
           git fetch origin gh-pages --depth=1 || true
       - name: Build Docs Website
-        run: poetry run mike deploy --push dev
+        run: |
+          poetry run mike deploy --push dev
+          poetry run mike alias dev latest --push

@@ -57,6 +57,14 @@
          <lastmod>2025-06-18</lastmod>
     </url>
     <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/DocumentCreator/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/DocumentFromTemplate/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
          <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/FileStore/</loc>
          <lastmod>2025-06-18</lastmod>
     </url>
@@ -78,6 +86,10 @@
     </url>
     <url>
          <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/GetAllDocuments/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/GetDataset/</loc>
          <lastmod>2025-06-18</lastmod>
     </url>
     <url>
@@ -109,6 +121,10 @@
          <lastmod>2025-06-18</lastmod>
     </url>
     <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/LLMDataEnrich/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
          <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/LLMSelect/</loc>
          <lastmod>2025-06-18</lastmod>
     </url>
@@ -133,7 +149,27 @@
          <lastmod>2025-06-18</lastmod>
     </url>
     <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/RowChunk/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
          <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/SQL/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/Save/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/SaveChunk/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/SaveToDataset/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/SearchDataset/</loc>
          <lastmod>2025-06-18</lastmod>
     </url>
     <url>
@@ -186,6 +222,10 @@
     </url>
     <url>
          <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/VectorSearch/</loc>
+         <lastmod>2025-06-18</lastmod>
+    </url>
+    <url>
+         <loc>https://redesigned-happiness-lml15p6.pages.github.io/dev/block-reference/VectorStore/</loc>
          <lastmod>2025-06-18</lastmod>
     </url>
     <url>

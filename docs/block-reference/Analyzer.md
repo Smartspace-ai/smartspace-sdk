@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be removed in a future version.** Use the `LLM` block instead for language model interactions. The `LLM` block provides all the functionality of the Analyzer block with better performance and additional features.
+
 The `Analyzer` Block is designed to process a collection of documents, interact with an LLM (Language Learning Model), and generate a response. It provides tools for summarizing and generating content based on sources and citations from the knowledge base. It ensures that sources used in the response are properly cited.
 
 This block allows customization of the response schema, enabling flexibility in the format of the output (string or structured data).

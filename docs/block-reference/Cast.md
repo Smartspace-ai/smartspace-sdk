@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be moved to connection configuration in a future version.** Type casting functionality will be handled automatically in connection configurations rather than requiring a separate block.
+
 The `Cast` Block converts an input into the specified type based on a provided schema. This is useful for ensuring that inputs conform to a specific structure or type.
 
 {{ generate_block_details(page.title) }}

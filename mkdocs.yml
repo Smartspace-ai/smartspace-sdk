@@ -1,6 +1,6 @@
 site_name: Smartspace Workflow Documentation
-site_url: "https://redesigned-happiness-lml15p6.pages.github.io/"
-repo_url: "https://github.com/Smartspace-ai/smartspace-flows"
+site_url: "https://smartspace-ai.github.io/smartspace-sdk/"
+repo_url: "https://github.com/Smartspace-ai/smartspace-sdk"
 
 theme:
   features:

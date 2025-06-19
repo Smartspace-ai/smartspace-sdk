@@ -7,9 +7,8 @@ from smartspace.core import (
     metadata,
     step,
 )
-
-from app.utils.expressions import evaluate_expression, expression_tooltip
 from smartspace.enums import BlockCategory
+from smartspace.utils.expressions import evaluate_expression, expression_tooltip
 
 ValueT = TypeVar("ValueT")
 

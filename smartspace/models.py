@@ -122,7 +122,7 @@ class WebDataComplete(WebDataBaseModel):
     model_config = ConfigDict(populate_by_name=True, title="WebData")
     snippet: str
     summary: str
-    id: str
+    id: str = Field(default=...)
     metadata: dict[str, Any]
 
     def as_info(self):

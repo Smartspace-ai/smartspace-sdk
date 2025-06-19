@@ -124,7 +124,7 @@ nav:
   #         - Flow Deployment: concepts/flows/flow-deployment.md
   #         - Flow Execution: concepts/flows/flow-execution.md
       # - Overview: concepts/index.md
-  # - Getting Started: getting-started/index.md
+  - Getting Started: getting-started/index.md
   # - Examples: examples/index.md
   # - API Reference: api/index.md
 

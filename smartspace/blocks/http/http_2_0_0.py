@@ -1,9 +1,8 @@
 from enum import Enum
-from typing import Annotated, Any, Iterable
+from typing import Annotated, Any, Optional
 
 import httpx
 from pydantic import BaseModel
-
 from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory
 
@@ -17,28 +16,13 @@ class HTTPMethod(str, Enum):
 
 
 class ResponseObject(BaseModel):
-    content: str | bytes | Iterable[bytes]
+    content: bytes
     headers: dict[Any, Any]
     body: Any
     status_code: int
     text: str
 
 
-
-
-class HTTPError(Exception):
-    def __init__(
-        self,
-        message: str,
-        status_code: int | None = None,
-        response: ResponseObject | None = None,
-    ):
-        self.message = message
-        self.status_code = status_code
-        self.response = response
-        super().__init__(self.message)
-
-        
 @metadata(
     description="Performs HTTP requests such as GET, POST, PUT, DELETE, and more.",
     category=BlockCategory.FUNCTION,
@@ -49,61 +33,54 @@ class HTTPRequest_2_0_0(Block):
     timeout: Annotated[int, Config()] = 30  # Timeout in seconds
 
     method: Annotated[HTTPMethod, Config()] = HTTPMethod.GET
-    headers: Annotated[dict[str, Any] , Config()] = {}
+    headers: Annotated[
+        dict[str, Any], Config()
+    ] = {}  # NOTE: mutable default is fine if your framework handles it
 
     @step(output_name="response")
     async def make_request(
         self,
         url: Annotated[str, Metadata(description="The URL to send the request to")],
-        query_params: Annotated[dict[str, Any] , Metadata(description="Query parameters to include in the URL")] = {},
-        body: Annotated[dict[str, Any], Metadata(description="Request body for POST, PUT, or PATCH requests")] = {},
+        body: Annotated[
+            Optional[Any],
+            Metadata(
+                description="Request body for POST, PUT, or PATCH requests. Can be a dict, list, or raw JSON-compatible value."
+            ),
+        ] = None,
+        query_params: Annotated[
+            Optional[dict[str, Any]], Metadata(description="Query parameters")
+        ] = None,
     ) -> ResponseObject:
+        if not url:
+            raise ValueError("URL is required")
+
+        query_params = query_params or {}
+        json_body = (
+            body
+            if self.method in {HTTPMethod.POST, HTTPMethod.PUT, HTTPMethod.PATCH}
+            else None
+        )
+
         async with httpx.AsyncClient(timeout=self.timeout) as client:
-            try:
-                if not url:
-                    raise ValueError("URL is required")
-                
-                response = await client.request(
-                    method=self.method,
-                    url=url,
-                    headers=self.headers ,
-                    params=query_params ,
-                    json=body if self.method in ["POST", "PUT", "PATCH"] else None,
-                )
+            response = await client.request(
+                method=self.method.value,  # ensure str
+                url=url,
+                headers=self.headers,
+                params=query_params,
+                json=json_body,
+            )
 
-                response.raise_for_status()
+            content_type = response.headers.get("content-type", "").lower()
+            response_body = (
+                response.json()
+                if "application/json" in content_type or "text/json" in content_type
+                else response.text
+            )
 
-                content_type = response.headers.get("content-type", "")
-                if "application/json" in content_type:
-                    try:
-                        body = response.json()
-                    except ValueError:
-                        # JSON decoding failed, leave body as None
-                        pass
-
-                return ResponseObject(
-                    status_code=response.status_code,
-                    headers=dict(response.headers),
-                    text=response.text,
-                    content=response.content,
-                    body=body,
-                )
-
-            except httpx.RequestError as e:
-                raise HTTPError(f"Network error occurred: {str(e)}")
-            except httpx.HTTPStatusError as e:
-                response_obj = ResponseObject(
-                    status_code=e.response.status_code,
-                    headers=dict(e.response.headers),
-                    text=e.response.text,
-                    content=e.response.content,
-                    body=None,
-                )
-                raise HTTPError(
-                    f"HTTP error occurred: {str(e)}",
-                    e.response.status_code,
-                    response_obj,
-                )
-            except Exception as e:
-                raise HTTPError(f"Unexpected error occurred: {str(e)}")
-
+            return ResponseObject(
+                status_code=response.status_code,
+                headers=dict(response.headers.items()),
+                text=response.text,
+                content=response.content,
+                body=response_body,
+            )

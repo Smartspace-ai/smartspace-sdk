@@ -57,7 +57,7 @@ from smartspace.models import (
     StateValue,
     ThreadMessage,
 )
-from smartspace.utils import _get_type_adapter, _issubclass
+from smartspace.utils.utils import _get_type_adapter, _issubclass
 
 B = TypeVar("B", bound="Block")
 S = TypeVar("S")

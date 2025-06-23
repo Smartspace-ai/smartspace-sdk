@@ -3,7 +3,7 @@ import inspect
 from typing import cast
 
 import smartspace.core
-import smartspace.utils
+import smartspace.utils.utils
 
 
 async def load(
@@ -88,7 +88,7 @@ async def load(
             for name in dir(module):
                 item = getattr(module, name)
                 if (
-                    smartspace.utils._issubclass(item, smartspace.core.Block)
+                    smartspace.utils.utils._issubclass(item, smartspace.core.Block)
                     and item != smartspace.core.Block
                     and item != smartspace.core.WorkSpaceBlock
                     and not inspect.isabstract(item)

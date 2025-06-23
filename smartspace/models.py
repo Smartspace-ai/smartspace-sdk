@@ -12,7 +12,7 @@ from smartspace.enums import (
     ChannelState,
     FlowVariableAccess,
 )
-from smartspace.utils import _get_type_adapter
+from smartspace.utils.utils import _get_type_adapter
 
 
 class File(BaseModel):

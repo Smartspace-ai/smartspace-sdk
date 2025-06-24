@@ -79,8 +79,11 @@ class WebDataBaseModel(BaseModel):
         return self.content
 
     def as_info(self):
-        raise NotImplementedError("Subclasses must implement as_info()")
-
+        return WebDataInfoBaseModel(
+                    id=self.id ,
+                    title=self.title,
+                    url=self.url,
+                )
 
 class WebSiteDetails(BaseModel):
     model_config = ConfigDict(populate_by_name=True, title="WebData")
@@ -221,7 +224,7 @@ class GenericChunks(BaseModel):
 
 
 # === Chunks Union Type ===
-Chunks = Union[WebChunks, FileChunks, GenericChunks]
+Chunks = Union[WebChunks,FileChunks,  GenericChunks]
 
 
 class PinType(enum.Enum):

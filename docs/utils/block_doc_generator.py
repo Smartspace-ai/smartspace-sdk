@@ -39,16 +39,25 @@ def get_block_classes(module_ast) -> list[ast.ClassDef]:
 def get_block_class(
     block_name: str, is_smartspace: bool = False
 ) -> ast.ClassDef | None:
-    # if is_smartspace:
-    #     files = [
-    #         os.path.join("docs", "utils", "smartspace_blocks", f)
-    #         for f in os.listdir(os.path.join("docs", "utils", "smartspace_blocks"))
-    #     ]
-    files = [
-        os.path.join("smartspace", "blocks", f)
-        for f in os.listdir(os.path.join("smartspace", "blocks"))
-        if f.endswith(".py")
+    if is_smartspace:
+        # Look in the smartspace_blocks directory for external blocks
+        smartspace_dir = os.path.join("docs", "utils", "smartspace_blocks")
+        if os.path.exists(smartspace_dir):
+            files = [
+                os.path.join(smartspace_dir, f)
+                for f in os.listdir(smartspace_dir)
+                if f.endswith(".py")
+            ]
+        else:
+            files = []
+    else:
+        # Look in the regular blocks directory
+        files = [
+            os.path.join("smartspace", "blocks", f)
+            for f in os.listdir(os.path.join("smartspace", "blocks"))
+            if f.endswith(".py")
         ]
+    
     for file_path in files:
         module_ast = parse_module(file_path)
         block_classes = get_block_classes(module_ast)
@@ -697,7 +706,26 @@ def generate_block_docs_from_text(module_text: str, output_dir: str):
         print(f"Generated documentation for {block_info['name']} in {output_file}")
 
 
-def generate_block_docs_temp(input_path: str, output_dir: str):
+def get_block_category(block_info: BlockInfo) -> str:
+    """Determine the category for a block based on its metadata."""
+    category = block_info['metadata'].get('category', 'Misc')
+    
+    # Map categories to documentation sections
+    category_map = {
+        'Data': 'Data',
+        'Agent': 'LLM',
+        'Llm': 'LLM',
+        'LLM': 'LLM',
+        'Function': 'Utils',
+        'Utils': 'Utils',
+        'Misc': 'Utils',
+    }
+    
+    return category_map.get(category, 'Utils')
+
+
+def generate_block_docs_temp(input_path: str, output_dir: str) -> dict[str, list[str]]:
+    """Generate documentation for blocks and return categorized block names."""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -707,29 +735,47 @@ def generate_block_docs_temp(input_path: str, output_dir: str):
         files = [
             os.path.join(input_path, f)
             for f in os.listdir(input_path)
-            if f.endswith(".py")
+            if f.endswith(".py") and not f.startswith('__')
         ]
     else:
         raise ValueError("Input path must be a file or directory")
 
+    block_categories = {}
+    
     for file_path in files:
-        module = parse_module(file_path)
-        block_classes = get_block_classes(module)
-        for block_class in block_classes:
-            block_info = get_block_info(block_class)
-            # check if file already exists
-            if os.path.exists(os.path.join(output_dir, f"{block_info['name']}.md")):
-                print(f"Documentation for {block_info['name']} already exists")
-                continue
-            markdown_content = get_block_markdown_template(is_smartspace=True)
-            details_markdown_content = generate_markdown(block_info)
-            markdown_content = markdown_content.replace(
-                "{{ generate_block_details(page.title) }}    ", details_markdown_content
-            )
-            output_file = os.path.join(output_dir, f"{block_info['name']}.md")
-            with open(output_file, "w") as f:
-                f.write(markdown_content)
-            print(f"Generated documentation for {block_info['name']} in {output_file}")
+        try:
+            module = parse_module(file_path)
+            block_classes = get_block_classes(module)
+            for block_class in block_classes:
+                block_info = get_block_info(block_class)
+                block_name = block_info['name']
+                
+                # Get category
+                category = get_block_category(block_info)
+                if category not in block_categories:
+                    block_categories[category] = []
+                block_categories[category].append(block_name)
+                
+                # check if file already exists
+                doc_file = os.path.join(output_dir, f"{block_name}.md")
+                if os.path.exists(doc_file):
+                    print(f"Documentation for {block_name} already exists, skipping...")
+                    continue
+                    
+                markdown_content = get_block_markdown_template(is_smartspace=True)
+                details_markdown_content = generate_markdown(block_info)
+                markdown_content = markdown_content.replace(
+                    "{{ generate_block_details_smartspace(page.title) }}    ", details_markdown_content
+                )
+                
+                with open(doc_file, "w") as f:
+                    f.write(markdown_content)
+                print(f"Generated documentation for {block_name} in {doc_file}")
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
+            continue
+    
+    return block_categories
 
 
 # Example usage

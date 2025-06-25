@@ -708,6 +708,10 @@ def generate_block_docs_from_text(module_text: str, output_dir: str):
 
 def get_block_category(block_info: BlockInfo) -> str:
     """Determine the category for a block based on its metadata."""
+    # Check if block is obsolete first
+    if block_info['metadata'].get('obsolete', False):
+        return 'Obsolete'
+    
     category = block_info['metadata'].get('category', 'Misc')
     
     # Map categories to documentation sections

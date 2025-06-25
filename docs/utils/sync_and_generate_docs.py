@@ -27,7 +27,9 @@ project_root = os.path.dirname(
 sys.path.insert(0, project_root)
 
 
-def clone_or_update_repo(repo_url: str, target_dir: str, force_clean: bool = False) -> None:
+def clone_or_update_repo(
+    repo_url: str, target_dir: str, force_clean: bool = False
+) -> None:
     """Clone repository if it doesn't exist, otherwise pull latest changes."""
     if os.path.exists(target_dir):
         if force_clean:
@@ -44,11 +46,17 @@ def clone_or_update_repo(repo_url: str, target_dir: str, force_clean: bool = Fal
                 print("Attempting to reset and pull again...")
                 try:
                     # Reset any local changes
-                    subprocess.run(["git", "-C", target_dir, "reset", "--hard"], check=True)
-                    subprocess.run(["git", "-C", target_dir, "clean", "-fd"], check=True)
+                    subprocess.run(
+                        ["git", "-C", target_dir, "reset", "--hard"], check=True
+                    )
+                    subprocess.run(
+                        ["git", "-C", target_dir, "clean", "-fd"], check=True
+                    )
                     subprocess.run(["git", "-C", target_dir, "pull"], check=True)
                 except subprocess.CalledProcessError:
-                    print("Reset and pull failed. Removing directory and cloning fresh...")
+                    print(
+                        "Reset and pull failed. Removing directory and cloning fresh..."
+                    )
                     shutil.rmtree(target_dir)
                     subprocess.run(["git", "clone", repo_url, target_dir], check=True)
     else:
@@ -67,7 +75,7 @@ def copy_block_files(source_dir: str, target_dir: str) -> List[str]:
             os.remove(os.path.join(target_dir, file))
 
     copied_files = []
-    source_blocks_dir = os.path.join(source_dir, "app", "blocks")
+    source_blocks_dir = os.path.join(source_dir, "app", "blocks", "native")
 
     if not os.path.exists(source_blocks_dir):
         print(f"Warning: Source blocks directory not found: {source_blocks_dir}")
@@ -115,45 +123,162 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
         print("Warning: Could not find 'SmartSpace Blocks' section in mkdocs.yml")
         return False
 
-    # Get existing blocks to avoid duplicates (case-insensitive)
-    existing_blocks = set()
+    # Track existing blocks with their locations
+    existing_blocks_by_location = {
+        "SmartSpace": {},  # {block_name: (category, section_index, block_index)}
+        "Obsolete": {},  # {block_name: block_index}
+    }
     existing_blocks_lowercase = set()
-    for section in smartspace_section:
+
+    # Check SmartSpace Blocks section
+    for section_idx, section in enumerate(smartspace_section):
         if isinstance(section, dict):
             for category, blocks in section.items():
                 if isinstance(blocks, list):
-                    for block in blocks:
+                    for block_idx, block in enumerate(blocks):
                         if isinstance(block, dict):
                             for _, path in block.items():
                                 if isinstance(path, str) and path.startswith(
                                     "block-reference/"
                                 ):
                                     block_name = path.split("/")[-1].replace(".md", "")
-                                    existing_blocks.add(block_name)
+                                    existing_blocks_by_location["SmartSpace"][
+                                        block_name
+                                    ] = (category, section_idx, block_idx)
                                     existing_blocks_lowercase.add(block_name.lower())
 
-    # Update navigation with new blocks
-    updated = False
-    for category, blocks in new_blocks.items():
-        # Find or create category section
-        category_section = None
-        for section in smartspace_section:
-            if isinstance(section, dict) and category in section:
-                category_section = section[category]
+    # Also check Obsolete section
+    obsolete_section_idx = None
+    for idx, item in enumerate(block_ref_section):
+        if isinstance(item, dict) and "Obsolete" in item:
+            obsolete_section_idx = idx
+            obsolete_blocks = item["Obsolete"]
+            if isinstance(obsolete_blocks, list):
+                for block_idx, block in enumerate(obsolete_blocks):
+                    if isinstance(block, dict):
+                        for _, path in block.items():
+                            if isinstance(path, str) and path.startswith(
+                                "block-reference/"
+                            ):
+                                block_name = path.split("/")[-1].replace(".md", "")
+                                existing_blocks_by_location["Obsolete"][block_name] = (
+                                    block_idx
+                                )
+                                existing_blocks_lowercase.add(block_name.lower())
+
+    # Find or create Obsolete section
+    obsolete_section = None
+    for i, item in enumerate(block_ref_section):
+        if isinstance(item, dict) and "Obsolete" in item:
+            obsolete_section = item["Obsolete"]
+            break
+
+    if obsolete_section is None and "Obsolete" in new_blocks and new_blocks["Obsolete"]:
+        # Create Obsolete section if it doesn't exist and we have obsolete blocks
+        obsolete_section = []
+        # Find where to insert Obsolete section (after SmartSpace Blocks)
+        smartspace_index = None
+        for i, item in enumerate(block_ref_section):
+            if isinstance(item, dict) and "SmartSpace Blocks" in item:
+                smartspace_index = i
                 break
+        if smartspace_index is not None:
+            block_ref_section.insert(
+                smartspace_index + 1, {"Obsolete": obsolete_section}
+            )
+        else:
+            block_ref_section.append({"Obsolete": obsolete_section})
 
-        if category_section is None:
-            # Create new category section
-            category_section = []
-            smartspace_section.append({category: category_section})
-            updated = True
+    # First, remove blocks that are in the wrong location
+    blocks_to_remove = []
 
-        # Add new blocks to category
-        for block in sorted(blocks):
-            if block not in existing_blocks and block.lower() not in existing_blocks_lowercase:
-                category_section.append({block: f"block-reference/{block}.md"})
-                print(f"Added {block} to {category} section")
+    # Check each new block to see if it needs to be moved
+    for category, blocks in new_blocks.items():
+        for block in blocks:
+            # Check if block exists in wrong location
+            if (
+                category == "Obsolete"
+                and block in existing_blocks_by_location["SmartSpace"]
+            ):
+                # Block should be obsolete but is in SmartSpace section
+                cat, sec_idx, blk_idx = existing_blocks_by_location["SmartSpace"][block]
+                blocks_to_remove.append(("SmartSpace", cat, sec_idx, blk_idx, block))
+            elif (
+                category != "Obsolete"
+                and block in existing_blocks_by_location["Obsolete"]
+            ):
+                # Block should be in SmartSpace but is in Obsolete section
+                blk_idx = existing_blocks_by_location["Obsolete"][block]
+                blocks_to_remove.append(("Obsolete", None, None, blk_idx, block))
+
+    # Remove blocks from incorrect locations (in reverse order to maintain indices)
+    for location_type, cat, sec_idx, blk_idx, block_name in sorted(
+        blocks_to_remove, key=lambda x: (x[0], x[2] or 0, x[3]), reverse=True
+    ):
+        if location_type == "SmartSpace":
+            # Remove from SmartSpace section
+            section = smartspace_section[sec_idx]
+            if isinstance(section, dict) and cat in section:
+                blocks_list = section[cat]
+                if 0 <= blk_idx < len(blocks_list):
+                    del blocks_list[blk_idx]
+                    print(
+                        f"Removed {block_name} from {cat} section (will move to correct location)"
+                    )
+                    updated = True
+        elif location_type == "Obsolete" and obsolete_section is not None:
+            # Remove from Obsolete section
+            if 0 <= blk_idx < len(obsolete_section):
+                del obsolete_section[blk_idx]
+                print(
+                    f"Removed {block_name} from Obsolete section (will move to correct location)"
+                )
                 updated = True
+
+    # Update navigation with new blocks
+    for category, blocks in new_blocks.items():
+        if category == "Obsolete":
+            # Handle Obsolete blocks separately
+            if obsolete_section is not None:
+                for block in sorted(blocks):
+                    # Add if not exists OR if it was removed from wrong location
+                    if block not in existing_blocks_by_location["Obsolete"] and (
+                        block not in existing_blocks_by_location["SmartSpace"]
+                        or any(b[4] == block for b in blocks_to_remove)
+                    ):
+                        obsolete_section.append({block: f"block-reference/{block}.md"})
+                        print(f"Added {block} to Obsolete section")
+                        updated = True
+        else:
+            # Handle regular categories under SmartSpace Blocks
+            category_section = None
+            for section in smartspace_section:
+                if isinstance(section, dict) and category in section:
+                    category_section = section[category]
+                    break
+
+            if category_section is None:
+                # Create new category section
+                category_section = []
+                smartspace_section.append({category: category_section})
+                updated = True
+
+            # Add new blocks to category
+            for block in sorted(blocks):
+                # Add if not exists OR if it was removed from wrong location
+                if (
+                    block not in existing_blocks_by_location["SmartSpace"]
+                    or existing_blocks_by_location["SmartSpace"].get(block, ("", 0, 0))[
+                        0
+                    ]
+                    != category
+                ):
+                    if block not in existing_blocks_by_location["Obsolete"] or any(
+                        b[4] == block for b in blocks_to_remove
+                    ):
+                        category_section.append({block: f"block-reference/{block}.md"})
+                        print(f"Added {block} to {category} section")
+                        updated = True
 
     if updated:
         # Sort categories and blocks within each category

@@ -22,6 +22,8 @@ jobs:
   update-docs:
     name: Update Block Documentation
     runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.generate_docs.outputs.changes }}
     permissions:
       contents: write
       pull-requests: write
@@ -82,7 +84,7 @@ jobs:
   enhance-docs-with-claude:
     name: Enhance Documentation with Claude
     needs: update-docs
-    if: needs.update-docs.result == 'success'
+    if: needs.update-docs.outputs.changes == 'true'
     runs-on: ubuntu-latest
     
     steps:

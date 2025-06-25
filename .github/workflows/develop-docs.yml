@@ -46,4 +46,3 @@ jobs:
       - name: Build Docs Website
         run: |
           poetry run mike deploy --push dev
-          poetry run mike alias dev latest --push

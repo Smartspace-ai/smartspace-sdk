@@ -15,11 +15,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple, Union
 
 import yaml
 from block_doc_generator import generate_block_docs_temp
-from typing_extensions import Tuple
 
 # Add project root to path to import block_doc_generator
 project_root = os.path.dirname(
@@ -75,7 +74,7 @@ def copy_block_files(source_dir: str, target_dir: str) -> List[str]:
         if file.endswith(".py"):
             os.remove(os.path.join(target_dir, file))
 
-    copied_files = []
+    copied_files: List[str] = []
     source_blocks_dir = os.path.join(source_dir, "app", "blocks", "native")
 
     if not os.path.exists(source_blocks_dir):
@@ -125,7 +124,9 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
         return False
 
     # Track existing blocks with their locations
-    existing_blocks_by_location: Dict[str, Dict[str, Tuple[str, int, int]]] = {
+    existing_blocks_by_location: Dict[
+        str, Union[Dict[str, Tuple[str, int, int]], Dict[str, int]]
+    ] = {
         "SmartSpace": {},  # {block_name: (category, section_index, block_index)}
         "Obsolete": {},  # {block_name: block_index}
     }
@@ -248,7 +249,7 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
 
     # Track which blocks to keep (handle case variations)
     blocks_to_keep = {}  # {lowercase_name: (actual_name, preferred_category)}
-    blocks_to_remove = []
+    blocks_to_remove: List[Tuple[str, Optional[str], Optional[int], int, str]] = []
 
     # First pass: identify all blocks and their preferred locations
     for category, blocks in new_blocks.items():

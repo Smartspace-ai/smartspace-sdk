@@ -81,6 +81,13 @@ jobs:
             documentation
             automated
 
+      - name: Upload temporary block sources as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: temp-block-sources
+          path: docs/utils/smartspace_blocks/
+          if-no-files-found: error
+
   enhance-docs-with-claude:
     name: Enhance Documentation with Claude
     needs: update-docs
@@ -88,6 +95,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Download temporary block sources artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: temp-block-sources
+          path: docs/utils/smartspace_blocks/
+
       - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
@@ -112,8 +125,12 @@ jobs:
         if: steps.changed_files.outputs.files != ''
         id: dynamic_prompt
         run: |
-          PROMPT_HEADER="You are a technical writer enhancing block documentation.
-          Review and enhance ONLY the following documentation files: ${{ steps.changed_files.outputs.files }}
+          PROMPT_HEADER="You are a meticulous technical writer responsible for ensuring all block documentation in our system is up to standard.
+          To create high-quality examples and accurate documentation, you MUST read and analyze the content of the corresponding block's source code.
+          The source code for new/updated blocks can be found in 'docs/utils/smartspace_blocks/', and for existing blocks in 'smartspace/blocks/'.
+          Use this source code as the ground truth to understand parameters, logic, return values, and potential exceptions before you begin writing.
+
+          Your task is to review and enhance ONLY the following documentation files: ${{ steps.changed_files.outputs.files }}
           
           For each file:
           1. Add meaningful examples in the Example(s) section that demonstrate real-world usage

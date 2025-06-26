@@ -19,6 +19,7 @@ from typing import Dict, List
 
 import yaml
 from block_doc_generator import generate_block_docs_temp
+from typing_extensions import Tuple
 
 # Add project root to path to import block_doc_generator
 project_root = os.path.dirname(
@@ -124,11 +125,58 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
         return False
 
     # Track existing blocks with their locations
-    existing_blocks_by_location = {
+    existing_blocks_by_location: Dict[str, Dict[str, Tuple[str, int, int]]] = {
         "SmartSpace": {},  # {block_name: (category, section_index, block_index)}
         "Obsolete": {},  # {block_name: block_index}
     }
-    existing_blocks_lowercase = set()
+    existing_blocks_lowercase = {}  # {lowercase_name: actual_name}
+    all_existing_blocks = {}  # {actual_name: (location_type, category)}
+
+    # First, check all non-SmartSpace sections in Block Reference
+    for item in block_ref_section:
+        if isinstance(item, dict):
+            for section_name, section_content in item.items():
+                # Skip SmartSpace Blocks and Obsolete (handled separately)
+                if section_name in ["SmartSpace Blocks", "Obsolete"]:
+                    continue
+
+                # Check direct block entries
+                if isinstance(section_content, list):
+                    for block_item in section_content:
+                        if isinstance(block_item, dict):
+                            for block_title, path in block_item.items():
+                                if isinstance(path, str) and path.startswith(
+                                    "block-reference/"
+                                ):
+                                    block_name = path.split("/")[-1].replace(".md", "")
+                                    existing_blocks_lowercase[block_name.lower()] = (
+                                        block_name
+                                    )
+                                    all_existing_blocks[block_name] = (
+                                        "Other",
+                                        section_name,
+                                    )
+
+                # Check nested categories (like in Misc section)
+                elif isinstance(section_content, dict):
+                    for subsection_name, subsection_blocks in section_content.items():
+                        if isinstance(subsection_blocks, list):
+                            for block_item in subsection_blocks:
+                                if isinstance(block_item, dict):
+                                    for block_title, path in block_item.items():
+                                        if isinstance(path, str) and path.startswith(
+                                            "block-reference/"
+                                        ):
+                                            block_name = path.split("/")[-1].replace(
+                                                ".md", ""
+                                            )
+                                            existing_blocks_lowercase[
+                                                block_name.lower()
+                                            ] = block_name
+                                            all_existing_blocks[block_name] = (
+                                                "Other",
+                                                f"{section_name}/{subsection_name}",
+                                            )
 
     # Check SmartSpace Blocks section
     for section_idx, section in enumerate(smartspace_section):
@@ -137,7 +185,7 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
                 if isinstance(blocks, list):
                     for block_idx, block in enumerate(blocks):
                         if isinstance(block, dict):
-                            for _, path in block.items():
+                            for block_title, path in block.items():
                                 if isinstance(path, str) and path.startswith(
                                     "block-reference/"
                                 ):
@@ -145,7 +193,13 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
                                     existing_blocks_by_location["SmartSpace"][
                                         block_name
                                     ] = (category, section_idx, block_idx)
-                                    existing_blocks_lowercase.add(block_name.lower())
+                                    existing_blocks_lowercase[block_name.lower()] = (
+                                        block_name
+                                    )
+                                    all_existing_blocks[block_name] = (
+                                        "SmartSpace",
+                                        category,
+                                    )
 
     # Also check Obsolete section
     obsolete_section_idx = None
@@ -156,7 +210,7 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
             if isinstance(obsolete_blocks, list):
                 for block_idx, block in enumerate(obsolete_blocks):
                     if isinstance(block, dict):
-                        for _, path in block.items():
+                        for block_title, path in block.items():
                             if isinstance(path, str) and path.startswith(
                                 "block-reference/"
                             ):
@@ -164,7 +218,10 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
                                 existing_blocks_by_location["Obsolete"][block_name] = (
                                     block_idx
                                 )
-                                existing_blocks_lowercase.add(block_name.lower())
+                                existing_blocks_lowercase[block_name.lower()] = (
+                                    block_name
+                                )
+                                all_existing_blocks[block_name] = ("Obsolete", None)
 
     # Find or create Obsolete section
     obsolete_section = None
@@ -189,27 +246,83 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
         else:
             block_ref_section.append({"Obsolete": obsolete_section})
 
-    # First, remove blocks that are in the wrong location
+    # Track which blocks to keep (handle case variations)
+    blocks_to_keep = {}  # {lowercase_name: (actual_name, preferred_category)}
     blocks_to_remove = []
 
-    # Check each new block to see if it needs to be moved
+    # First pass: identify all blocks and their preferred locations
     for category, blocks in new_blocks.items():
         for block in blocks:
-            # Check if block exists in wrong location
-            if (
-                category == "Obsolete"
-                and block in existing_blocks_by_location["SmartSpace"]
-            ):
-                # Block should be obsolete but is in SmartSpace section
-                cat, sec_idx, blk_idx = existing_blocks_by_location["SmartSpace"][block]
-                blocks_to_remove.append(("SmartSpace", cat, sec_idx, blk_idx, block))
-            elif (
-                category != "Obsolete"
-                and block in existing_blocks_by_location["Obsolete"]
-            ):
-                # Block should be in SmartSpace but is in Obsolete section
-                blk_idx = existing_blocks_by_location["Obsolete"][block]
-                blocks_to_remove.append(("Obsolete", None, None, blk_idx, block))
+            block_lower = block.lower()
+
+            # Check if this block already exists in other sections (non-SmartSpace)
+            if block_lower in existing_blocks_lowercase:
+                existing_name = existing_blocks_lowercase[block_lower]
+                if existing_name in all_existing_blocks:
+                    location_type, existing_category = all_existing_blocks[
+                        existing_name
+                    ]
+                    if location_type == "Other":
+                        # Block exists in non-SmartSpace section, skip it
+                        print(
+                            f"Skipping {block} - already exists in {existing_category} section"
+                        )
+                        continue
+
+            if block_lower not in blocks_to_keep:
+                blocks_to_keep[block_lower] = (block, category)
+            else:
+                # If we already have this block (case-insensitive), prefer non-obsolete category
+                existing_name, existing_cat = blocks_to_keep[block_lower]
+                if existing_cat == "Obsolete" and category != "Obsolete":
+                    blocks_to_keep[block_lower] = (block, category)
+
+    # Remove all existing entries that are duplicates (case-insensitive) or in wrong location
+    for block_lower, (preferred_name, preferred_category) in blocks_to_keep.items():
+        # Find all case variations of this block in existing structure
+        for existing_name, (location_type, existing_category) in list(
+            all_existing_blocks.items()
+        ):
+            if existing_name.lower() == block_lower:
+                # Determine if we need to remove this entry
+                should_remove = False
+
+                # Remove if it's a case variation of the preferred name
+                if existing_name != preferred_name:
+                    should_remove = True
+                    print(
+                        f"Removing case variation: {existing_name} (keeping {preferred_name})"
+                    )
+
+                # Remove if it's in the wrong category
+                elif existing_category != preferred_category:
+                    should_remove = True
+                    print(
+                        f"Moving {existing_name} from {existing_category} to {preferred_category}"
+                    )
+
+                if should_remove:
+                    if (
+                        location_type == "SmartSpace"
+                        and existing_name in existing_blocks_by_location["SmartSpace"]
+                    ):
+                        cat, sec_idx, blk_idx = existing_blocks_by_location[
+                            "SmartSpace"
+                        ][existing_name]
+                        blocks_to_remove.append(
+                            ("SmartSpace", cat, sec_idx, blk_idx, existing_name)
+                        )
+                    elif (
+                        location_type == "Obsolete"
+                        and existing_name in existing_blocks_by_location["Obsolete"]
+                    ):
+                        blk_idx = existing_blocks_by_location["Obsolete"][existing_name]
+                        blocks_to_remove.append(
+                            ("Obsolete", None, None, blk_idx, existing_name)
+                        )
+
+    # Variable to track if updates were made
+    updated = False
 
     # Remove blocks from incorrect locations (in reverse order to maintain indices)
     for location_type, cat, sec_idx, blk_idx, block_name in sorted(
@@ -235,50 +348,55 @@ def update_mkdocs_nav(mkdocs_path: str, new_blocks: Dict[str, List[str]]) -> boo
                 )
                 updated = True
 
-    # Update navigation with new blocks
-    for category, blocks in new_blocks.items():
-        if category == "Obsolete":
-            # Handle Obsolete blocks separately
+    # Update navigation with new blocks using deduplicated list
+    for block_lower, (block_name, preferred_category) in blocks_to_keep.items():
+        # Check if this block already exists with the correct name and category
+        if block_name in all_existing_blocks:
+            location_type, existing_category = all_existing_blocks[block_name]
+            if existing_category == preferred_category:
+                # Block already exists in correct location, skip
+                continue
+
+        if preferred_category == "Obsolete":
+            # Handle Obsolete blocks
             if obsolete_section is not None:
-                for block in sorted(blocks):
-                    # Add if not exists OR if it was removed from wrong location
-                    if block not in existing_blocks_by_location["Obsolete"] and (
-                        block not in existing_blocks_by_location["SmartSpace"]
-                        or any(b[4] == block for b in blocks_to_remove)
-                    ):
-                        obsolete_section.append({block: f"block-reference/{block}.md"})
-                        print(f"Added {block} to Obsolete section")
-                        updated = True
+                # Only add if not already present
+                block_exists = any(
+                    isinstance(item, dict) and block_name in item
+                    for item in obsolete_section
+                )
+                if not block_exists:
+                    obsolete_section.append(
+                        {block_name: f"block-reference/{block_name}.md"}
+                    )
+                    print(f"Added {block_name} to Obsolete section")
+                    updated = True
         else:
             # Handle regular categories under SmartSpace Blocks
             category_section = None
             for section in smartspace_section:
-                if isinstance(section, dict) and category in section:
-                    category_section = section[category]
+                if isinstance(section, dict) and preferred_category in section:
+                    category_section = section[preferred_category]
                     break
 
             if category_section is None:
                 # Create new category section
                 category_section = []
-                smartspace_section.append({category: category_section})
+                smartspace_section.append({preferred_category: category_section})
                 updated = True
 
-            # Add new blocks to category
-            for block in sorted(blocks):
-                # Add if not exists OR if it was removed from wrong location
-                if (
-                    block not in existing_blocks_by_location["SmartSpace"]
-                    or existing_blocks_by_location["SmartSpace"].get(block, ("", 0, 0))[
-                        0
-                    ]
-                    != category
-                ):
-                    if block not in existing_blocks_by_location["Obsolete"] or any(
-                        b[4] == block for b in blocks_to_remove
-                    ):
-                        category_section.append({block: f"block-reference/{block}.md"})
-                        print(f"Added {block} to {category} section")
-                        updated = True
+            # Check if block already exists in this category
+            block_exists = any(
+                isinstance(item, dict) and block_name in item
+                for item in category_section
+            )
+
+            if not block_exists:
+                category_section.append(
+                    {block_name: f"block-reference/{block_name}.md"}
+                )
+                print(f"Added {block_name} to {preferred_category} section")
+                updated = True
 
     if updated:
         # Sort categories and blocks within each category

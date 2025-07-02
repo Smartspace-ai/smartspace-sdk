@@ -43,6 +43,10 @@ jobs:
         run: |
           pip install pyyaml
       
+      - name: Configure git for private repo access
+        run: |
+          git config --global url."https://${{ secrets.GH_TOKEN_AI_API }}@github.com/".insteadOf "https://github.com/"
+      
       - name: Run sync and documentation generation
         id: generate_docs
         run: |

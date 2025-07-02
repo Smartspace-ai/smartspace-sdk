@@ -1,10 +1,6 @@
 [tool.pytest.ini_options]
-testpaths = [
-    "tests",
-]
-filterwarnings = [
-    "ignore::DeprecationWarning"
-]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.poetry]
 name = "smartspace-ai"
@@ -12,7 +8,10 @@ version = "0.1.6"
 description = "Smartspace SDK"
 readme = "README.md"
 packages = [{ include = "smartspace" }]
-authors = ["David Gentile <david.gentile@smartspace.ai>", "Denver Hayward <denver.hayward@smartspace.ai>"]
+authors = [
+    "David Gentile <david.gentile@smartspace.ai>",
+    "Denver Hayward <denver.hayward@smartspace.ai>",
+]
 
 
 [tool.poetry.scripts]
@@ -38,10 +37,7 @@ pydantic = "2.7.0"
 pydantic-extra-types = "2.0.0"
 pydantic-settings = "2.0.3"
 litellm = "^1.43.19"
-llama-index = "^0.11.1"
-llama-index-embeddings-huggingface = "^0.3.0"
 httpx = "^0.27.0"
-neo4j = "^5.24.0"
 types-requests = "^2.32.0.20240914"
 pyodbc = "^5.2.0"
 sqlalchemy = "^2.0.36"
@@ -57,7 +53,6 @@ pytest-mock = "^3.12.0"
 mypy = "^1.8.0"
 pytest-cov = "^4.1.0"
 pytest-asyncio = "^0.23.8"
-
 
 
 [tool.poetry.group.docs.dependencies]

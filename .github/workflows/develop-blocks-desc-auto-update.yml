@@ -60,6 +60,8 @@ jobs:
       - name: Run Claude to ensure block documentation standards
         if: steps.changed_block_files.outputs.files != ''
         uses: anthropics/claude-code-base-action@beta
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         with:
           prompt: ${{ steps.dynamic_prompt.outputs.prompt_content }}
           append_system_prompt: "After writing code, be sure to code review yourself."

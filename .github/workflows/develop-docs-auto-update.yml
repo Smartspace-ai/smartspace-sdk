@@ -156,11 +156,10 @@ jobs:
       - name: Enhance documentation with Claude
         if: steps.changed_files.outputs.files != ''
         uses: anthropics/claude-code-base-action@beta
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         with:
           prompt: ${{ steps.dynamic_prompt.outputs.prompt_content }}
           allowed_tools: "View,BatchTool"
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
       
       - name: Commit enhanced documentation
         if: steps.changed_files.outputs.files != ''

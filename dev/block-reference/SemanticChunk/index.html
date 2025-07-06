@@ -529,60 +529,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metadata
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#outputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Outputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      State Variables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       Example(s)
@@ -2526,60 +2472,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metadata
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#outputs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Outputs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-variables" class="md-nav__link">
-    <span class="md-ellipsis">
-      State Variables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       Example(s)
@@ -2663,85 +2555,7 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>The <code>SemanticChunk</code> Block is used to split a document into semantic chunks, with each chunk being a group of semantically related sentences. The Block utilizes an embedding model to evaluate the semantic similarity between sentences and decides when to form a new chunk based on a configurable dissimilarity threshold.</p>
 <p>This Block is useful for breaking down large documents into smaller, meaningful sections for tasks like summarization, topic modeling, or information extraction.</p>
-<h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>Semantic chunk parser.</p>
-<p>Splits a document into Chunks, with each node being a group of semantically related sentences.</p>
-<p>Args:
-buffer_size (int): number of sentences to group together when evaluating semantic similarity
-chunk_model: (BaseEmbedding): embedding model to use, defaults to BAAI/bge-small-en-v1.5
-breakpoint_percentile_threshold: (int): the percentile of cosine dissimilarity that must be exceeded between a group of sentences and the next to form a node. The smaller this number is, the more nodes will be generated</p>
-<h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Category</strong>: Function</li>
-<li><strong>Icon</strong>: fa-quote-left</li>
-</ul>
-<h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Data Type</th>
-<th>Description</th>
-<th>Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>buffer_size</td>
-<td><code>int</code></td>
-<td></td>
-<td><code>1</code></td>
-</tr>
-<tr>
-<td>breakpoint_percentile_threshold</td>
-<td><code>int</code></td>
-<td></td>
-<td><code>95</code></td>
-</tr>
-<tr>
-<td>model_name</td>
-<td><code>str</code></td>
-<td></td>
-<td><code>BAAI/bge-small-en-v1.5</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="inputs">Inputs<a class="headerlink" href="#inputs" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Data Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>text</td>
-<td><code>str or list[str]</code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="outputs">Outputs<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Data Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>result</td>
-<td><code>list[str]</code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="state-variables">State Variables<a class="headerlink" href="#state-variables" title="Permanent link">&para;</a></h2>
-<p>No state variables available.</p>
+<p>Block SemanticChunk not found</p>
 <h2 id="examples">Example(s)<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="example-1-split-a-document-into-chunks">Example 1: Split a document into chunks<a class="headerlink" href="#example-1-split-a-document-into-chunks" title="Permanent link">&para;</a></h3>
 <ul>

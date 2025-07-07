@@ -1,34 +1,34 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	"name": "SmartSpace SDK",
+    "name": "SmartSpace SDK",
     "dockerComposeFile": "docker-compose.yml",
     "service": "devcontainer",
     "workspaceFolder": "/workspace",
-	"containerEnv": {
-		"PYTHONPATH": "/workspace"
-	},
-	"mounts": [
-		"type=bind,source=${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly"
-	],
-	// Configure tool-specific properties.
-	"customizations": {
-		// Configure properties specific to VS Code.
-		"vscode": {
-			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python"
-			},
-			"extensions": [
-				"charliermarsh.ruff",
-				"GitHub.vscode-github-actions",
-				"ms-azuretools.vscode-bicep",
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"ms-python.debugpy",
-				"ms-python.mypy-type-checker",
-				"tamasfe.even-better-toml"
-			]
-		}
-	},
-	"postCreateCommand": "bash .devcontainer/setup.sh"
+    "containerEnv": {
+        "PYTHONPATH": "/workspace"
+    },
+    "mounts": [
+        "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly"
+    ],
+    // Configure tool-specific properties.
+    "customizations": {
+        // Configure properties specific to VS Code.
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python"
+            },
+            "extensions": [
+                "charliermarsh.ruff",
+                "GitHub.vscode-github-actions",
+                "ms-azuretools.vscode-bicep",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "ms-python.mypy-type-checker",
+                "tamasfe.even-better-toml"
+            ]
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup.sh"
 }

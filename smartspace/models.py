@@ -1,11 +1,230 @@
 import enum
 from datetime import datetime
-from typing import Annotated, Any, Generic, TypeVar
+from typing import Annotated, Any, Generic, TypeVar, Union
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from smartspace.enums import BlockClass, ChannelEvent, ChannelState
-from smartspace.utils import _get_type_adapter
+from smartspace.enums import (
+    BlockClass,
+    BlockScope,
+    ChannelEvent,
+    ChannelState,
+    FlowVariableAccess,
+)
+from smartspace.utils.utils import _get_type_adapter
+
+
+class File(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="File")
+    id: str
+    name: str
+
+    def as_info(self, length: int):
+        return FileWithInfoNew(id=self.id, name=self.name, length=length)
+
+
+class FileWithContent(File):
+    model_config = ConfigDict(populate_by_name=True, title="FileWithContent")
+    content: str
+
+    def as_info(self, length: int | None = None):
+        return FileWithInfoNew(
+            id=self.id,
+            name=self.name,
+            length=length if length is not None else len(self.content),
+        )
+
+    def get_content(self) -> str:
+        return self.content
+
+
+class FileWithInfoNew(File):
+    model_config = ConfigDict(populate_by_name=True, title="FileInfo")
+    length: int
+
+
+class WebDataInfoBaseModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    id: str
+    url: str
+    title: str
+
+
+class WebDataInfoWithSnippet(WebDataInfoBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    snippet: str
+
+
+class WebDataInfoWithSummary(WebDataInfoBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    summary: str
+
+
+class WebDataInfoComplete(WebDataInfoBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataInfo")
+    snippet: str
+    summary: str
+    metadata: dict[str, Any]
+
+
+class WebDataBaseModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    content: str
+    url: str
+    title: str
+    id: str | None = None
+
+    def get_content(self) -> str:
+        return self.content
+
+    def as_info(self):
+        return WebDataInfoBaseModel(
+                    id=self.id ,
+                    title=self.title,
+                    url=self.url,
+                )
+
+class WebSiteDetails(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    content: str
+    url: str
+    title: str
+
+    def get_content(self) -> str:
+        return self.content
+
+
+class WebDataWithSnippet(WebDataBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    snippet: str
+
+    def as_info(self):
+        return WebDataInfoWithSnippet(
+            id=self.id or str(UUID()),
+            title=self.title,
+            url=self.url,
+            snippet=self.snippet,
+        )
+
+
+class WebDataWithSummary(WebDataBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    summary: str
+
+    def as_info(self):
+        return WebDataInfoWithSummary(
+            id=self.id or str(UUID()),
+            title=self.title,
+            url=self.url,
+            summary=self.summary,
+        )
+
+
+class WebDataComplete(WebDataBaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebData")
+    snippet: str
+    summary: str
+    id: str = Field(default=...)
+    metadata: dict[str, Any]
+
+    def as_info(self):
+        return WebDataInfoComplete(
+            id=self.id or str(UUID()),
+            title=self.title,
+            url=self.url,
+            snippet=self.snippet,
+            summary=self.summary,
+            metadata=self.metadata,
+        )
+
+
+class GoogleSearchResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    items: list[WebDataWithSnippet]
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class Chunk_v2(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="Chunk")
+    index: int
+    position: int
+    content: str
+    name: str
+
+
+class GenericParentInfo(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    id: str
+    object_structure: dict[str, Any]
+
+
+class GenericParent(BaseModel):
+    @staticmethod
+    def get_schema(value):
+        if isinstance(value, dict):
+            return {k: GenericParent.get_schema(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            if value:
+                return {"__list__": GenericParent.get_schema(value[0])}
+            else:
+                return {"__list__": "unknown"}
+        else:
+            return {"__type__": type(value).__name__}
+
+    model_config = ConfigDict(extra="allow", title="MiscParent")
+    id: str
+    content: Any
+
+    def get_content(self) -> Any:
+        return self.content
+
+    def as_info(self):
+        return GenericParentInfo(
+            id=self.id, object_structure=self.get_schema(self.content)
+        )
+
+
+class GenericChunk(Chunk_v2):
+    model_config = ConfigDict(populate_by_name=True, title="MiscChunk")
+    parentInfo: GenericParentInfo
+
+
+class WebDataChunk(Chunk_v2):
+    model_config = ConfigDict(populate_by_name=True, title="WebDataChunk")
+    parentInfo: (
+        WebDataInfoComplete
+        | WebDataInfoWithSnippet
+        | WebDataInfoWithSummary
+        | WebDataInfoBaseModel
+    )
+
+
+class FileChunk(Chunk_v2):
+    model_config = ConfigDict(populate_by_name=True, title="FileChunk")
+    parentInfo: FileWithInfoNew
+
+
+class WebChunks(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="WebChunks")
+    parent: WebDataComplete | WebDataWithSummary | WebDataWithSnippet | WebDataBaseModel
+    chunks: list[WebDataChunk]
+
+
+class FileChunks(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="FileChunks")
+    parent: FileWithContent
+    chunks: list[FileChunk]
+
+
+class GenericChunks(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, title="GenericChunks")
+    parent: GenericParent
+    chunks: list[GenericChunk]
+
+
+# === Chunks Union Type ===
+Chunks = Union[WebChunks,FileChunks,  GenericChunks]
 
 
 class PinType(enum.Enum):
@@ -89,6 +308,7 @@ class BlockInterface(BaseModel):
 
     block_class: Annotated[BlockClass | None, Field(alias="class")] = None
     metadata: dict[str, Any] = {}
+    scopes: list[BlockScope] | None = None
     ports: dict[str, PortInterface]
     state: dict[str, StateInterface]
 
@@ -136,21 +356,16 @@ class PinRedirect(BaseModel):
 class ThreadMessageResponseSource(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    index: int
-    uri: str
+    index: int = 0
+    uri: str = ""
 
 
 class ThreadMessageResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    content: str
+    content: str = ""
     sources: list[ThreadMessageResponseSource] | None = None
 
-
-class File(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-    id: str
-    name: str 
 
 class ContentItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
@@ -170,17 +385,31 @@ class ThreadMessage(BaseModel):
     created_by: Annotated[str, Field(..., alias="createdBy")]
 
 
+class SmartSpaceDataSetProperty(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class SmartSpaceDataSet(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: UUID
+    name: str
+    properties: list[SmartSpaceDataSetProperty]
+
+
 class SmartSpaceDataSpace(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    id: str
+    id: UUID
     name: str
+    datasets: list[SmartSpaceDataSet] = []
 
 
 class SmartSpaceWorkspace(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    id: str
+    id: UUID
     name: str
     data_spaces: Annotated[list[SmartSpaceDataSpace], Field(alias="dataSpaces")] = []
     flow_definition: Annotated[
@@ -188,8 +417,21 @@ class SmartSpaceWorkspace(BaseModel):
     ] = None
 
     @property
-    def dataspace_ids(self) -> list[str]:
+    def dataspace_ids(self) -> list[UUID]:
         return [dataspace.id for dataspace in self.data_spaces]
+
+    @property
+    def datasets(self) -> list[SmartSpaceDataSet]:
+        all_datasets = [
+            dataset for dataspace in self.data_spaces for dataset in dataspace.datasets
+        ]
+        result: list[SmartSpaceDataSet] = []
+
+        for dataset in all_datasets:
+            if not any([d.id == dataset.id for d in result]):
+                result.append(dataset)
+
+        return result
 
 
 class FlowPinRef(BaseModel):
@@ -212,11 +454,20 @@ class Connection(BaseModel):
     target: FlowPinRef
 
 
+class FlowBlockConstant(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    target: BlockPinRef
+    value: Any
+
+
 class FlowBlock(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     name: str
     version: str
+    description: str | None = None
+    constants: list[FlowBlockConstant] = []
     dynamic_ports: Annotated[list[str], Field(alias="dynamicPorts")] = []
     dynamic_output_pins: Annotated[
         list[BlockPinRef], Field(alias="dynamicOutputPins")
@@ -252,25 +503,42 @@ class FlowOutput(BaseModel):
         return FlowOutput(json_schema=_get_type_adapter(t).json_schema())
 
 
+class FlowVariable(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    json_schema: Annotated[dict[str, Any], Field(alias="schema")]
+    access: FlowVariableAccess = FlowVariableAccess.NONE
+
+
 class FlowDefinition(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     inputs: dict[str, FlowInput]
     outputs: dict[str, FlowOutput]
+    variables: dict[str, FlowVariable]
     constants: dict[str, FlowConstant]
     blocks: dict[str, FlowBlock]
 
     connections: list[Connection]
 
-    def get_source_node(self, node: str) -> FlowBlock | FlowInput | FlowConstant | None:
+    def get_source_node(
+        self, node: str
+    ) -> FlowBlock | FlowInput | FlowConstant | FlowVariable | None:
         return (
             self.inputs.get(node, None)
             or self.constants.get(node, None)
             or self.blocks.get(node, None)
+            or self.variables.get(node, None)
         )
 
-    def get_target_node(self, node: str) -> FlowBlock | FlowOutput | None:
-        return self.outputs.get(node, None) or self.blocks.get(node, None)
+    def get_target_node(
+        self, node: str
+    ) -> FlowBlock | FlowOutput | FlowVariable | None:
+        return (
+            self.outputs.get(node, None)
+            or self.blocks.get(node, None)
+            or self.variables.get(node, None)
+        )
 
 
 class BlockRunData(BaseModel):

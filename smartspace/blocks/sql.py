@@ -1,56 +1,46 @@
 import datetime
-from typing import Annotated, Any, Dict, List, Type, Union
+from decimal import Decimal
+from typing import Annotated, Any, Dict, List, Union
 
-from sqlalchemy import (
-    Boolean,
-    Date,
-    DateTime,
-    Float,
-    Integer,
-    LargeBinary,
-    String,
-    Time,
-    bindparam,
-    text,
-)
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.sql.elements import BindParameter
-from sqlalchemy.types import TypeEngine
 
 from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
-# Removed Pydantic import and SQLResult model as per requirement
-
-
 @metadata(
     category=BlockCategory.DATA,
-    description="Executes a SQL query using ODBC",
-    documentation=(
-        "Executes an asynchronous SQL query on a database using SQLAlchemy. "
-        "Supports all types of queries, including SELECT, INSERT, UPDATE, and DELETE. "
-        "For data-modifying queries (INSERT, UPDATE, DELETE), the block commits the transaction. "
-        "If the database connection fails (e.g., because the database isn't running yet), "
-        "the block will retry the connection once before raising an error. "
-        "The connection string should be provided in a format compatible with SQLAlchemy's `create_async_engine`, "
-        "such as `'mssql+aioodbc://username:password@host:port/dbname?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'`."
+    description=(
+        "Executes an async SQL query via SQLAlchemy against any supported database. "
+        "Ensure your `connection_string` uses the correct dialect+driver prefix and proper URL encoding. Examples:\n"
+        "  • MySQL: mysql+aiomysql://<user>:<password>@<host>:<port>/<dbname>?charset=utf8mb4\n"
+        "  • SQL Server (ODBC): mssql+aioodbc://<user>:<password>@<host>:<port>/<dbname>?driver=ODBC+Driver+17+for+SQL+Server\n"
+        "  • Oracle (ODBC): oracle+aioodbc://<user>:<password>@<host>:<port>/<servicename>\n"
+        "  • PostgreSQL: postgresql+asyncpg://<user>:<password>@<host>:<port>/<dbname>\n"
+        "Percent-encode special characters in credentials (e.g., `^` → `%5E`)."
     ),
     icon="fa-database",
-    label="SQL query, database query, ODBC connection, database operation, SQL execution",
 )
 class SQL(Block):
-    """Block that executes an asynchronous SQL query on a database using SQLAlchemy."""
-
     connection_string: Annotated[str, Config()]
     query: Annotated[str, Config()]
 
     @step(output_name="result")
     async def run(self, **params) -> Union[List[Dict[str, Any]], int]:
-        """Execute the SQL query with the given parameters and return the result."""
-        engine = create_async_engine(self.connection_string)
+        from sqlalchemy import (
+            Boolean, Date, DateTime, Float, Integer,
+            LargeBinary, Numeric, String, Time,
+            bindparam, text
 
-        # Define type mapping with precise type annotations
-        type_mapping: Dict[Type[Any], TypeEngine[Any]] = {
+        )
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy.sql.elements import BindParameter
+        from sqlalchemy.types import TypeEngine
+
+        # create the async engine (driver auto-picked from connection_string)
+        engine = create_async_engine(self.connection_string, future=True)
+
+        # Python type → SQLAlchemy type map
+        type_mapping: Dict[type, TypeEngine] = {
+
             str: String(),
             int: Integer(),
             float: Float(),
@@ -59,55 +49,38 @@ class SQL(Block):
             datetime.date: Date(),
             datetime.time: Time(),
             bytes: LargeBinary(),
+            Decimal: Numeric(),   # <--- Decimal support added here
         }
 
         try:
-            async with engine.begin() as connection:
-                statement = text(self.query)
+            async with engine.begin() as conn:
+                stmt = text(self.query)
 
-                # Accessing the private attribute _bindparams
-                # Note: Accessing private attributes is generally discouraged, but necessary here due to SQLAlchemy's API limitations.
-                required_params = set(statement._bindparams.keys())
-                provided_params = set(params.keys())
-                missing_params = required_params - provided_params
+                # Determine required bind params
+                required = set(stmt._bindparams.keys())
+                missing = required - set(params)
+                if missing:
+                    raise ValueError(f"Missing params: {', '.join(missing)}")
 
-                if missing_params:
-                    raise ValueError(f"Missing parameters: {', '.join(missing_params)}")
-
-                # Prepare bind parameters with typing
-                bind_params: List[BindParameter] = []
-
-                for param_name in required_params:
-                    param_value = params[param_name]
-                    # Determine the SQLAlchemy type based on the parameter value
-                    if isinstance(param_value, (list, tuple)):
-                        # For expanding parameters, infer type from the first element
-                        if param_value:
-                            element_type = type(param_value[0])
-                        else:
-                            element_type = str  # Default to string if list is empty
-                        param_type = type_mapping.get(element_type, String())
-                        bind_params.append(
-                            bindparam(param_name, expanding=True, type_=param_type)
-                        )
+                # Build bindparam objects with correct types
+                binds: List[BindParameter] = []
+                for name in required:
+                    val = params[name]
+                    if isinstance(val, (list, tuple)):
+                        elem_t = type(val[0]) if val else str
+                        sql_t = type_mapping.get(elem_t, String())
+                        binds.append(bindparam(name, expanding=True, type_=sql_t))
                     else:
-                        param_type = type_mapping.get(type(param_value), String())
-                        bind_params.append(bindparam(param_name, type_=param_type))
+                        sql_t = type_mapping.get(type(val), String())
+                        binds.append(bindparam(name, type_=sql_t))
 
-                statement = statement.bindparams(*bind_params)
+                stmt = stmt.bindparams(*binds)
 
-                # Execute the query
-                cursor = await connection.execute(statement, params)
-
-                # Determine the type of query and populate the result accordingly
-                if cursor.returns_rows:
-                    # Fetch all results as dictionaries
-                    result = [dict(row) for row in cursor.mappings().all()]
+                # Execute and fetch
+                result = await conn.execute(stmt, params)
+                if result.returns_rows:
+                    return [dict(r) for r in result.mappings().all()]
                 else:
-                    # For INSERT, UPDATE, DELETE, etc., get the number of affected rows
-                    result = cursor.rowcount
-
-                return result
-
+                    return result.rowcount
         finally:
             await engine.dispose()

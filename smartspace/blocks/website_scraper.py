@@ -4,7 +4,6 @@ from typing import Annotated, List, Set
 from urllib.parse import urljoin, urlparse
 
 import httpx
-from bs4 import BeautifulSoup
 from pydantic import BaseModel
 
 from smartspace.core import Block, Config, Output, metadata, step
@@ -34,6 +33,8 @@ class WebsiteScraper(Block):
 
     @step()
     async def scrape_website(self, base_url: str):
+        from bs4 import BeautifulSoup
+
         if not base_url:
             self.website_content.send([""])
             return

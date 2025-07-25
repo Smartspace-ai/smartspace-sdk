@@ -2,258 +2,258 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/cli/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Analyzer/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Append/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Buffer/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Cast/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Collect/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Concat/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Count/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/CreateList/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/CreateObject/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/CreateResponseWithSources/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/DictConst/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/DocumentCreator/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/DocumentFromTemplate/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/FileStore/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/First/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Flatten/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/ForEach/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Get/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/GetAllDocuments/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/GetDataset/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/GetFileContent/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/GetJsonField/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/HTTPRequest/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/IntegerConst/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Join/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/JoinStrings/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/LLM/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/LLMDataEnrich/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/LLMSelect/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/LLMWithTools/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Map/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/MergeLists/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/ParseJson/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/RegexMatch/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/RowChunk/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SQL/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Save/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SaveChunk/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SaveToDataset/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SearchDataset/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SemanticChunk/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SentenceChunk/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/Slice/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/SplitString/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/StringConst/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/StringTemplate/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/StringTruncator/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/TemplatedObject/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/TokenChunk/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/TypeSwitch/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/UnpackList/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/UnpackObject/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/VectorSearch/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/VectorStore/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/WebsiteScraper/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/block-reference/WindowChunk/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/concepts/channels/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/concepts/blocks/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/concepts/blocks/connections/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/concepts/blocks/custom-blocks-building/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
     <url>
          <loc>https://smartspace-ai.github.io/smartspace-sdk/dev/getting-started/</loc>
-         <lastmod>2025-07-07</lastmod>
+         <lastmod>2025-07-25</lastmod>
     </url>
 </urlset>

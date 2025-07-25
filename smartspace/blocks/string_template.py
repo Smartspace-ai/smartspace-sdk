@@ -1,7 +1,5 @@
 from typing import Annotated, Any
 
-from jinja2 import BaseLoader, Environment
-
 from smartspace.core import (
     Block,
     Config,
@@ -22,5 +20,7 @@ class StringTemplate(Block):
 
     @step(output_name="string")
     async def build(self, **inputs: Any) -> str:
+        from jinja2 import BaseLoader, Environment
+
         template = Environment(loader=BaseLoader()).from_string(self.template)
         return template.render(**inputs)

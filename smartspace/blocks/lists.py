@@ -4,112 +4,19 @@ from more_itertools import flatten
 
 from smartspace.core import (
     Block,
-    ChannelEvent,
     Config,
-    InputChannel,
     OperatorBlock,
     Output,
-    OutputChannel,
     State,
-    Tool,
-    callback,
     metadata,
     step,
 )
-from smartspace.enums import BlockCategory, ChannelState
+from smartspace.enums import BlockCategory
 
 ItemT = TypeVar("ItemT")
 ResultT = TypeVar("ResultT")
 SequenceT = TypeVar("SequenceT", bound=list[Any] | str)
-
-
-@metadata(
-    category=BlockCategory.FUNCTION,
-    description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
-    icon="fa-project-diagram",
-    label="map function, transform items, process list, iterate collection, apply function to list",
-)
-class Map(Block, Generic[ItemT, ResultT]):
-    class Operation(Tool):
-        def run(self, item: ItemT) -> ResultT: ...
-
-    run: Operation
-
-    results: Output[list[ResultT]]
-
-    count: Annotated[
-        int,
-        State(
-            step_id="map",
-            input_ids=["items"],
-        ),
-    ] = 0
-
-    results_state: Annotated[
-        list[Any],
-        State(
-            step_id="map",
-            input_ids=["items"],
-        ),
-    ] = []
-
-    @step()
-    async def map(self, items: list[ItemT]):
-        if len(items) == 0:
-            self.results.send([])
-            return
-
-        self.results_state = [None] * len(items)
-        self.count = len(items)
-        for i, item in enumerate(items):
-            await self.run.call(item).then(lambda result: self.collect(result, i))
-
-    @callback()
-    async def collect(
-        self,
-        result: ResultT,
-        index: int,
-    ):
-        self.results_state[index] = result
-        self.count -= 1
-
-        if self.count == 0:
-            self.results.send(self.results_state)
-
-
-@metadata(
-    category=BlockCategory.FUNCTION,
-    description="Collects data from a channel and outputs them as a list once the channel closes.",
-    icon="fa-boxes",
-    label="collect list, gather items, accumulate data, assemble collection, aggregate entries",
-    obsolete=True,
-    deprecated_reason="This block has been deprecated..",
-)
-class Collect(OperatorBlock, Generic[ItemT]):
-    items: Output[list[ItemT]]
-
-    items_state: Annotated[
-        list[ItemT],
-        State(
-            step_id="collect",
-            input_ids=["item"],
-        ),
-    ] = []
-
-    @step()
-    async def collect(
-        self,
-        item: InputChannel[ItemT],
-    ):
-        if (
-            item.state == ChannelState.OPEN
-            and item.event == ChannelEvent.DATA
-            and item.data
-        ):
-            self.items_state.append(item.data)
-
-        if item.event == ChannelEvent.CLOSE:
-            self.items.send(self.items_state)
+firstItemT = TypeVar("firstItemT")
 
 
 @metadata(
@@ -125,29 +32,9 @@ class Count(OperatorBlock):
 
 @metadata(
     category=BlockCategory.FUNCTION,
-    description="Loops through a list of items and outputs them one at a time",
-    icon="fa-ellipsis-h	",
-    label="for each, iterate items, loop through list, process each item, step through collection",
-)
-class ForEach(OperatorBlock, Generic[ItemT]):
-    item: OutputChannel[ItemT]
-
-    @step()
-    async def foreach(self, items: list[ItemT]):
-        for item in items:
-            self.item.send(item)
-
-        self.item.close()
-
-
-@metadata(
-    category=BlockCategory.FUNCTION,
     description="Joins a list of strings using the configured separator and outputs the resulting string.",
     icon="fa-link",
     label="join strings, concatenate text, combine strings, merge text, connect strings",
-    obsolete=True,
-    use_instead="Join",
-    deprecated_reason="This block will be deprecated in a future version. Use Join instead.",
 )
 class JoinStrings(Block):
     separator: Annotated[str, Config()] = ""
@@ -192,9 +79,6 @@ class Slice(Block):
         return items[self.start : self.end]
 
 
-firstItemT = TypeVar("firstItemT")
-
-
 @metadata(
     category=BlockCategory.FUNCTION,
     description="Gets the first item from a list",
@@ -216,3 +100,91 @@ class Flatten(OperatorBlock):
     @step(output_name="list")
     async def flatten(self, lists: list[list[Any]]) -> list[Any]:
         return list(flatten(lists))
+
+
+@metadata(
+    description="Takes in inputs and creates a list containing the inputs.",
+    category=BlockCategory.MISC,
+    icon="fa-list-ul",
+    label="create list, build list, construct list, form list, make list",
+)
+class CreateList(Block):
+    @step(output_name="list")
+    async def build(self, *items: Any) -> list[Any]:
+        return list(items)
+
+
+@metadata(
+    category=BlockCategory.FUNCTION,
+    description="Appends an item to a list and outputs the updated list. Maintains the list state across calls.",
+    label="list builder, dynamic list, item aggregation, list accumulation, append to list",
+)
+class BuildList(Block):
+    items: Annotated[list[Any], State()] = []
+
+    @step(output_name="items")
+    async def create_response(self, item: Any) -> list[Any]:
+        self.items.append(item)
+        return self.items
+
+
+@metadata(
+    category=BlockCategory.FUNCTION,
+    description="Merges objects from two lists by matching on the configured key.",
+    obsolete=True,
+    label="merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data",
+    use_instead="Join",
+)
+class MergeLists(Block):
+    key: Annotated[str, Config()]
+
+    @step(output_name="result")
+    async def merge_lists(
+        self,
+        a: list[dict[str, Any]],
+        b: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        dict1 = {item[self.key]: item for item in a}
+        dict2 = {item[self.key]: item for item in b}
+
+        merged_dict = {}
+        for code in dict1.keys() | dict2.keys():
+            if code in dict1 and code in dict2:
+                merged_dict[code] = {**dict1[code], **dict2[code]}
+            elif code in dict1:
+                merged_dict[code] = dict1[code]
+            elif code in dict2:
+                merged_dict[code] = dict2[code]
+
+        final_result = list(merged_dict.values())
+
+        return final_result
+
+
+@metadata(
+    description="Takes in a list and sends each item to the corresponding output",
+    category=BlockCategory.MISC,
+    icon="fa-th-list",
+    label="unpack list, distribute items, extract list elements, spread array, decompose list",
+)
+class UnpackList(Block):
+    items: list[Output[Any]]
+
+    @step()
+    async def unpack(self, list: list[Any]):
+        for i, v in enumerate(list):
+            if len(self.items) > i:
+                self.items[i].send(v)
+
+
+@metadata(
+    description="Appends item to items and output resulting list",
+    category=BlockCategory.MISC,
+    icon="fa-plus",
+    label="append item, add item, extend list, insert item, concatenate item",
+)
+class Append(Block, Generic[ItemT]):
+    @step(output_name="items")
+    async def build(self, items: list[ItemT], item: ItemT) -> list[ItemT]:
+        items.append(item)
+        return items

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from typing import List
 
@@ -77,7 +78,7 @@ def delete(name: str):
 
 
 @app.command()
-async def publish(name: str, path: str = ""):
+def publish(name: str, path: str = ""):
     import os
     import zipfile
 
@@ -90,11 +91,11 @@ async def publish(name: str, path: str = ""):
     if os.path.exists(file_name):
         os.remove(file_name)
 
-    block_set = await smartspace.blocks.load(path, force_reload=True)
+    block_set = asyncio.run(smartspace.blocks.load(path, force_reload=True))
 
     print("Publishing the following blocks:")
     for block_name, versions in block_set.all.items():
-        for version, block_type in versions.items():
+        for version, _ in versions.items():
             print(f"{block_name} ({version})")
 
     zf = zipfile.ZipFile(file_name, "w")

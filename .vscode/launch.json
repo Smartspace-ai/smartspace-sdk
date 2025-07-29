@@ -15,6 +15,16 @@
             ]
         },
         {
+            "name": "Debug Smartspace help",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "smartspace",
+            "justMyCode": false,
+            "args": [
+                "--help"
+            ]
+        },
+        {
             "name": "Debug doc_generator",
             "type": "debugpy",
             "request": "launch",

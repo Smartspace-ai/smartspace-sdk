@@ -8,7 +8,7 @@ filterwarnings = [
 
 [tool.poetry]
 name = "smartspace-ai"
-version = "0.1.7"
+version = "0.1.8"
 description = "Smartspace SDK"
 readme = "README.md"
 packages = [{ include = "smartspace" }]
@@ -26,7 +26,7 @@ mypy = "^1.8.0"
 mypy-extensions = "1.0.0"
 numpy = "^1.26.0"
 jsonschema = "^4.23.0"
-typer = "^0.12.3"
+typer = "0.16.0"
 azure-identity = "^1.17.1"
 msal = "^1.29.0"
 pysignalr = "^1.0.0"

@@ -56,6 +56,9 @@ def get_msal_app():
         ".smartspace",
         "msal_token_cache",
     )
+
+    os.makedirs(os.path.dirname(cache_filename), exist_ok=True)
+
     cache = msal.SerializableTokenCache()
     if os.path.exists(cache_filename):
         cache.deserialize(open(cache_filename, "r").read())

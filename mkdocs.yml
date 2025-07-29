@@ -1,6 +1,6 @@
 site_name: Smartspace Workflow Documentation
-site_url: "https://redesigned-happiness-lml15p6.pages.github.io/"
-repo_url: "https://github.com/Smartspace-ai/smartspace-flows"
+site_url: "https://smartspace-ai.github.io/smartspace-sdk/"
+repo_url: "https://github.com/Smartspace-ai/smartspace-sdk"
 
 theme:
   features:
@@ -54,6 +54,7 @@ nav:
           - Flatten: block-reference/Flatten.md
           - ForEach: block-reference/ForEach.md
           - HTTPRequest: block-reference/HTTPRequest.md
+          - Join: block-reference/Join.md
           - Map: block-reference/Map.md
           - MergeLists: block-reference/MergeLists.md
           - Slice: block-reference/Slice.md
@@ -73,6 +74,10 @@ nav:
           - Count: block-reference/Count.md
           - CreateList: block-reference/CreateList.md
           - CreateObject: block-reference/CreateObject.md
+          - DictConst: block-reference/DictConst.md
+          - IntegerConst: block-reference/IntegerConst.md
+          - StringConst: block-reference/StringConst.md
+          - TemplatedObject: block-reference/TemplatedObject.md
           - TypeSwitch: block-reference/TypeSwitch.md
           - UnpackList: block-reference/UnpackList.md
           - UnpackObject: block-reference/UnpackObject.md
@@ -81,15 +86,26 @@ nav:
           - Data:
               - FileStore: block-reference/FileStore.md
               - GetAllDocuments: block-reference/GetAllDocuments.md
+              - GetDataset: block-reference/GetDataset.md
               - GetFileContent: block-reference/GetFileContent.md
+              - RowChunk: block-reference/RowChunk.md
+              - Save: block-reference/Save.md
+              - SaveChunk: block-reference/SaveChunk.md
+              - SaveToDataset: block-reference/SaveToDataset.md
+              - SearchDataset: block-reference/SearchDataset.md
+              - SQL: block-reference/SQL.md
               - VectorSearch: block-reference/VectorSearch.md
+              - VectorStore: block-reference/VectorStore.md
           - LLM:
               - Analyzer: block-reference/Analyzer.md
               - LLM: block-reference/LLM.md
+              - LLMDataEnrich: block-reference/LLMDataEnrich.md
               - LLMSelect: block-reference/LLMSelect.md
               - LLMWithTools: block-reference/LLMWithTools.md
           - Utils:
               - CreateResponseWithSources: block-reference/CreateResponseWithSources.md
+              - DocumentCreator: block-reference/DocumentCreator.md
+              - DocumentFromTemplate: block-reference/DocumentFromTemplate.md
       - Obsolete:
           - GetJsonField: block-reference/GetJsonField.md
       # - Agent:
@@ -108,7 +124,7 @@ nav:
   #         - Flow Deployment: concepts/flows/flow-deployment.md
   #         - Flow Execution: concepts/flows/flow-execution.md
       # - Overview: concepts/index.md
-  # - Getting Started: getting-started/index.md
+  - Getting Started: getting-started/index.md
   # - Examples: examples/index.md
   # - API Reference: api/index.md
 

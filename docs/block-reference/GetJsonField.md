@@ -4,7 +4,11 @@
 {% endif %}
 
 ## Overview
-The `GetJsonField` Block uses JSONPath to extract specific data from a JSON object or list. JSONPath is a query language used to traverse and extract data from JSON structures. This Block is marked as obsolete, meaning it may no longer be recommended for use in future workflows.
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be moved to connection configuration in a future version.** JSONPath extraction functionality will be handled automatically in connection configurations rather than requiring a separate block.
+
+The `GetJsonField` Block uses JSONPath to extract specific data from a JSON object or list. JSONPath is a query language used to traverse and extract data from JSON structures.
 
 It accepts JSON input, which can be a JSON object or a list of JSON objects, and applies a JSONPath expression to extract the specified fields.
 

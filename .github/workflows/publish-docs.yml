@@ -27,6 +27,17 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Install library
         run: poetry install --no-interaction --only docs
+      - name: Prepare gh-pages branch
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+      - name: Debug Git State
+        run: |
+          echo "Current branch:"
+          git branch -a
+          echo "Git status:"
+          git status
+          echo "Mike versions:"
+          poetry run mike list || echo "No versions found"
       - name: Build Docs Website
         run: |
           # Extract major and minor from tag (assuming tag format is semver, e.g., 2.1.1) 

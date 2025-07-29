@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be removed in a future version.** Use the `Join` block instead for string joining operations.
+
 The `JoinStrings` Block takes a list of strings and joins them together into a single string using a configured separator. You can specify the separator to use between the strings (such as a space, comma, or other characters). The resulting string is then output.
 
 This Block is helpful when you need to concatenate a list of strings with a custom separator.

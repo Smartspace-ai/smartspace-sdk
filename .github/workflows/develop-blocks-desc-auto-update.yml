@@ -1,0 +1,68 @@
+name: Block Documentation Update
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "smartspace/blocks/**"
+
+jobs:
+  claude-auto-blocks-metadata-review:
+    name: Claude Auto Blocks Metadata Review (on PR)
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the full git history to be able to diff changes
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to fetch history for diffing across commits
+
+      # Step 2: Find all Python files that were changed in the smartspace/blocks/ directory
+      - name: Get changed block files
+        id: changed_block_files
+        run: |
+          # This command finds all changed files between the pull request's head and its base,
+          # filters for python files in smartspace/blocks, and formats them into a space-separated string.
+          CHANGED_BLOCK_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep '^smartspace/blocks/.*\.py$' | tr '\n' ' ' | sed 's/ $//')
+          if [[ -z "$CHANGED_BLOCK_FILES" ]]; then
+            echo "No block files changed in smartspace/blocks/."
+            echo "files=''" >> $GITHUB_OUTPUT
+          else
+            echo "Found changed block files: $CHANGED_BLOCK_FILES"
+            echo "files=$CHANGED_BLOCK_FILES" >> $GITHUB_OUTPUT
+          fi
+
+      # Step 3: Create a dynamic prompt if files have changed
+      - name: Create dynamic prompt content
+        if: steps.changed_block_files.outputs.files != ''
+        id: dynamic_prompt
+        run: |
+          PROMPT_HEADER="You are a meticulous technical writer responsible for ensuring all block documentation in our system is up to standard.
+          Your task is to review ONLY the following changed files: ${{ steps.changed_block_files.outputs.files }}
+          Apply the guidelines from the prompt file below to correct any missing or non-compliant block metadata descriptions or configuration parameter descriptions.
+          Focus exclusively on files within the 'smartspace/blocks/' directory.
+          If a file's documentation already perfectly adheres to the guidelines, make no changes to that file.
+
+          The files to modify are: ${{ steps.changed_block_files.outputs.files }}
+          ---
+          Here are the guidelines:"
+
+          GUIDELINES=$(cat .github/claude_code_prompts/blocks_metadata_prompt.md)
+
+          # To handle multiline strings for GITHUB_OUTPUT, we use a special heredoc-like syntax.
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "prompt_content<<$EOF" >> $GITHUB_OUTPUT
+          echo "$PROMPT_HEADER" >> $GITHUB_OUTPUT
+          echo "$GUIDELINES" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      # Step 4: Run Claude task only if there are changed block files
+      - name: Run Claude to ensure block documentation standards
+        if: steps.changed_block_files.outputs.files != ''
+        uses: anthropics/claude-code-base-action@beta
+        with:
+          prompt: ${{ steps.dynamic_prompt.outputs.prompt_content }}
+          append_system_prompt: "After writing code, be sure to code review yourself."
+          # Viewing and batch editing are sufficient.
+          allowed_tools: "View,BatchTool"
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}

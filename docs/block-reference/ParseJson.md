@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be moved to connection configuration in a future version.** JSON parsing functionality will be handled automatically in connection configurations rather than requiring a separate block.
+
 The `ParseJson` Block parses a JSON string or a list of JSON strings into Python dictionaries. This Block accepts either a single JSON string or a list of JSON strings and converts them into their corresponding dictionary or list of dictionaries, respectively. It is useful when you need to work with structured JSON data in subsequent steps.
 
 {{ generate_block_details(page.title) }}

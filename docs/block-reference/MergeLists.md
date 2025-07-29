@@ -4,6 +4,10 @@
 {% endif %}
 
 ## Overview
+
+!!! warning "Deprecated Block"
+    **This block is deprecated and will be removed in a future version.** Use the `Concat` block instead for list merging operations.
+
 The `MergeLists` Block merges two lists of objects (dictionaries) based on a matching key. It takes two input lists and combines the dictionaries from both lists where the specified key is equal. If both lists contain objects with the same key, their values are merged, with values from the second list overriding those from the first in case of conflicts.
 
 This Block is useful for combining datasets or lists where you need to merge records with the same identifier.

@@ -35,5 +35,14 @@ jobs:
       - name: Prepare gh-pages branch
         run: |
           git fetch origin gh-pages --depth=1 || true
+      - name: Debug Git State
+        run: |
+          echo "Current branch:"
+          git branch -a
+          echo "Git status:"
+          git status
+          echo "Mike versions:"
+          poetry run mike list || echo "No versions found"
       - name: Build Docs Website
-        run: poetry run mike deploy --push dev
+        run: |
+          poetry run mike deploy --push dev

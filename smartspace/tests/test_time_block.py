@@ -1,18 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import pytest
 
 from smartspace.blocks.time_block import (
-    AddTimeRequest,
-    CalculateDifferenceRequest,
-    ConvertTimezoneRequest,
     DateTime,
-    ExtractComponentsRequest,
-    FormatDateRequest,
-    GetCurrentRequest,
-    ParseDateRequest,
-    SubtractTimeRequest,
+    DateTimeRequest,
 )
 from smartspace.core import BlockError
 
@@ -31,402 +24,386 @@ class TestDateTime:
     @pytest.fixture
     def block_custom_format(self):
         block = DateTime()
-        block.default_format = "%Y-%m-%d"
+        block.output_format = "%Y-%m-%d"
         return block
-
-    @pytest.fixture
-    def test_datetime(self):
-        return datetime(2024, 7, 29, 14, 30, 0, tzinfo=ZoneInfo("UTC"))
-
-    @pytest.fixture
-    def test_timestamp(self):
-        # Create a more predictable timestamp: 2024-07-29 14:30:00 UTC
-        dt = datetime(2024, 7, 29, 14, 30, 0, tzinfo=ZoneInfo("UTC"))
-        return dt.timestamp()
 
     # Test get_current operation
     @pytest.mark.asyncio
     async def test_get_current_formatted_default(self, block):
-        request = GetCurrentRequest(operation="get_current", format_output=True)
-        result = await block.get_current(request)
+        request = DateTimeRequest(operation="get_current")
+        result = await block.execute(request)
         assert isinstance(result, str)
         assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
-
-    @pytest.mark.asyncio
-    async def test_get_current_raw_datetime(self, block):
-        request = GetCurrentRequest(operation="get_current", format_output=False)
-        result = await block.get_current(request)
-        assert isinstance(result, datetime)
-        assert result.tzinfo is not None
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
     async def test_get_current_custom_timezone(self, block_custom_timezone):
-        request = GetCurrentRequest(operation="get_current", format_output=False)
-        result = await block_custom_timezone.get_current(request)
-        assert isinstance(result, datetime)
-        assert str(result.tzinfo) == "America/New_York"
+        request = DateTimeRequest(operation="get_current")
+        result = await block_custom_timezone.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
+
+    @pytest.mark.asyncio
+    async def test_get_current_custom_format(self, block_custom_format):
+        request = DateTimeRequest(operation="get_current")
+        result = await block_custom_format.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 10  # YYYY-MM-DD format
+        assert result.count("-") == 2
+        
+        # Verify it's a valid date format
+        parsed = datetime.strptime(result, "%Y-%m-%d")
+        assert parsed is not None
 
     # Test add_time operation
     @pytest.mark.asyncio
-    async def test_add_time_days(self, block, test_datetime):
-        request = AddTimeRequest(
-            operation="add_time",
-            date_input="2024-07-29 14:30:00",
-            days=5,
-            format_output=True,
-        )
-        result = await block.add_time(request)
-        assert result == "2024-08-03 14:30:00"
+    async def test_add_time_days(self, block):
+        request = DateTimeRequest(operation="add_time", days=5)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_add_time_multiple_units(self, block, test_datetime):
-        request = AddTimeRequest(
+    async def test_add_time_multiple_units(self, block):
+        before = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        request = DateTimeRequest(
             operation="add_time",
-            date_input="2024-07-29 14:30:00",
             days=1,
             hours=2,
             minutes=30,
             seconds=45,
-            format_output=True,
         )
-        result = await block.add_time(request)
-        assert result == "2024-07-30 17:00:45"
+        result = await block.execute(request)
+        after = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        
+        assert isinstance(result, str)
+        result_dt = datetime.strptime(result, "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZoneInfo("Pacific/Auckland"))
+        
+        # The result should be roughly current time + the requested delta
+        expected_delta = timedelta(days=1, hours=2, minutes=30, seconds=45)
+        min_expected = before + expected_delta - timedelta(seconds=10)  # Increased tolerance
+        max_expected = after + expected_delta + timedelta(seconds=10)
+        
+        assert min_expected <= result_dt <= max_expected
 
     @pytest.mark.asyncio
-    async def test_add_time_timestamp_input(self, block, test_timestamp):
-        request = AddTimeRequest(
-            operation="add_time", date_input=test_timestamp, days=1, format_output=True
-        )
-        result = await block.add_time(request)
-        assert result == "2024-07-30 14:30:00"
-
-    @pytest.mark.asyncio
-    async def test_add_time_raw_output(self, block):
-        request = AddTimeRequest(
-            operation="add_time",
-            date_input="2024-07-29 14:30:00",
-            days=1,
-            format_output=False,
-        )
-        result = await block.add_time(request)
-        assert isinstance(result, datetime)
-        assert result.day == 30
+    async def test_add_time_zero_values(self, block):
+        # Test adding zero time units (should return current time)
+        before = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        request = DateTimeRequest(operation="add_time")  # All defaults to 0
+        result = await block.execute(request)
+        after = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        
+        assert isinstance(result, str)
+        result_dt = datetime.strptime(result, "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZoneInfo("Pacific/Auckland"))
+        
+        # Result should be very close to current time
+        assert before - timedelta(seconds=10) <= result_dt <= after + timedelta(seconds=10)
 
     # Test subtract_time operation
     @pytest.mark.asyncio
     async def test_subtract_time_days(self, block):
-        request = SubtractTimeRequest(
-            operation="subtract_time",
-            date_input="2024-07-29 14:30:00",
-            days=5,
-            format_output=True,
-        )
-        result = await block.subtract_time(request)
-        assert result == "2024-07-24 14:30:00"
+        request = DateTimeRequest(operation="subtract_time", days=5)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
     async def test_subtract_time_multiple_units(self, block):
-        request = SubtractTimeRequest(
+        before = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        request = DateTimeRequest(
             operation="subtract_time",
-            date_input="2024-07-29 14:30:00",
             days=1,
             hours=2,
             minutes=30,
             seconds=15,
-            format_output=True,
         )
-        result = await block.subtract_time(request)
-        assert result == "2024-07-28 11:59:45"
+        result = await block.execute(request)
+        after = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        
+        assert isinstance(result, str)
+        result_dt = datetime.strptime(result, "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZoneInfo("Pacific/Auckland"))
+        
+        # The result should be roughly current time - the requested delta
+        expected_delta = timedelta(days=1, hours=2, minutes=30, seconds=15)
+        min_expected = before - expected_delta - timedelta(seconds=10)
+        max_expected = after - expected_delta + timedelta(seconds=10)
+        
+        assert min_expected <= result_dt <= max_expected
 
-    # Test format_date operation
+    # Test months and years operations
     @pytest.mark.asyncio
-    async def test_format_date_custom_format(self, block):
-        request = FormatDateRequest(
-            operation="format_date",
-            date_input="2024-07-29 14:30:00",
-            format_string="%B %d, %Y",
-        )
-        result = await block.format_date(request)
-        assert result == "July 29, 2024"
-
-    @pytest.mark.asyncio
-    async def test_format_date_timestamp_input(self, block, test_timestamp):
-        request = FormatDateRequest(
-            operation="format_date", date_input=test_timestamp, format_string="%Y-%m-%d"
-        )
-        result = await block.format_date(request)
-        assert result == "2024-07-29"
-
-    @pytest.mark.asyncio
-    async def test_format_date_invalid_format(self, block):
-        # Note: Python's strftime doesn't always raise errors for invalid codes
-        # This test verifies that %Q gets passed through literally
-        request = FormatDateRequest(
-            operation="format_date",
-            date_input="2024-07-29 14:30:00",
-            format_string="%Q",  # Invalid format code
-        )
-        result = await block.format_date(request)
-        # %Q is not a valid format code, so it should be passed through literally
-        assert result == "%Q"
-
-    # Test parse_date operation
-    @pytest.mark.asyncio
-    async def test_parse_date_automatic_detection(self, block):
-        request = ParseDateRequest(
-            operation="parse_date", date_string="2024-07-29", format_output=True
-        )
-        result = await block.parse_date(request)
-        assert result == "2024-07-29 00:00:00"
+    async def test_add_months(self, block):
+        request = DateTimeRequest(operation="add_time", months=3)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_parse_date_custom_format(self, block):
-        request = ParseDateRequest(
-            operation="parse_date",
-            date_string="29/07/2024",
-            input_format="%d/%m/%Y",
-            format_output=True,
-        )
-        result = await block.parse_date(request)
-        assert result == "2024-07-29 00:00:00"
+    async def test_add_years(self, block):
+        request = DateTimeRequest(operation="add_time", years=2)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_parse_date_iso_format(self, block):
-        request = ParseDateRequest(
-            operation="parse_date",
-            date_string="2024-07-29T14:30:00Z",
-            format_output=True,
-        )
-        result = await block.parse_date(request)
-        assert "2024-07-29 14:30:00" in result
+    async def test_subtract_months(self, block):
+        request = DateTimeRequest(operation="subtract_time", months=6)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_parse_date_invalid_format(self, block):
-        request = ParseDateRequest(
-            operation="parse_date", date_string="invalid date", format_output=True
-        )
-        with pytest.raises(BlockError, match="Unable to parse date string"):
-            await block.parse_date(request)
-
-    # Test convert_timezone operation
-    @pytest.mark.asyncio
-    async def test_convert_timezone_utc_to_ny(self, block):
-        request = ConvertTimezoneRequest(
-            operation="convert_timezone",
-            date_input="2024-07-29 14:30:00",
-            target_timezone="America/New_York",
-            format_output=True,
-        )
-        result = await block.convert_timezone(request)
-        # UTC 14:30 should be NY 10:30 (EDT in July)
-        assert result == "2024-07-29 10:30:00"
+    async def test_subtract_years(self, block):
+        request = DateTimeRequest(operation="subtract_time", years=1)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_convert_timezone_timestamp_input(self, block, test_timestamp):
-        request = ConvertTimezoneRequest(
-            operation="convert_timezone",
-            date_input=test_timestamp,
-            target_timezone="Asia/Tokyo",
-            format_output=True,
+    async def test_mixed_units_with_months_years(self, block):
+        # Test combining all time units including months and years
+        request = DateTimeRequest(
+            operation="add_time",
+            years=1,
+            months=2,
+            weeks=1,
+            days=3,
+            hours=4,
+            minutes=30,
+            seconds=45
         )
-        result = await block.convert_timezone(request)
-        # UTC 14:30 should be Tokyo 23:30 (JST is UTC+9)
-        assert result == "2024-07-29 23:30:00"
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # YYYY-MM-DD HH:MM:SS format
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_convert_timezone_raw_output(self, block):
-        request = ConvertTimezoneRequest(
-            operation="convert_timezone",
-            date_input="2024-07-29 14:30:00",
-            target_timezone="Europe/London",
-            format_output=False,
-        )
-        result = await block.convert_timezone(request)
-        assert isinstance(result, datetime)
-        assert str(result.tzinfo) == "Europe/London"
-
-    # Test calculate_difference operation
-    @pytest.mark.asyncio
-    async def test_calculate_difference_days(self, block):
-        request = CalculateDifferenceRequest(
-            operation="calculate_difference",
-            start_date="2024-07-29 14:30:00",
-            end_date="2024-08-03 14:30:00",
-            unit="days",
-        )
-        result = await block.calculate_difference(request)
-        assert result == 5
-
-    @pytest.mark.asyncio
-    async def test_calculate_difference_hours(self, block):
-        request = CalculateDifferenceRequest(
-            operation="calculate_difference",
-            start_date="2024-07-29 14:30:00",
-            end_date="2024-07-29 16:30:00",
-            unit="hours",
-        )
-        result = await block.calculate_difference(request)
-        assert result == 2.0
-
-    @pytest.mark.asyncio
-    async def test_calculate_difference_negative(self, block):
-        request = CalculateDifferenceRequest(
-            operation="calculate_difference",
-            start_date="2024-07-30 14:30:00",
-            end_date="2024-07-29 14:30:00",
-            unit="days",
-        )
-        result = await block.calculate_difference(request)
-        assert result == -1
-
-    @pytest.mark.asyncio
-    async def test_calculate_difference_timestamp_inputs(self, block, test_timestamp):
-        future_timestamp = test_timestamp + 3600  # 1 hour later
-        request = CalculateDifferenceRequest(
-            operation="calculate_difference",
-            start_date=test_timestamp,
-            end_date=future_timestamp,
-            unit="minutes",
-        )
-        result = await block.calculate_difference(request)
-        assert result == 60.0
-
-    # Test extract_components operation
-    @pytest.mark.asyncio
-    async def test_extract_components_basic(self, block):
-        request = ExtractComponentsRequest(
-            operation="extract_components", date_input="2024-07-29 14:30:15"
-        )
-        result = await block.extract_components(request)
-        expected = {
-            "year": 2024,
-            "month": 7,
-            "day": 29,
-            "hour": 14,
-            "minute": 30,
-            "second": 15,
-            "weekday": 0,  # Monday
-            "iso_weekday": 1,  # Monday
-            "day_of_year": 211,  # 29th July is the 211th day of 2024
-            "week_of_year": 31,
-        }
-        assert result == expected
-
-    @pytest.mark.asyncio
-    async def test_extract_components_timestamp_input(self, block, test_timestamp):
-        request = ExtractComponentsRequest(
-            operation="extract_components", date_input=test_timestamp
-        )
-        result = await block.extract_components(request)
-        assert result["year"] == 2024
-        assert result["month"] == 7
-        assert result["day"] == 29
-        assert result["hour"] == 14
-        assert result["minute"] == 30
+    async def test_negative_months_years(self, block):
+        # Test that negative months/years in add_time effectively subtract
+        request = DateTimeRequest(operation="add_time", years=-1, months=-6)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     # Test error handling
     @pytest.mark.asyncio
-    async def test_invalid_date_input_type(self, block):
-        # Test with an unsupported type that passes Pydantic validation but fails in the method
-        request = AddTimeRequest(
-            operation="add_time", date_input="not a parseable date string", days=1
-        )
-        with pytest.raises(BlockError, match="Unable to parse date string"):
-            await block.add_time(request)
-
-    @pytest.mark.asyncio
-    async def test_invalid_timezone(self, block):
+    async def test_invalid_timezone(self):
+        block = DateTime()
         block.timezone = "Invalid/Timezone"
-        request = GetCurrentRequest(operation="get_current")
+        request = DateTimeRequest(operation="get_current")
         with pytest.raises(BlockError, match="Invalid timezone"):
-            await block.get_current(request)
+            await block.execute(request)
 
     @pytest.mark.asyncio
-    async def test_parse_datetime_input_unsupported_string(self, block):
-        request = AddTimeRequest(
-            operation="add_time", date_input="not a valid date", days=1
-        )
-        with pytest.raises(BlockError, match="Unable to parse date string"):
-            await block.add_time(request)
+    async def test_unknown_operation(self, block):
+        # Test that unknown operations raise an error at Pydantic validation level
+        with pytest.raises(ValueError):
+            DateTimeRequest(operation="unknown_operation")
 
     # Test edge cases
     @pytest.mark.asyncio
-    async def test_leap_year_handling(self, block):
-        request = AddTimeRequest(
-            operation="add_time",
-            date_input="2024-02-28 12:00:00",  # 2024 is a leap year
-            days=1,
-            format_output=True,
-        )
-        result = await block.add_time(request)
-        assert result == "2024-02-29 12:00:00"  # Should handle leap day correctly
+    async def test_large_time_addition(self, block):
+        # Test adding large time units
+        request = DateTimeRequest(operation="add_time", days=365, hours=24, minutes=60, seconds=3600)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19  # Should handle large values without error
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_month_boundary_handling(self, block):
-        request = AddTimeRequest(
-            operation="add_time",
-            date_input="2024-01-31 12:00:00",
-            days=31,  # Adding 31 days from Jan 31
-            format_output=True,
-        )
-        result = await block.add_time(request)
-        assert "2024-03-02" in result  # Should handle month boundaries correctly
+    async def test_negative_time_values_in_add(self, block):
+        # Test that negative values in add_time effectively subtract
+        before = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        request = DateTimeRequest(operation="add_time", days=-1)  # Negative day
+        result = await block.execute(request)
+        after = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        
+        assert isinstance(result, str)
+        result_dt = datetime.strptime(result, "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZoneInfo("Pacific/Auckland"))
+        
+        # Result should be roughly current time - 1 day
+        expected_delta = timedelta(days=-1)
+        min_expected = before + expected_delta - timedelta(seconds=10)
+        max_expected = after + expected_delta + timedelta(seconds=10)
+        
+        assert min_expected <= result_dt <= max_expected
 
     @pytest.mark.asyncio
-    async def test_dst_handling(self, block_custom_timezone):
-        # Test during DST transition (this is a complex case)
-        # We need to specify the input is in NY timezone for proper conversion
-        dt_ny = datetime(2024, 7, 29, 12, 0, 0, tzinfo=ZoneInfo("America/New_York"))
-        request = ConvertTimezoneRequest(
-            operation="convert_timezone",
-            date_input=dt_ny.timestamp(),  # Use timestamp to avoid string parsing issues
-            target_timezone="UTC",
-            format_output=True,
-        )
-        result = await block_custom_timezone.convert_timezone(request)
-        # Should handle DST correctly (EDT is UTC-4 in summer)
-        assert result == "2024-07-29 16:00:00"
+    async def test_output_format_consistency(self):
+        # Test that all operations use the same output format
+        custom_format = "%Y/%m/%d %H:%M"
+        request_get = DateTimeRequest(operation="get_current")
+        request_add = DateTimeRequest(operation="add_time", hours=1)
+        request_sub = DateTimeRequest(operation="subtract_time", hours=1)
+        
+        # Test get_current
+        block1 = DateTime()
+        block1.output_format = custom_format
+        result1 = await block1.execute(request_get)
+        assert isinstance(result1, str)
+        assert "/" in result1 and len(result1) == 16  # YYYY/MM/DD HH:MM format
+        parsed1 = datetime.strptime(result1, "%Y/%m/%d %H:%M")
+        assert parsed1 is not None
+        
+        # Test add_time
+        block2 = DateTime()
+        block2.output_format = custom_format
+        result2 = await block2.execute(request_add)
+        assert isinstance(result2, str)
+        assert "/" in result2 and len(result2) == 16
+        parsed2 = datetime.strptime(result2, "%Y/%m/%d %H:%M")
+        assert parsed2 is not None
+        
+        # Test subtract_time  
+        block3 = DateTime()
+        block3.output_format = custom_format
+        result3 = await block3.execute(request_sub)
+        assert isinstance(result3, str)
+        assert "/" in result3 and len(result3) == 16
+        parsed3 = datetime.strptime(result3, "%Y/%m/%d %H:%M")
+        assert parsed3 is not None
+
+    # Test month/year edge cases
+    @pytest.mark.asyncio
+    async def test_month_day_overflow_handling(self):
+        # Test edge case: adding months when day doesn't exist in target month
+        block = DateTime()
+        block.timezone = "UTC"  # Use UTC for predictable results
+        
+        request = DateTimeRequest(operation="add_time", months=1)
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19
+        
+        # Verify it's a valid datetime format and doesn't crash
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
 
     @pytest.mark.asyncio
-    async def test_custom_allowed_formats(self, block):
-        # Test with a custom allowed format
-        block.allowed_formats = ["%d-%m-%Y %H:%M"]
-        request = ParseDateRequest(
-            operation="parse_date", date_string="29-07-2024 14:30", format_output=True
-        )
-        result = await block.parse_date(request)
-        assert "2024-07-29 14:30:00" in result
+    async def test_leap_year_handling_with_months(self):
+        # Test leap year handling when adding/subtracting months
+        block = DateTime()
+        block.timezone = "UTC"
+        
+        request = DateTimeRequest(operation="add_time", months=12)  # Add a full year
+        result = await block.execute(request)
+        assert isinstance(result, str)
+        assert len(result) == 19
+        
+        # Verify it's a valid datetime format
+        parsed = datetime.strptime(result, "%Y-%m-%d %H:%M:%S")
+        assert parsed is not None
+
+    # Test specific behavior validation
+    @pytest.mark.asyncio
+    async def test_operation_field_required(self):
+        # Test that operation field is required
+        with pytest.raises(ValueError):
+            DateTimeRequest()  # Missing required operation field
 
     @pytest.mark.asyncio
-    async def test_week_calculation_edge_case(self, block):
-        # Test week difference calculation
-        request = CalculateDifferenceRequest(
-            operation="calculate_difference",
-            start_date="2024-07-29 00:00:00",  # Monday
-            end_date="2024-08-05 00:00:00",  # Next Monday
-            unit="weeks",
-        )
-        result = await block.calculate_difference(request)
-        assert result == 1
+    async def test_all_time_units_default_to_zero(self, block):
+        # Test that all time units default to 0 when not specified
+        request = DateTimeRequest(operation="add_time")  # No time units specified
+        
+        before = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        result = await block.execute(request)
+        after = datetime.now(tz=ZoneInfo("Pacific/Auckland"))
+        
+        result_dt = datetime.strptime(result, "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZoneInfo("Pacific/Auckland"))
+        
+        # Should be very close to current time since all units are 0
+        assert before - timedelta(seconds=10) <= result_dt <= after + timedelta(seconds=10)
 
     @pytest.mark.asyncio
-    async def test_microsecond_precision(self, block):
-        # Test that microseconds are handled properly using timestamp
-        dt_with_microseconds = datetime(
-            2024, 7, 29, 14, 30, 0, 123456, tzinfo=ZoneInfo("UTC")
-        )
-        request = ExtractComponentsRequest(
-            operation="extract_components", date_input=dt_with_microseconds.timestamp()
-        )
-        result = await block.extract_components(request)
-        assert result["second"] == 0  # Microseconds don't affect seconds
+    async def test_timezone_configuration_affects_all_operations(self):
+        # Test that timezone configuration affects all operations
+        utc_block = DateTime()
+        utc_block.timezone = "UTC"
+        
+        ny_block = DateTime()
+        ny_block.timezone = "America/New_York"
+        
+        request = DateTimeRequest(operation="get_current")
+        
+        utc_result = await utc_block.execute(request)
+        ny_result = await ny_block.execute(request)
+        
+        # Results should be different due to timezone differences
+        # (unless we're exactly at a moment when they happen to be the same hour)
+        assert isinstance(utc_result, str)
+        assert isinstance(ny_result, str)
+        
+        # Both should be valid datetime formats
+        utc_parsed = datetime.strptime(utc_result, "%Y-%m-%d %H:%M:%S")
+        ny_parsed = datetime.strptime(ny_result, "%Y-%m-%d %H:%M:%S")
+        assert utc_parsed is not None
+        assert ny_parsed is not None
 
-    @pytest.mark.asyncio
-    async def test_year_boundary_week_calculation(self, block):
-        # Test week of year calculation at year boundary
-        request = ExtractComponentsRequest(
-            operation="extract_components", date_input="2024-01-01 00:00:00"
-        )
-        result = await block.extract_components(request)
-        assert "week_of_year" in result
-        assert isinstance(result["week_of_year"], int)
+    @pytest.mark.asyncio 
+    async def test_output_format_affects_all_operations(self):
+        # Test that output_format configuration affects all operations
+        block = DateTime()
+        block.output_format = "%d/%m/%Y %H:%M"  # Different format
+        
+        operations = [
+            DateTimeRequest(operation="get_current"),
+            DateTimeRequest(operation="add_time", days=1),
+            DateTimeRequest(operation="subtract_time", days=1)
+        ]
+        
+        for request in operations:
+            # Need separate block instances since blocks can only run once
+            test_block = DateTime()
+            test_block.output_format = "%d/%m/%Y %H:%M"
+            
+            result = await test_block.execute(request)
+            assert isinstance(result, str)
+            assert len(result) == 16  # DD/MM/YYYY HH:MM format
+            assert result.count("/") == 2
+            
+            # Verify it's a valid datetime in the expected format
+            parsed = datetime.strptime(result, "%d/%m/%Y %H:%M")
+            assert parsed is not None

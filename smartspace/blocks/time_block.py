@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal, Union
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field
@@ -17,12 +17,12 @@ from smartspace.enums import BlockCategory
 
 class DateTimeRequest(BaseModel):
     """Request model for date/time operations"""
-    
+
     operation: Literal[
         "get_current",
-        "add_time", 
+        "add_time",
         "subtract_time",
-    ] = Field(description="The date/time operation to perform")
+    ] = Field(default="get_current", description="The date/time operation to perform")
 
     # Time arithmetic fields (for add_time and subtract_time operations)
     years: int = Field(default=0, description="Number of years to add/subtract")
@@ -41,6 +41,7 @@ class DateTimeRequest(BaseModel):
         "date arithmetic, formatting, parsing, timezone conversions, and component extraction. "
         "Supports various input formats (datetime objects, ISO strings, timestamps, formatted strings) "
         "and flexible output formatting for diverse date/time manipulation needs."
+        "If no operation is provided, the current time is returned."
     ),
     label="datetime operations, date arithmetic, time formatting, timezone conversion, date parsing",
 )
@@ -97,7 +98,6 @@ class DateTime(Block):
             "'%B %d, %Y' for 'January 15, 2024'."
         ),
     ] = "%Y-%m-%d %H:%M:%S"
-
 
     def __init__(self):
         super().__init__()
@@ -180,7 +180,7 @@ class DateTime(Block):
             raise BlockError(f"Invalid month: {month}")
 
     @step(output_name="result")
-    async def execute(self, request: DateTimeRequest) -> str:
+    async def execute(self, request: Union[DateTimeRequest, Any]) -> str:
         """
         Execute the configured date/time operation.
 
@@ -191,7 +191,10 @@ class DateTime(Block):
             # Get current time in the configured timezone
             current_time = datetime.now(tz=self._get_timezone(self.timezone))
 
-            if request.operation == "get_current":
+            if (
+                not isinstance(request, DateTimeRequest)
+                or request.operation == "get_current"
+            ):
                 result_dt = current_time
 
             elif request.operation == "add_time":

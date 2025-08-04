@@ -20,13 +20,18 @@ ValueT = TypeVar("ValueT")
     label="conditional logic, boolean check, if-then-else, branching, condition evaluation",
 )
 class If(Block, Generic[ValueT]):
-    condition: Annotated[str, Config()] = "value"
+    condition: Annotated[str| bool, Config()] = "value"
     false: Output[ValueT]
     true: Output[ValueT]
 
+
     @step()
     async def create_response(self, value: ValueT):
-        if evaluate_expression(self.condition, value):
+        if self.condition == True:
+            self.true.send(value)
+        elif self.condition == False:
+            self.false.send(value)
+        elif evaluate_expression(self.condition, value):
             self.true.send(value)
         else:
             self.false.send(value)

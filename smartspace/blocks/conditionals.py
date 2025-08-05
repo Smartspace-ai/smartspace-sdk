@@ -24,9 +24,14 @@ class If(Block, Generic[ValueT]):
     false: Output[ValueT]
     true: Output[ValueT]
 
+
     @step()
     async def create_response(self, value: ValueT):
-        if evaluate_expression(self.condition, value):
+        if self.condition == True:
+            self.true.send(value)
+        elif self.condition == False:
+            self.false.send(value)
+        elif evaluate_expression(self.condition, value):
             self.true.send(value)
         else:
             self.false.send(value)

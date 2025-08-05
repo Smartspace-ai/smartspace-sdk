@@ -20,7 +20,7 @@ ValueT = TypeVar("ValueT")
     label="conditional logic, boolean check, if-then-else, branching, condition evaluation",
 )
 class If(Block, Generic[ValueT]):
-    condition: Annotated[str| bool, Config()] = "value"
+    condition: Annotated[str, Config()] = "value"
     false: Output[ValueT]
     true: Output[ValueT]
 

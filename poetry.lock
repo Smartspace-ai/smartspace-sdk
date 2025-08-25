@@ -1204,13 +1204,13 @@ trio = ["trio (>=0.22.0,<1.0)"]
 
 [[package]]
 name = "httpx"
-version = "0.27.2"
+version = "0.28.1"
 description = "The next generation HTTP client."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "httpx-0.27.2-py3-none-any.whl", hash = "sha256:7bb2708e112d8fdd7829cd4243970f0c223274051cb35ee80c03301ee29a3df0"},
-    {file = "httpx-0.27.2.tar.gz", hash = "sha256:f7c2be1d2f3c3c3160d441802406b206c2b76f5947b11115e6df10c6c65e66c2"},
+    {file = "httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"},
+    {file = "httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"},
 ]
 
 [package.dependencies]
@@ -1218,7 +1218,6 @@ anyio = "*"
 certifi = "*"
 httpcore = "==1.*"
 idna = "*"
-sniffio = "*"
 
 [package.extras]
 brotli = ["brotli", "brotlicffi"]
@@ -2863,13 +2862,13 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.97.1"
+version = "1.101.0"
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "openai-1.97.1-py3-none-any.whl", hash = "sha256:4e96bbdf672ec3d44968c9ea39d2c375891db1acc1794668d8149d5fa6000606"},
-    {file = "openai-1.97.1.tar.gz", hash = "sha256:a744b27ae624e3d4135225da9b1c89c107a2a7e5bc4c93e5b7b5214772ce7a4e"},
+    {file = "openai-1.101.0-py3-none-any.whl", hash = "sha256:6539a446cce154f8d9fb42757acdfd3ed9357ab0d34fcac11096c461da87133b"},
+    {file = "openai-1.101.0.tar.gz", hash = "sha256:29f56df2236069686e64aca0e13c24a4ec310545afb25ef7da2ab1a18523f22d"},
 ]
 
 [package.dependencies]
@@ -5477,4 +5476,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "54cf0c8aba6c77252295470ec5f79585736d2042e4456acbd7571e552f893c18"
+content-hash = "fa7364ac9f112e370b99f4e2ec37c827f00829b35566d70786ee23ef2343875b"

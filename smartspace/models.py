@@ -323,6 +323,8 @@ class FlowContext(BaseModel):
 class BlockErrorModel(BaseModel):
     message: str
     data: Any
+    code: int = 500
+    block_id: Annotated[str, Field(alias="blockId")]
 
 
 class InputValue(BaseModel):
@@ -559,6 +561,7 @@ class BlockRunMessage(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     outputs: list[OutputValue] = []
+    errors: list[BlockErrorModel] = []
     inputs: list[InputValue] = []
     redirects: list[PinRedirect] = []
     states: list[StateValue] = []

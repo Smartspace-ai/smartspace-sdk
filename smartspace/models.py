@@ -324,7 +324,6 @@ class BlockErrorModel(BaseModel):
     message: str
     data: Any
     code: int = 500
-    block_id: Annotated[str, Field(alias="blockId")]
 
 
 class InputValue(BaseModel):

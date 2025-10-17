@@ -6,7 +6,7 @@
 ## Overview
 The `SearchDataSet` Block searches dataset items with advanced SQL-style filtering capabilities combined with full-text semantic search. It provides comprehensive search features including semantic search across dataset content, SQL-style property filtering with full operator support, complex logical expressions, multi-datatype support, multiple query support for comprehensive coverage, and flexible pagination. The block converts SQL-style filter expressions directly to Cosmos DB queries for optimal performance.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details_smartspace("SearchDataSet") }}
 
 ## Example(s)
 
@@ -36,7 +36,6 @@ The `SearchDataSet` Block searches dataset items with advanced SQL-style filteri
 - The Block will return items 11-30 matching both the search and filter criteria.
 
 ## Error Handling
-- If the Block is used outside of a workspace context, it will raise an exception.
 - If no dataset_id is provided or the dataset is not found in the workspace, it returns an empty list.
 - Empty query lists will return an empty result list.
 - Invalid SQL syntax in filter expressions will raise appropriate parsing errors.

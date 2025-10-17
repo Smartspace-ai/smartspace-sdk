@@ -4,7 +4,10 @@
 {% endif %}
 
 ## Overview
-The `CreateResponseWithSources` Block is used to generate an API response that includes both the content and associated sources. This is particularly useful when you want to return content along with references to the sources from which the information was derived.
+!!! warning "Deprecated Block"
+    This block is deprecated and will be removed in a future version. Prefer wiring the `sources` output of your LLM block directly to your flow response instead of using this helper.
+
+The `CreateResponseWithSources` Block generates an API response that includes both the content and associated sources, useful when returning content with references to where information was derived.
 
 This Block ensures that sources are appropriately formatted, allowing them to be provided either as a list of `Source` objects or as a single URI string.
 
@@ -17,7 +20,7 @@ This Block ensures that sources are appropriately formatted, allowing them to be
 - Provide content such as `"Here is the summary of the report."` and a list of sources: `[Source(index=1, uri="https://example.com/source1"), Source(index=2, uri="https://example.com/source2")]`.
 - The Block will emit an API response containing the content and the list of sources.
 
-### Example 2: Create a response with a single source URI
+### Example 2: Create a response with a single source path/URI
 - Set up a `CreateResponseWithSources` Block.
 - Provide content: `"This is the generated content."` and a single source URI: `"https://example.com/source"`.
 - The Block will convert the URI into a `Source` object and output the response with the source.
@@ -28,8 +31,8 @@ This Block ensures that sources are appropriately formatted, allowing them to be
 - The Block will output the content with an empty sources array.
 
 ## Error Handling
-- If the sources input is a string, the Block will automatically convert it into a `Source` object with the default index of `1`.
-- If no sources are provided, the Block will send an empty list as the `sources` field in the response.
+- If `sources` is a string, it is converted to a single `Source(index=1, container_item_path=<string>)`.
+- If no sources are provided, an empty list is sent.
 
 ## FAQ
 

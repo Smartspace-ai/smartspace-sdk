@@ -8,7 +8,7 @@ The `WindowChunk` Block splits a document into chunks where each chunk consists 
 
 This Block is particularly useful when you need to maintain local context around sentences, such as for tasks like summarization, entity extraction, or contextual analysis.
 
-{{ generate_block_details(page.title) }}
+{{ generate_block_details_smartspace(page.title) }}
 
 ## Example(s)
 

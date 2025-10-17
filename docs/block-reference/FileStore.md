@@ -8,7 +8,7 @@ The `FileStore` Block manages the storage and retrieval of files, allowing for c
 
 This Block is useful for applications that require storing documents, generating embeddings for content, and performing similarity-based searches over stored text.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details_smartspace("FileStore_1_0_0") }}
 
 ## Example(s)
 
@@ -50,4 +50,3 @@ This Block is useful for applications that require storing documents, generating
 ???+ question "How does semantic search work?"
 
     The Block generates an embedding for the input query and compares it with the embeddings of stored chunks using cosine similarity. The top `k` most similar chunks are returned based on the `top_k` configuration.
-

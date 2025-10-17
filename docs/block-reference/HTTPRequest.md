@@ -5,10 +5,9 @@
 
 ## Overview
 The `HTTPRequest` Block performs HTTP requests using methods such as GET, POST, PUT, DELETE, and PATCH. It supports passing request parameters, headers, query parameters, and request bodies. The Block outputs a `ResponseObject` containing the response content, headers, body, and status code.
-
+{{ generate_block_details(page.title) }}
 By default, the request method is `GET`, but it can be configured using the available HTTP methods. If any values are not provided during the request, they will be fetched from the Block's configuration.
 
-{{ generate_block_details(page.title) }}
 
 ## Example(s)
 
@@ -33,10 +32,10 @@ By default, the request method is `GET`, but it can be configured using the avai
 - The Block will send a `GET` request with the headers and query parameters and return the response.
 
 ## Error Handling
-- If the `URL` is missing, the Block will raise a `ValueError` indicating that the URL is required.
-- Network-related errors will raise an `HTTPError` with a descriptive message, e.g., "Network error occurred".
-- If the server responds with an HTTP error (status code 4xx or 5xx), an `HTTPError` will be raised with the corresponding `ResponseObject`.
-- Any other unexpected exceptions will also raise an `HTTPError`.
+- If the `URL` is missing, the Block raises `ValueError`.
+- Network-related issues (DNS, timeouts, connection errors) raise `HTTPError` with a descriptive message.
+- HTTP 4xx/5xx responses raise `HTTPError` with a `ResponseObject` containing `status_code`, `headers`, `text`, and `content` (and `body=None`).
+- Invalid configuration (e.g., non‑numeric `timeout`) can raise a configuration/request error.
 
 ## FAQ
 
@@ -50,7 +49,7 @@ By default, the request method is `GET`, but it can be configured using the avai
 
 ???+ question "What happens if the response is not JSON?"
     
-    If the response's content type is not `application/json`, the Block will still return the response content, but the `body` field in the `ResponseObject` will be `None`.
+    When the response content type is not JSON, `body` is `None`. Use `text` or `content` to access the raw response.
 
 ???+ question "How can I pass headers and query parameters dynamically?"
     

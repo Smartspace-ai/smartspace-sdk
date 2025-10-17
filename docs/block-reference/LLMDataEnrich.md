@@ -39,6 +39,7 @@ The `LLMDataEnrich` Block uses a Language Learning Model (LLM) to enrich documen
 - If the LLM does not return a tool call response, the Block will raise a `BlockError`.
 - If the LLM returns empty arguments for the tool call, an error will be raised.
 - The Block validates that responses match the expected schema structure.
+ - When using a non-object response schema, ensure your downstream expects a string, as the block unwraps the `response` field.
 
 ## FAQ
 
@@ -70,3 +71,17 @@ The `LLMDataEnrich` Block uses a Language Learning Model (LLM) to enrich documen
 ???+ question "How does this differ from the standard LLM block?"
 
     While the standard LLM block can output structured data, LLMDataEnrich is specifically optimized for entity extraction and data enrichment tasks. It automatically creates the appropriate schema based on field names and uses tool calling to ensure structured output.
+### Example 5: Dynamic schema with empty fields
+- If `field_names=[]`, the dynamic model creates an empty object schema.
+- The LLM may return `{}` when no fields are requested; add fields to `field_names` to guide extraction.
+
+### Example 6: Non-object response schema
+- When `response_schema` is not an object (e.g., `{"type":"string"}`), the tool’s parameter schema wraps the result under `response`. The block then unwraps `args["response"]`.
+- Use this when you prefer a single string output rather than a multi-field object.
+
+### Example 7: Large inputs and token limits
+- The block calls `remove_excess_tokens_chat_request` to trim oversize requests.
+- If content is long, consider chunking upstream and enriching per chunk to improve reliability.
+???+ question "What happens if there are no matches for a field?"
+
+    The corresponding list will be empty. You can post-process empty lists as needed, or instruct the model to return `[]` explicitly when nothing is found.

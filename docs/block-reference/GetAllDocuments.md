@@ -4,25 +4,25 @@
 {% endif %}
 
 ## Overview
-The `GetAllDocuments` Block retrieves all documents from a specified data space using a `SearchService`. This Block is useful when you need to gather and process a collection of documents stored in a data space for analysis or further operations.
+Retrieves all dataset items from every dataset in a specified dataspace. Useful for collecting all documents within a dataspace for analysis or downstream processing.
 
 {{ generate_block_details_smartspace(page.title) }}
 
 ## Example(s)
 
-### Example 1: Retrieve all documents from a data space
+### Example 1: Retrieve all documents from a dataspace
 - Create a `GetAllDocuments` Block.
-- Set the `dataspace_id` to the ID of the data space you want to retrieve documents from.
-- The Block will return a list of documents, each containing the document path and content.
+- Set `dataspace_id` to the target dataspace UUID.
+- Output: list of `DataSetItem` objects aggregated from all datasets in the dataspace.
 
 ### Example 2: Use in a workflow to process documents
-- Set up a `GetAllDocuments` Block in a workflow.
-- Provide the `dataspace_id` to specify the data space.
-- After retrieving the documents, pass them to another block for processing, such as content analysis or text summarization.
+- Place `GetAllDocuments` upstream of an LLM or chunking step.
+- Provide `dataspace_id`.
+- Fan out the resulting `DataSetItem` list to downstream processors.
 
 ## Error Handling
-- If the `dataspace_id` is invalid or the data space cannot be accessed, the Block will raise an error.
-- If no documents are found in the data space, the Block will return an empty list.
+- If `dataspace_id` is invalid or unavailable, the block raises an error from the configuration API call.
+- If a dataspace has no datasets or no items, returns an empty list.
 
 ## FAQ
 
@@ -34,6 +34,6 @@ The `GetAllDocuments` Block retrieves all documents from a specified data space 
 
     Yes, you can use this Block with any data space by setting the `dataspace_id` to the appropriate ID for the space you want to access.
 
-???+ question "How are the documents formatted in the output?"
+???+ question "What is the output type?"
 
-    The Block outputs a list of `GetAllDocumentsResult` objects, each containing the `path` (the document's location) and `content` (the text of the document).
+    A list of `DataSetItem` objects. Each item includes its `id`, `properties`, and metadata (dataset/container references, etc.).

@@ -24,8 +24,8 @@ The `WebsiteScraper` Block scrapes the content of a given website and retrieves 
 - The Block will scrape only the specified page and output its content and metadata.
 
 ## Error Handling
-- If the URL is invalid or unreachable, the Block will log an error and skip the page.
-- If no pages are successfully scraped, the Block will output empty lists for both `website_content` and `website_details`.
+- Invalid or unreachable URLs are skipped with an error logged.
+- If no pages are successfully scraped, the block emits `website_content=[""]` and `website_details=[]`.
 
 ## FAQ
 
@@ -39,7 +39,7 @@ The `WebsiteScraper` Block scrapes the content of a given website and retrieves 
 
 ???+ question "How does the Block handle rate limiting?"
 
-    The Block uses a short delay (`1 second`) between batches of scraping tasks to avoid overwhelming the server. 
+    The Block uses a short delay (`1 second`) between batches of scraping tasks to avoid overwhelming the server.
 
     
 ???+ question "What metadata is included in the `website_details` output?"

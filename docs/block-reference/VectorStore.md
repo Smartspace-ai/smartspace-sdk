@@ -4,57 +4,46 @@
 {% endif %}
 
 ## Overview
-The `VectorStore` Block is a comprehensive solution that combines semantic chunking of content with vector storage and search capabilities. It performs semantic chunking to split documents into meaningful segments, generates embeddings for each chunk, and stores them in an in-memory vector database. The block supports uploading new content, updating existing content, and performing similarity searches across the stored chunks.
+Semantic chunking + in-memory vector search for generic content. Splits text into semantically coherent chunks, embeds them, and stores embeddings for cosine-similarity search. Supports incremental uploads and retrieving raw content by name.
 
 {{ generate_block_details_smartspace(page.title) }}
 
 ## Example(s)
 
-### Example 1: Upload and chunk content
-- Create a `VectorStore` Block.
-- Use the `upload` step with content: `[{"name": "doc1.txt", "content": "This is a document about AI..."}]`.
-- The Block will semantically chunk the content, generate embeddings, and store them in the vector database.
-- Returns information about newly uploaded and previously uploaded items.
+### Example 1: Add content and get store info
+- Call `add_data(data=[{"name":"doc1.txt","content":"This is a document about AI..."}])`.
+- The block chunks and embeds, then returns `store_info` summarizing newly vs previously uploaded items.
 
-### Example 2: Search for similar content
-- Create a `VectorStore` Block with existing content.
-- Use the `search` step with query: `"artificial intelligence"`.
-- Set `limit` to `5` to get the top 5 most similar chunks.
-- The Block will return chunks ranked by semantic similarity to the query.
+### Example 2: Semantic search over stored chunks
+- Call `semantic_search(query="artificial intelligence")`.
+- Output: `search_chunks` list containing the top `top_k` most similar chunk texts.
 
-### Example 3: Get store information
-- Create a `VectorStore` Block.
-- Use the `get_store_info` step to retrieve metadata about stored content.
-- Returns information about all items in the vector store including content length and chunk counts.
+### Example 3: Retrieve raw content by name
+- Call `get(query_name="doc1.txt")`.
+- Output: `get_content` returns the original text content or a friendly message if not found.
 
-### Example 4: Update existing content
-- Create a `VectorStore` Block with existing content.
-- Use the `upload` step with updated content for an existing document name.
-- The Block will replace the old chunks and embeddings with new ones for that document.
+### Example 4: Incremental uploads
+- Add more items via `add_data` later. `store_info` differentiates `just_uploaded` vs `previously_uploaded`.
 
 ## Error Handling
-- If embedding generation fails for content, appropriate errors will be raised.
-- The Block handles duplicate content names by updating existing entries.
-- Empty or invalid content inputs are handled gracefully.
+- Chunking errors raise a runtime error.
+- Empty inputs to `add_data` return a summary without adding.
+- Unknown names in `get` return a friendly not-found string.
 
 ## FAQ
 
-???+ question "How does semantic chunking work?"
+???+ question "What chunking method is used?"
 
-    The Block uses SemanticSplitterNodeParser to group semantically related sentences together. This creates more meaningful chunks compared to simple sentence or token-based splitting, improving the quality of embeddings and search results.
+    Uses llama-index `SemanticSplitterNodeParser`, tuned by `buffer_size` and `breakpoint_percentile_threshold`.
 
-???+ question "What embedding model is used?"
+???+ question "How many search results are returned?"
 
-    The Block uses the default embeddings service configured in your SmartSpace instance. This typically provides high-quality vector representations for semantic similarity search.
+    Controlled by `top_k` (default 5).
 
-???+ question "How are search results ranked?"
+???+ question "How are `just_uploaded` vs `previously_uploaded` determined?"
 
-    Search results are ranked by cosine similarity between the query embedding and stored chunk embeddings. Higher similarity scores indicate more semantically related content.
+    Based on the names added during the latest `add_data` call compared to content already in the store.
 
-???+ question "Can I store different types of content?"
+???+ question "Is storage persistent?"
 
-    Yes, the Block can handle any text content. The content is automatically processed through semantic chunking regardless of the original format, as long as it's provided as a text string.
-
-???+ question "Is the vector store persistent?"
-
-    The vector store is in-memory and will be reset when the block is reinitialized. For persistent storage, consider using the dedicated vector database blocks or file storage options.
+    No. This block uses in-memory state. Reinitialize to clear. For persistence, use dataset/vector DB blocks.

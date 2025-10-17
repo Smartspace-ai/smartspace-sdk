@@ -4,9 +4,9 @@
 {% endif %}
 
 ## Overview
-The `RegexMatch` Block performs regex-based pattern matching on a string input. It applies the provided regex expression to the input string and returns a list of all matches found. If no matches are found, the Block returns `["No match found"]`.
+The `RegexMatch` Block performs regex-based pattern matching and replacement on string input. It operates in two modes: **match mode** (when `replace_with` is empty) returns a list of all pattern matches, while **replace mode** (when `replace_with` is provided) performs find-and-replace operations. Supports full Python regex syntax including capture groups, lookaheads, and backreferences.
 
-This Block is useful for extracting data based on specific patterns in strings, such as emails, phone numbers, or other formats.
+This Block is useful for extracting data based on specific patterns (emails, phone numbers, etc.) or transforming text through pattern-based substitutions.
 
 {{ generate_block_details(page.title) }}
 
@@ -24,13 +24,27 @@ This Block is useful for extracting data based on specific patterns in strings, 
 - Provide the input string: `"Alice and Bob are attending the event."`
 - The Block will output: `["Alice", "and", "are"]`.
 
-### Example 3: No matches found
+### Example 3: Replace all occurrences of a pattern
+- Create a `RegexMatch` Block.
+- Set the `regex` to `\d+` (matches digits).
+- Set `replace_with` to `"***"`.
+- Provide the input string: `"My phone is 12345 and zip is 67890."`
+- The Block will output: `"My phone is *** and zip is ***."`
+
+### Example 4: Use capture groups for advanced replacement
+- Create a `RegexMatch` Block.
+- Set the `regex` to `(\w+)@(\w+\.com)` (captures email parts).
+- Set `replace_with` to `"user: \1, domain: \2"`.
+- Provide input: `"Contact: john@example.com"`
+- Output: `"Contact: user: john, domain: example.com"`
+
+### Example 5: No matches found
 - Create a `RegexMatch` Block.
 - Set the `regex` to `\d+` (this regex matches digits).
 - Provide the input string: `"No numbers here."`
 - The Block will output: `["No match found"]` as there are no digits in the string.
 
-### Example 4: Handle regex errors
+### Example 6: Handle regex errors
 - Create a `RegexMatch` Block.
 - Set an invalid regex, such as `\d++`.
 - The Block will return an error message like `["Error: nothing to repeat at position 3"]`.
@@ -55,4 +69,17 @@ This Block is useful for extracting data based on specific patterns in strings, 
 
 ???+ question "Does this Block support multiline input?"
     
-    Yes, the Block can handle multiline input, but you'll need to adjust the regex pattern accordingly (e.g., use `re.MULTILINE` or include newline characters in the regex if needed).
+    Yes, the Block can handle multiline input, but you'll need to adjust the regex pattern accordingly (e.g., use `re.MULTILINE` flags or include newline characters in the regex if needed).
+
+???+ question "How do I choose between match mode and replace mode?"
+
+    - **Match mode** (default): Leave `replace_with` empty. Returns `list[str]` of all matches.
+    - **Replace mode**: Provide `replace_with` string. Returns modified `str` with all matches replaced.
+
+???+ question "Can I use backreferences in replacements?"
+
+    Yes! Use `\1`, `\2`, etc. in `replace_with` to reference capture groups from your regex pattern.
+
+???+ question "What regex features are supported?"
+
+    Full Python `re` module syntax: capture groups `()`, alternation `|`, quantifiers `*+?{}`, character classes `[]`, anchors `^$`, lookaheads/lookbehinds, named groups, and more.

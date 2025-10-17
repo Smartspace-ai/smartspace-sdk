@@ -21,9 +21,23 @@ The `LLMSelect` Block is designed to interact with a Language Learning Model (LL
 - Provide a series of messages or a conversation history.
 - The Block will use the entire thread history when making the decision, ensuring that the context of the conversation is maintained.
 
+### Example 3: Overlapping option names (best practices)
+- Define options with clear, non-overlapping names (avoid prefixes like `Export` and `Export CSV`).
+- The block matches responses by checking if the model output starts with the option name, iterating options in descending name length.
+- If overlap is unavoidable, prefer the longest and most specific option name to minimize ambiguity.
+
+### Example 4: Whitespace and punctuation
+- The model’s output is trimmed; matching is case‑sensitive and checks `startswith(option_name)`.
+- Avoid trailing punctuation in option names; keep names concise: `ExportCSV`, `ExportPDF`.
+
+### Example 5: No selection / ambiguous output
+- If the LLM’s output doesn’t match any option, the block raises an exception.
+- Strengthen your `pre_prompt` to instruct the model to answer with an exact option name.
+
 ## Error Handling
 - If the LLM settings are unexpectedly `None`, an exception will be raised.
 - If the LLM response does not match any of the predefined options, the Block will raise an exception.
+ - Ensure that max_tokens is sufficient for the longest option name; the block caps token count accordingly.
 
 ## FAQ
 
@@ -41,4 +55,4 @@ The `LLMSelect` Block is designed to interact with a Language Learning Model (LL
 
 ???+ question "What happens if the LLM response is ambiguous?"
 
-    The Block checks the LLM's response against the available options in descending order of length to find a match. If the response does not match any option, an exception is raised.
+    The Block checks the LLM's response against the available options in descending order of length to find a match using `startswith`. If the response does not match any option exactly, an exception is raised. Make option names unique and instruct the model to output the name verbatim.

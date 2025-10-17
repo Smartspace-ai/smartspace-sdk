@@ -23,23 +23,23 @@ The block interacts with a `BlobService` to retrieve file data from a URI and pr
 - The Block will extract and convert the text content using the appropriate method and send it to the `content` output, along with the file name.
 
 ## Error Handling
-- If the file type is not detected or cannot be processed, the Block will raise an error.
-- PDF text extraction may be slower for large or complex documents due to the nature of the PDF structure.
-- If no file name is available, an empty string will be sent to the `file_name` output.
+- If the file type is unsupported or processing fails, the block raises an error.
+- When converting via Document Intelligence or Pandoc fails, a descriptive error is raised.
+- If no file name is available, an empty string is sent to `file_name`.
 
 ## FAQ
 
 ???+ question "What file types are supported?"
 
-    This Block supports PDF files and other file types that can be partitioned and converted to text. It uses specialized methods for extracting text from PDFs and more general methods for other file types.
+    This Block supports direct reads for: `json`, `html`, `eml`, `ics`, `txt`, `vtt` (and `xlsx` when converting to non-markdown). When `use_document_intelligence` is enabled, it uses Document Intelligence for `pdf`, `docx`, `xlsx`, `pptx`, and common images (`jpg/jpeg/png/bmp/tiff/heif`). Otherwise, Pandoc conversion is used where applicable.
 
 ???+ question "What happens if the file type cannot be detected?"
 
-    If the file type cannot be detected, the Block will use a fallback method to handle the file, or it will raise an error if the file type is unsupported.
+    If the file type cannot be detected, a fallback conversion is attempted where possible; otherwise, an error is raised.
 
 ???+ question "How does PDF text extraction work?"
 
-    PDF text extraction uses the `pypdf` library to extract text from each page. The extracted text is then combined into a single string separated by double newlines for readability.
+    For PDFs, when not using Document Intelligence, `pypdf` is used to extract text per-page and combined; when Document Intelligence is enabled, content is converted to markdown first.
 
 ???+ question "Can I use this block for large files?"
 

@@ -36,34 +36,34 @@ def get_block_classes(module_ast) -> list[ast.ClassDef]:
     return block_classes
 
 
-def get_block_class(
-    block_name: str, is_smartspace: bool = False
-) -> ast.ClassDef | None:
+def _collect_python_files(root: str) -> list[str]:
+    files: list[str] = []
+    for dirpath, _, filenames in os.walk(root):
+        for fn in filenames:
+            if fn.endswith(".py") and not fn.startswith("__"):
+                files.append(os.path.join(dirpath, fn))
+    return files
+
+
+def get_block_class(block_name: str, is_smartspace: bool = False) -> tuple[ast.ClassDef, ast.Module] | None:
     if is_smartspace:
-        # Look in the smartspace_blocks directory for external blocks
+        # Look in the smartspace_blocks directory for external blocks (recursive)
         smartspace_dir = os.path.join("docs", "utils", "smartspace_blocks")
-        if os.path.exists(smartspace_dir):
-            files = [
-                os.path.join(smartspace_dir, f)
-                for f in os.listdir(smartspace_dir)
-                if f.endswith(".py")
-            ]
-        else:
-            files = []
+        files = _collect_python_files(smartspace_dir) if os.path.exists(smartspace_dir) else []
     else:
-        # Look in the regular blocks directory
-        files = [
-            os.path.join("smartspace", "blocks", f)
-            for f in os.listdir(os.path.join("smartspace", "blocks"))
-            if f.endswith(".py")
-        ]
-    
+        # Look in the internal blocks directory (recursive)
+        blocks_dir = os.path.join("smartspace", "blocks")
+        files = _collect_python_files(blocks_dir) if os.path.exists(blocks_dir) else []
+
     for file_path in files:
-        module_ast = parse_module(file_path)
+        try:
+            module_ast = parse_module(file_path)
+        except Exception:
+            continue
         block_classes = get_block_classes(module_ast)
         for class_info in block_classes:
             if class_info.name == block_name:
-                return class_info
+                return class_info, module_ast
     return None
 
 
@@ -220,7 +220,13 @@ class BlockAttributes(TypedDict, total=False):
     value_type: str | None
 
 
-def get_class_attributes(class_def) -> list[BlockAttributes]:
+def get_class_attributes(class_def, module_ast: ast.Module | None = None, _seen: set[str] | None = None) -> list[BlockAttributes]:
+    # collect attributes defined on this class and inherited from base classes in the same module
+    if _seen is None:
+        _seen = set()
+    if class_def.name in _seen:
+        return []
+    _seen.add(class_def.name)
     attributes: list[BlockAttributes] = []
     for node in class_def.body:
         if isinstance(node, ast.AnnAssign):
@@ -316,6 +322,25 @@ def get_class_attributes(class_def) -> list[BlockAttributes]:
                 attr_info["default_value"] = get_value_from_node(node.value)
 
             attributes.append(attr_info)
+
+    # Inherit attributes from base classes that are defined in the same module
+    if module_ast is not None:
+        for base in class_def.bases:
+            base_name: str | None = None
+            if isinstance(base, ast.Name):
+                base_name = base.id
+            elif isinstance(base, ast.Attribute):
+                # Only consider simple names (skip imported bases)
+                base_name = base.attr
+            if not base_name:
+                continue
+            # find base class in the same module
+            for node in module_ast.body:
+                if isinstance(node, ast.ClassDef) and node.name == base_name:
+                    inherited = get_class_attributes(node, module_ast, _seen)
+                    attributes.extend(inherited)
+                    break
+
     return attributes
 
 
@@ -447,11 +472,11 @@ class BlockInfo(TypedDict):
     steps: list[BlockStep]
 
 
-def get_block_info(class_def) -> BlockInfo:
+def get_block_info(class_def, module_ast: ast.Module | None = None) -> BlockInfo:
     block_info: BlockInfo = {
         "name": class_def.name,
         "metadata": get_metadata_decorator(class_def),
-        "attributes": get_class_attributes(class_def),
+        "attributes": get_class_attributes(class_def, module_ast),
         "steps": get_step_functions(class_def),
     }
     return block_info
@@ -682,10 +707,11 @@ def generate_markdown(block_info):
 
 
 def generate_block_markdown_details(block_name: str, is_smartspace: bool = False):
-    block_class = get_block_class(block_name, is_smartspace)
-    if not block_class:
+    result = get_block_class(block_name, is_smartspace)
+    if not result:
         return f"Block {block_name} not found"
-    block_info = get_block_info(block_class)
+    block_class, module_ast = result
+    block_info = get_block_info(block_class, module_ast)
     markdown_content = generate_markdown(block_info)
     return markdown_content
 
@@ -751,7 +777,7 @@ def generate_block_docs_temp(input_path: str, output_dir: str) -> dict[str, list
             module = parse_module(file_path)
             block_classes = get_block_classes(module)
             for block_class in block_classes:
-                block_info = get_block_info(block_class)
+                block_info = get_block_info(block_class, module)
                 block_name = block_info['name']
                 
                 # Get category

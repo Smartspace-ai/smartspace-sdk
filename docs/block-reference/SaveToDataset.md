@@ -6,7 +6,7 @@
 ## Overview
 The `SaveToDataSet` Block saves a single item with specified properties to a specific dataset identified by ID. It allows you to upsert (insert or update) data items into a dataset within your workspace. The block automatically handles ID generation if not provided and supports saving any properties as key-value pairs.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details_smartspace("SaveToDataSet") }}
 
 ## Example(s)
 

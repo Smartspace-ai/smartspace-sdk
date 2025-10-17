@@ -4,47 +4,55 @@
 {% endif %}
 
 ## Overview
-The `LLM` Block facilitates interaction with a Language Learning Model (LLM) by processing user messages and generating responses. It can handle both simple string responses and structured data based on a defined schema. The block uses a `ModelConfig` to configure the LLM and supports thread history to maintain context across multiple interactions.
+Conversation and structured output with optional tool calls and citations. Configure with a `ModelConfig` and a dynamic `response_schema` (string or JSON schema). Supports thread history, tool integration, and automatic source citation when dataset items are supplied.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details_smartspace("LLM_1_0_1") }}
 
 ## Example(s)
 
-### Example 1: Generate a simple response from the LLM
+### Example 1: Simple response
 - Create an `LLM` Block.
-- Set the `llm_config` with the model details and pre-prompt.
-- Provide an input message: `"Summarize this document."`
-- The Block will use the LLM to generate a text response and send it to the `response` output.
+- Set `llm_config` (model name, temperature, pre-prompt).
+- Provide a message: `"Summarize this document."`
+- Output: `response` is a string (default schema is string).
 
-### Example 2: Use a custom response schema
-- Set up an `LLM` Block.
-- Define a custom `response_schema` that expects an object with specific fields, such as `{"type": "object", "properties": {"summary": {"type": "string"}}}`.
-- Provide the input message: `"Summarize the following content."`
-- The Block will output the structured response, matching the defined schema.
+### Example 2: Structured JSON response
+- Define `response_schema` as an object, e.g. `{ "type": "object", "properties": { "summary": {"type":"string"} } }`.
+- Provide a message; the block enforces structured output via tool-calling.
+- Output: `response` is a JSON object; `sources` remains empty unless citing.
 
 ### Example 3: Use thread history for context
-- Create an `LLM` Block with `use_thread_history` set to `True`.
-- Provide a series of messages over multiple steps.
-- The Block will use the entire conversation history to generate contextually aware responses.
+- Enable `use_thread_history=True`.
+- Send multiple messages across steps; prior messages are included for context.
+
+### Example 4: Citations with dataset items
+- Provide `cited_documents` before calling `chat`.
+- The block instructs the LLM to add citations like `(source_1)`, then resolves and normalizes them.
+- Outputs: `response` (string or JSON) and `sources` (resolved dataset/file references).
+
+### Example 5: Tool calling
+- Add entries to `tools`; the LLM may trigger tool calls.
+- After running a tool externally, resume via `handle_tool_result(tool_call_id, tool_result)`.
 
 ## Error Handling
-- If the LLM response does not match the expected schema, the Block will attempt to map the response to the `response_schema`.
-- If the schema is not an object and the response is not a string, the Block will raise an error during validation.
+- Empty tool call arguments or unexpected finish reasons raise errors.
+- For string schema, pre-prompt discourages stringified JSON; for object schema, tool-based response wrapper enforces structure.
+- Unresolved citations (e.g., `(source_X)`) are removed; only matched sources are emitted.
 
 ## FAQ
 
 ???+ question "What happens if the response schema is not provided?"
 
-    If no `response_schema` is provided, the Block assumes the response is a simple string and processes it accordingly.
+    It defaults to `{ "type": "string" }`. `response` will be a plain string unless you set an object schema.
 
 ???+ question "How does the Block handle structured responses?"
 
-    If a structured `response_schema` is defined, the Block expects the LLM to return data that matches the schema. The response is then parsed and sent to the `response` output.
+    With object schemas, a response function/tool is defined so the LLM returns schema-compliant JSON.
 
 ???+ question "Can I use the Block without thread history?"
 
-    Yes, by setting `use_thread_history` to `False`, the Block will only use the current message in its response generation, without considering previous interactions.
+    Yes. Set `use_thread_history=False` to only consider the current message.
 
 ???+ question "What happens if the LLM response type is a tool call?"
 
-    If the LLM response is a tool call, the Block will process the tool call arguments and return the result based on the provided schema.
+    Run the indicated tool(s) and pass results back via `handle_tool_result`. The block continues the conversation and emits final outputs when ready.

@@ -14,31 +14,31 @@ The Block uses Jinja2 templating syntax, allowing for complex logic including co
 
 ### Example 1: Create a user profile object
 - Create a `TemplatedObject` Block.
-- Configure template: `{"name": "{{name}}", "age": {{age}}, "active": {{active}}}`.
+- Configure template: `{"name": "{% raw %}{{name}}{% endraw %}", "age": {% raw %}{{age}}{% endraw %}, "active": {% raw %}{{active}}{% endraw %}}`.
 - Provide inputs: `name="Alice"`, `age=30`, `active=true`.
 - The Block will output: `{"name": "Alice", "age": 30, "active": true}`.
 
 ### Example 2: Generate API request payload
 - Set up a `TemplatedObject` Block.
-- Configure template: `{"query": "{{search_term}}", "filters": {"category": "{{category}}", "min_price": {{min_price}}}, "limit": {{limit}}}`.
+- Configure template: `{"query": "{% raw %}{{search_term}}{% endraw %}", "filters": {"category": "{% raw %}{{category}}{% endraw %}", "min_price": {% raw %}{{min_price}}{% endraw %}}, "limit": {% raw %}{{limit}}{% endraw %}}`.
 - Provide inputs: `search_term="laptop"`, `category="electronics"`, `min_price=500`, `limit=10`.
 - The Block will output a structured API request object.
 
 ### Example 3: Use conditional logic in template
 - Create a `TemplatedObject` Block.
-- Configure template: `{"user": "{{username}}", "role": "{{role}}"{% if is_admin %}, "permissions": ["read", "write", "admin"]{% else %}, "permissions": ["read"]{% endif %}}`.
+- Configure template: `{"user": "{% raw %}{{username}}{% endraw %}", "role": "{% raw %}{{role}}{% endraw %}"{% raw %}{% if is_admin %}{% endraw %}, "permissions": ["read", "write", "admin"]{% raw %}{% else %}{% endraw %}, "permissions": ["read"]{% raw %}{% endif %}{% endraw %}}`.
 - Provide inputs: `username="john"`, `role="user"`, `is_admin=false`.
 - The Block will output: `{"user": "john", "role": "user", "permissions": ["read"]}`.
 
 ### Example 4: Generate array with loop
 - Set up a `TemplatedObject` Block.
-- Configure template: `{"items": [{% for item in items %}"{{item}}"{% if not loop.last %},{% endif %}{% endfor %}], "count": {{items|length}}}`.
+- Configure template: `{"items": [{% raw %}{% for item in items %}{% endraw %}"{% raw %}{{item}}{% endraw %}"{% raw %}{% if not loop.last %}{% endraw %}, {% raw %}{% endif %}{% endraw %}{% raw %}{% endfor %}{% endraw %}], "count": {% raw %}{{items|length}}{% endraw %}}`.
 - Provide inputs: `items=["apple", "banana", "cherry"]`.
 - The Block will output: `{"items": ["apple", "banana", "cherry"], "count": 3}`.
 
 ### Example 5: Handle nested objects
 - Create a `TemplatedObject` Block.
-- Configure template: `{"person": {"name": "{{name}}", "contact": {"email": "{{email}}", "phone": "{{phone}}"}}, "metadata": {"created": "{{timestamp}}", "source": "{{source}}"}}`.
+- Configure template: `{"person": {"name": "{% raw %}{{name}}{% endraw %}", "contact": {"email": "{% raw %}{{email}}{% endraw %}", "phone": "{% raw %}{{phone}}{% endraw %}"}}, "metadata": {"created": "{% raw %}{{timestamp}}{% endraw %}", "source": "{% raw %}{{source}}{% endraw %}"}}`.
 - Provide inputs with nested structure for a complex JSON object.
 
 ## Error Handling

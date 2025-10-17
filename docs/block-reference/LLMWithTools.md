@@ -31,9 +31,19 @@ This Block is useful when you want the LLM to dynamically call different tools b
 - Set up an `LLMWithTools` Block.
 - The LLM can call multiple tools during the interaction, processing each tool’s output and using the results to generate a final response.
 
+### Example 4: Resume after external tool execution
+- When a tool requires external execution, capture the tool call ID and run the tool outside the block.
+- Feed the tool result back into your flow (e.g., via a follow-up step), then re‑invoke the block’s resume logic (for the modern replacement `LLM`, this is `handle_tool_result(tool_call_id, tool_result)`).
+- The conversation continues and the model produces a final response with incorporated tool results.
+
+### Example 5: Tool naming edge cases
+- If your tool names contain spaces or punctuation, the successor `LLM` block sanitizes names internally (spaces removed). Prefer simple, alphanumeric names to avoid ambiguity.
+- In older `LLMWithTools` flows, keep names short and unique to reduce LLM confusion.
+
 ## Error Handling
 - If tool results are not available, the Block will raise an error.
 - If the LLM response type is unexpected, the Block will attempt to handle the error gracefully by sending back a default response.
+ - For complex interactions, verify tool outputs are JSON-serializable (or string) and keep payload sizes reasonable to avoid token budget issues.
 
 ## FAQ
 
@@ -52,3 +62,7 @@ This Block is useful when you want the LLM to dynamically call different tools b
 ???+ question "Can the Block handle multiple tool calls in a single interaction?"
 
     Yes, the Block is capable of handling multiple tool calls in a single interaction. It manages tool call results and appends them to the conversation history, ensuring that the LLM can utilize multiple tools as needed.
+
+???+ question "Should I migrate existing flows?"
+
+    Yes. `LLMWithTools` is deprecated. The modern `LLM` block offers built‑in tool calling, better schema enforcement, citation handling, and improved error control. Migrate when practical.

@@ -8,7 +8,7 @@ The `SentenceChunk` Block parses text with a preference for keeping complete sen
 
 The Block uses a combination of sentence splitting, token counting, and customizable chunk sizes and overlaps. It also supports a secondary chunking regex for additional control over sentence splitting.
 
-{{ generate_block_details(page.title) }}
+{{ generate_block_details_smartspace(page.title) }}
 
 ## Example(s)
 

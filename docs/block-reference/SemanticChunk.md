@@ -8,7 +8,7 @@ The `SemanticChunk` Block is used to split a document into semantic chunks, with
 
 This Block is useful for breaking down large documents into smaller, meaningful sections for tasks like summarization, topic modeling, or information extraction.
 
-{{ generate_block_details(page.title) }}
+{{ generate_block_details_smartspace(page.title) }}
 
 ## Example(s)
 

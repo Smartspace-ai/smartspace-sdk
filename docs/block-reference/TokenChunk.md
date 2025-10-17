@@ -8,7 +8,7 @@ The `TokenChunk` Block splits a document into chunks based on a fixed token size
 
 This Block uses a tokenizer from the specified model to determine the token size and supports overlapping chunks for better continuity between consecutive chunks.
 
-{{ generate_block_details(page.title) }}
+{{ generate_block_details_smartspace(page.title) }}
 
 ## Example(s)
 

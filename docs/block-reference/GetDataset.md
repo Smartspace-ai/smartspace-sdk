@@ -6,7 +6,7 @@
 ## Overview
 The `GetDataSet` Block retrieves dataset items with advanced SQL-style filtering and sorting capabilities. It provides comprehensive data retrieval features including SQL-style property filtering with full operator support, complex logical expressions, multi-datatype support, flexible pagination, and SQL-style sorting with multiple columns and directions. The block converts SQL-style filter and sort expressions directly to Cosmos DB queries for optimal performance.
 
-{{ generate_block_details_smartspace(page.title) }}
+{{ generate_block_details_smartspace("GetDataSet") }}
 
 ## Example(s)
 

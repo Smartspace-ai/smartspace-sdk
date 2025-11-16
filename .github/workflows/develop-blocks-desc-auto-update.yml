@@ -2,7 +2,7 @@ name: Block Documentation Update
 
 on:
   pull_request:
-    branches: ["main"]
+    branches: ["__disabled__"]
     paths:
       - "smartspace/blocks/**"
 

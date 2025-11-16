@@ -50,7 +50,7 @@ pypandoc = "^1.14"
 docxtpl = "^0.19.0"
 python-docx = "^1.1.2"
 aiomysql = "^0.2.0"
-lark = "^1.2.2"
+lark = "1.1.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.0"

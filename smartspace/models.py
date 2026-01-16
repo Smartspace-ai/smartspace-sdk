@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Annotated, Any, Generic, TypeVar, Union
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer
 
 from smartspace.enums import (
     BlockClass,
@@ -19,6 +19,13 @@ class File(BaseModel):
     model_config = ConfigDict(populate_by_name=True, title="File")
     id: str
     name: str
+
+    @model_serializer(mode="wrap")
+    def _serialize(self, serializer):
+        data = serializer(self)
+        if isinstance(data, dict):
+            data.setdefault("_type", "File")
+        return data
 
     def as_info(self, length: int):
         return FileWithInfoNew(id=self.id, name=self.name, length=length)

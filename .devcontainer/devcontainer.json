@@ -9,7 +9,7 @@
 		"PYTHONPATH": "/workspace"
 	},
 	"mounts": [
-		"type=bind,source=${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly"
+		"type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly"
 	],
 	// Configure tool-specific properties.
 	"customizations": {

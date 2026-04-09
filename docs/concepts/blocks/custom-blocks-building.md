@@ -302,7 +302,6 @@ llama-index==0.11.15
 llama-index-agent-openai==0.3.4
 llama-index-cli==0.3.1
 llama-index-core==0.11.15
-llama-index-embeddings-huggingface==0.3.1
 llama-index-embeddings-openai==0.2.5
 llama-index-indices-managed-llama-cloud==0.4.0
 llama-index-legacy==0.9.48.post3
@@ -438,8 +437,6 @@ timm==1.0.9
 tokenizers==0.20.0
 tomli==2.0.1
 tomlkit==0.13.2
-torch==2.4.1
-torchvision==0.19.1
 tqdm==4.66.5
 transformers==4.45.1
 trove-classifiers==2024.9.12

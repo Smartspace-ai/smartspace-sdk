@@ -30,6 +30,20 @@ class ChannelState(Enum):
     CLOSED = "Closed"
 
 
+class StreamingEvent(Enum):
+    """Events emitted by a StreamingOutput pin.
+
+    UPDATE   — progressive snapshot of a single logical value. Supersedes
+               any prior UPDATE on the same pin. Routes to FlowOutputs only
+               (compute consumers see the FINALIZE value).
+    FINALIZE — terminal, authoritative value. Fires once. Routes to
+               FlowOutputs, FlowVariables and downstream FlowBlocks.
+    """
+
+    UPDATE = "Update"
+    FINALIZE = "Finalize"
+
+
 class BlockScope(Enum):
     WORKSPACE = "WorkSpace"
     DATASET = "DataSet"

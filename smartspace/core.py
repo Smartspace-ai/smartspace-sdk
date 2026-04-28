@@ -35,6 +35,7 @@ from smartspace.enums import (
     BlockScope,
     ChannelEvent,
     InputDisplayType,
+    StreamingEvent,
 )
 from smartspace.models import (
     BlockErrorModel,
@@ -48,6 +49,7 @@ from smartspace.models import (
     OutputChannelMessage,
     OutputPinInterface,
     OutputValue,
+    StreamingOutputMessage,
     PinRedirect,
     PinType,
     PortInterface,
@@ -171,16 +173,19 @@ def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPi
             {},
         )
 
-        if get_origin(signature.return_annotation) == OutputChannel:
+        return_origin = get_origin(signature.return_annotation)
+        if return_origin is OutputChannel or return_origin is StreamingOutput:
             args = get_args(signature.return_annotation)
             if not args or len(args) != 1:
                 raise Exception("Outputs must have exactly one type.")
 
             output_type: type = args[0]
-            is_channel = True
+            is_channel = return_origin is OutputChannel
+            is_streaming = return_origin is StreamingOutput
         else:
             output_type = signature.return_annotation
             is_channel = False
+            is_streaming = False
 
         output_type_adapter, schema, _generics = _get_json_schema_with_generics(
             output_type
@@ -201,6 +206,7 @@ def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPi
                 },
                 channel=is_channel,
                 channel_group_id=port_name if is_channel else None,
+                streaming=is_streaming,
             ),
             output_type_adapter,
         )
@@ -639,7 +645,7 @@ def _get_pins(
 
     for base_type in all_bases:
         o = get_origin(base_type)
-        if o is Output or o is OutputChannel:
+        if o is Output or o is OutputChannel or o is StreamingOutput:
             args = get_args(base_type)
             if not args or len(args) != 1:
                 raise Exception("Outputs must have exactly one type.")
@@ -656,6 +662,7 @@ def _get_pins(
                 },
                 channel=o is OutputChannel,
                 channel_group_id=f"{port_name}" if o is OutputChannel else None,
+                streaming=o is StreamingOutput,
             )
 
     if _issubclass(cls_annotation, Tool):
@@ -723,7 +730,7 @@ def _get_pins(
             field_type = field_annotation
 
         o = get_origin(field_type)
-        if o is Output or o is OutputChannel:
+        if o is Output or o is OutputChannel or o is StreamingOutput:
             args = get_args(field_type)
             if not args or len(args) != 1:
                 raise Exception("Outputs must have exactly one type.")
@@ -758,6 +765,7 @@ def _get_pins(
                 },
                 channel=o is OutputChannel,
                 channel_group_id=f"{port_name}.{name}" if o is OutputChannel else None,
+                streaming=o is StreamingOutput,
             )
 
         elif o is dict:
@@ -1208,6 +1216,67 @@ class Output(Generic[T]):
                     OutputValue(
                         source=self.pin,
                         value=value,
+                    )
+                ],
+                inputs=[],
+                redirects=[],
+                states=[],
+            )
+        )
+
+
+class StreamingOutput(Generic[T]):
+    """An output that represents a single logical value arriving in parts.
+
+    Call ``update(snapshot)`` repeatedly during streaming; each snapshot
+    supersedes the prior one and routes only to FlowOutputs for live UI
+    display. Call ``finalize(value)`` once to emit the terminal, authoritative
+    value, which routes to FlowOutputs, FlowVariables and downstream blocks.
+
+    After ``finalize`` is called, further ``update`` / ``finalize`` calls
+    are silently dropped — the pin is single-shot from the flow's
+    perspective.
+    """
+
+    def __init__(self, pin: BlockPinRef):
+        self.pin = pin
+        self._finalized = False
+
+    def update(self, snapshot: T):
+        if self._finalized:
+            return
+        messages = block_messages.get()
+        messages.put_nowait(
+            BlockRunMessage(
+                outputs=[
+                    OutputValue(
+                        source=self.pin,
+                        value=StreamingOutputMessage(
+                            event=StreamingEvent.UPDATE,
+                            data=snapshot,
+                        ),
+                    )
+                ],
+                inputs=[],
+                redirects=[],
+                states=[],
+            )
+        )
+
+    def finalize(self, value: T):
+        if self._finalized:
+            return
+        self._finalized = True
+        messages = block_messages.get()
+        messages.put_nowait(
+            BlockRunMessage(
+                outputs=[
+                    OutputValue(
+                        source=self.pin,
+                        value=StreamingOutputMessage(
+                            event=StreamingEvent.FINALIZE,
+                            data=value,
+                        ),
                     )
                 ],
                 inputs=[],
@@ -1781,6 +1850,8 @@ class Block(metaclass=MetaBlock):
             elif "" in port_interface.outputs:
                 if port_interface.outputs[""].channel:
                     return OutputChannel(BlockPinRef(port=port_id, pin=""))
+                elif port_interface.outputs[""].streaming:
+                    return StreamingOutput(BlockPinRef(port=port_id, pin=""))
                 else:
                     return Output(BlockPinRef(port=port_id, pin=""))
 
@@ -1851,6 +1922,10 @@ class Block(metaclass=MetaBlock):
             if output_interface.type == PinType.SINGLE:
                 if output_interface.channel:
                     output = OutputChannel(BlockPinRef(port=port_id, pin=output_name))
+                elif output_interface.streaming:
+                    output = StreamingOutput(
+                        BlockPinRef(port=port_id, pin=output_name)
+                    )
                 else:
                     output = Output(BlockPinRef(port=port_id, pin=output_name))
 
@@ -1865,13 +1940,17 @@ class Block(metaclass=MetaBlock):
                     for _output_name, index in dynamic_outputs
                     if _output_name == output_name
                 ]
-                outputs: list[None | Output | OutputChannel] = [None] * (
-                    max(_dynamic_outputs, default=-1) + 1
-                )
+                outputs: list[None | Output | OutputChannel | StreamingOutput] = [
+                    None
+                ] * (max(_dynamic_outputs, default=-1) + 1)
 
                 for index in _dynamic_outputs:
                     if output_interface.channel:
                         outputs[index] = OutputChannel(
+                            BlockPinRef(port=port_id, pin=output_name)
+                        )
+                    elif output_interface.streaming:
+                        outputs[index] = StreamingOutput(
                             BlockPinRef(port=port_id, pin=output_name)
                         )
                     else:
@@ -1887,10 +1966,19 @@ class Block(metaclass=MetaBlock):
                     )
 
             elif output_interface.type == PinType.DICTIONARY:
-                output_dict: dict[str, Output | OutputChannel] = {
-                    index: OutputChannel(BlockPinRef(port=port_id, pin=output_name))
-                    if output_interface.channel
-                    else Output(BlockPinRef(port=port_id, pin=output_name))
+                def _make_output(pin_ref: BlockPinRef):
+                    if output_interface.channel:
+                        return OutputChannel(pin_ref)
+                    if output_interface.streaming:
+                        return StreamingOutput(pin_ref)
+                    return Output(pin_ref)
+
+                output_dict: dict[
+                    str, Output | OutputChannel | StreamingOutput
+                ] = {
+                    index: _make_output(
+                        BlockPinRef(port=port_id, pin=output_name)
+                    )
                     for _output_name, index in dynamic_outputs
                     if _output_name == output_name
                 }

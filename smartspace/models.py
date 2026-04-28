@@ -11,6 +11,7 @@ from smartspace.enums import (
     ChannelEvent,
     ChannelState,
     FlowVariableAccess,
+    StreamingEvent,
 )
 from smartspace.utils.utils import _get_type_adapter
 
@@ -280,6 +281,10 @@ class OutputPinInterface(BaseModel):
     type: PinType
     channel: bool
     channel_group_id: Annotated[str | None, Field(alias="channelGroupId")]
+    # True for StreamingOutput pins: progressive snapshots of a single
+    # logical value, terminated by a FINALIZE event. Mutually exclusive
+    # with `channel` — a pin is a plain output, a channel, or streaming.
+    streaming: bool = False
 
 
 class PortInterface(BaseModel):
@@ -589,3 +594,20 @@ class OutputChannelMessage(BaseModel, Generic[ChannelT]):
 
     event: ChannelEvent | None
     data: ChannelT | None
+
+
+StreamingT = TypeVar("StreamingT")
+
+
+class StreamingOutputMessage(BaseModel, Generic[StreamingT]):
+    """Wire payload emitted by a StreamingOutput pin.
+
+    UPDATE carries a progressive snapshot; FINALIZE carries the terminal
+    value. The runtime discriminates on `event` to decide persistence and
+    routing semantics.
+    """
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    event: StreamingEvent
+    data: StreamingT | None

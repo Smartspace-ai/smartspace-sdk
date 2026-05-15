@@ -1,0 +1,52 @@
+# Gates merges into develop and main: install + build + (optional) pytest.
+# Acts as the required status check on both branches once branch protection
+# is updated to reference the `pr-checks` job.
+
+name: PR checks
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10.15"
+
+      - name: Cache Poetry installation
+        id: cached-poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: poetry-0
+
+      - name: Install Poetry
+        if: steps.cached-poetry.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Build package
+        run: poetry build
+
+      - name: Run pytest if tests exist
+        run: |
+          if [ -d tests ] && [ -n "$(ls -A tests 2>/dev/null)" ]; then
+            poetry run pytest
+          else
+            echo "No tests directory yet — skipping pytest. Add tests under tests/ to gate merges on them."
+          fi

@@ -22,7 +22,7 @@ from smartspace.enums import BlockCategory
 
 @metadata(
     description="This block takes a JSON string or a list of JSON strings and parses them",
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     icon="fa-code",
     label="parse JSON, convert JSON string, decode JSON, JSON deserialize, extract JSON data",
 )
@@ -47,7 +47,7 @@ class ParseJson(OperatorBlock):
 
 @metadata(
     description="This block removes a specified key from a JSON object. If 'recursive' is set to true, it recursively removes the key from all nested dictionaries; otherwise, it only removes the key from the top level. Returns a copy of the object with the key removed.",
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     icon="fa-code",
     label="Remove Key from any json object",
 )
@@ -80,7 +80,7 @@ class RemoveProperty(OperatorBlock):
 
 @metadata(
     description="This block retrieves the keys of a JSON object (dictionary). Returns a list of keys.",
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     icon="fa-code",
     label="Get Keys from json object",
 )
@@ -96,7 +96,7 @@ class GetKeys(OperatorBlock):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Uses JSONPath to extract data from a JSON object or list. This block will be moved to connection configuration in a future version",
     obsolete=True,
     label="extract JSON field, get JSON value, access JSON data, retrieve JSON property, JSON path query",
@@ -120,7 +120,7 @@ class GetJsonField(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Uses JSONPath to extract data from a JSON object or list.\nJSONPath implementation is from https://pypi.org/project/jsonpath-ng/.",
     icon="fa-search",
     label="get JSON path, query JSON data, extract JSON values, JSON lookup, search JSON",
@@ -148,7 +148,7 @@ class JoinType(Enum):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="""
 The `Join` block performs advanced join operations between two lists of dictionaries based on a specified key. It merges the data according to the selected join type, similar to SQL join operations, allowing for flexible data integration and transformation.
 
@@ -256,7 +256,7 @@ class Join(Block):
 
 @metadata(
     description="Merges multiple dictionaries into a single object. Accepts only dicts and combines all key-value pairs into one dictionary.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-cube",
     label="merge objects, combine dictionaries, build object, aggregate key-value pairs",
 )
@@ -271,7 +271,7 @@ class MergeObjects(Block):
 
 @metadata(
     description="Takes in inputs and creates an object containing the inputs",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-cube",
     label="create object, build dictionary, construct object, make key-value map, generate object",
 )
@@ -282,7 +282,7 @@ class CreateObject(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     label="object builder, json merge, dictionary update, data aggregation, object construction",
     description="Merges objects using dictionary unpacking (similar to jq's merge). Each new object is merged with the existing accumulated object.",
 )
@@ -335,7 +335,7 @@ class BuildObject(Block):
 
 @metadata(
     description="Takes in an object and sends each key-value pair to the corresponding output",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-th-large",
     label="unpack object, extract object properties, decompose dictionary, spread object, distribute fields",
 )

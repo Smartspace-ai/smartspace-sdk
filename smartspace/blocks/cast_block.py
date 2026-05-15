@@ -11,7 +11,7 @@ ItemT = TypeVar("ItemT")
 
 @metadata(
     description="Takes in any input and will attempt to convert the input to the specified schema. If the convert config is unticked, it will not attempt to convert the value and will instead just output the input.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-sync-alt",
     label="cast type, convert data, transform format, change type, typecast value",
 )

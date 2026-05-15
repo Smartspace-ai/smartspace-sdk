@@ -2,9 +2,32 @@ from enum import Enum
 
 
 class BlockCategory(Enum):
-    AGENT = {"name": "Agent", "description": "An entity that performs actions"}
+    # --- Active taxonomy ---
+    AGENT = {
+        "name": "Agent",
+        "description": "LLM-driven, non-deterministic blocks",
+    }
+    DATA = {
+        "name": "Data",
+        "description": "Read, write, or search internal datasets, files, and embeddings",
+    }
+    WEB = {
+        "name": "Web",
+        "description": "Calls an external service over the network",
+    }
+    TRANSFORM = {
+        "name": "Transform",
+        "description": "Pure compute — reshape, parse, format, or convert data",
+    }
+    CONTROL = {
+        "name": "Control",
+        "description": "Routing, branching, looping, gating, and timing",
+    }
+
+    # --- Deprecated; kept for back-compat until all @metadata calls migrate ---
+    # Remove these in a follow-up PR once both the SDK's own blocks and
+    # downstream consumers (ai-api, etc.) have moved off them.
     FUNCTION = {"name": "Function", "description": "A callable entity"}
-    DATA = {"name": "Data", "description": "A data entity"}
     CUSTOM = {"name": "Custom", "description": "A custom entity"}
     MISC = {"name": "Misc", "description": "Doesnt belong to any category"}
 

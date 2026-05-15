@@ -1,12 +1,13 @@
 import pypandoc
 
 from smartspace.core import Block, metadata, step
+from smartspace.enums import BlockCategory
 
 
 @metadata(
-    category={"name": "Custom", "description": "Custom blocks added by SmartSpace"},
+    category=BlockCategory.TRANSFORM,
     description="Converts Markdown input to RTF format.",
-    label="markdown-to-rtf converter",
+    label="markdown to rtf, format conversion, document conversion, pandoc",
 )
 class MarkdownToRTF(Block):
     @step(output_name="rtf_output")

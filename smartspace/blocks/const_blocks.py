@@ -6,7 +6,7 @@ from smartspace.enums import BlockCategory
 
 @metadata(
     description="Takes a dictionary as config and outputs it.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-book",
     label="dictionary constant, fixed dictionary, static object, constant map, predefined object",
 )
@@ -20,7 +20,7 @@ class DictConst(Block):
 
 @metadata(
     description="Takes a string as config and outputs it.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-quote-right",
     label="string constant, fixed text, static string, constant text, predefined string",
 )
@@ -34,7 +34,7 @@ class StringConst(Block):
 
 @metadata(
     description="Takes an integer as config and outputs it.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-hashtag",
     label="integer constant, fixed number, static integer, constant number, predefined value",
 )

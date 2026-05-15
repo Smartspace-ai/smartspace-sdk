@@ -20,7 +20,8 @@ firstItemT = TypeVar("firstItemT")
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
+    description="Returns the number of items in the input list.",
     icon="fa-sort-numeric-up",
     label="count items, list length, item count, size of list, total elements",
 )
@@ -31,7 +32,7 @@ class Count(OperatorBlock):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Joins a list of strings using the configured separator and outputs the resulting string.",
     icon="fa-link",
     label="join strings, concatenate text, combine strings, merge text, connect strings",
@@ -45,7 +46,7 @@ class JoinStrings(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Splits a string using the configured separator and outputs a list of the substrings",
     icon="fa-cut",
     label="split string, divide text, break string, tokenize text, parse string",
@@ -65,7 +66,7 @@ class SplitString(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Slices a list or string using the configured start and end indexes.",
     icon="fa-cut",
     label="slice list, extract portion, get segment, subset sequence, partial list",
@@ -80,9 +81,10 @@ class Slice(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Gets the first item from a list",
     icon="fa-arrow-alt-circle-left",
+    label="first, head, take one, list head, pop front",
 )
 class First(OperatorBlock, Generic[firstItemT]):
     @step(output_name="item")
@@ -91,7 +93,7 @@ class First(OperatorBlock, Generic[firstItemT]):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Flattens a list of lists into a single list",
     icon="fa-compress",
     label="flatten list, merge nested lists, combine nested arrays, unnest lists, simplify nested lists",
@@ -104,7 +106,7 @@ class Flatten(OperatorBlock):
 
 @metadata(
     description="Takes in inputs and creates a list containing the inputs.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-list-ul",
     label="create list, build list, construct list, form list, make list",
 )
@@ -115,7 +117,7 @@ class CreateList(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Appends an item to a list and outputs the updated list. Maintains the list state across calls.",
     label="list builder, dynamic list, item aggregation, list accumulation, append to list",
 )
@@ -129,7 +131,7 @@ class BuildList(Block):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Merges objects from two lists by matching on the configured key.",
     obsolete=True,
     label="merge JSON lists, combine JSON arrays, join JSON objects, match and merge, consolidate JSON data",
@@ -163,7 +165,7 @@ class MergeLists(Block):
 
 @metadata(
     description="Takes in a list and sends each item to the corresponding output",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-th-list",
     label="unpack list, distribute items, extract list elements, spread array, decompose list",
 )
@@ -179,7 +181,7 @@ class UnpackList(Block):
 
 @metadata(
     description="Appends item to items and output resulting list",
-    category=BlockCategory.MISC,
+    category=BlockCategory.TRANSFORM,
     icon="fa-plus",
     label="append item, add item, extend list, insert item, concatenate item",
 )

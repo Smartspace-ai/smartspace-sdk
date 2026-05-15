@@ -11,7 +11,7 @@ from smartspace.enums import BlockCategory
   - **`set`**: Stores a new value.
   - **`get`**: Sends the current value out the output.
   - **`setGet`**: Combines setting and sending in a single action, immediately outputting the new value that is set""",
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     label="variable storage, data holding, value storage, state management, data persistence",
 )
 class Variable(Block):

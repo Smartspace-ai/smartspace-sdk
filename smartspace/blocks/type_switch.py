@@ -21,7 +21,7 @@ class TypeSwitchOption(Generic[ItemT]):
 
 @metadata(
     description="Checks the output schemas of the options and sends the input to the first option that matches",
-    category=BlockCategory.MISC,
+    category=BlockCategory.CONTROL,
     icon="fa-random",
     label="type switch, schema routing, type routing, data branching, conditional path",
 )

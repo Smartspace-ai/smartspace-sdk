@@ -6,7 +6,7 @@ from smartspace.enums import BlockCategory, InputDisplayType
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="""
     A block that takes a Jinja2 template string, fills the template,
     and then parses the result into a JSON object.

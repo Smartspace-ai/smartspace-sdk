@@ -1,0 +1,145 @@
+# Maintains the standing `release/next → main` PR with an automatic patch
+# version bump on pyproject.toml. Merging the PR triggers release.yml to
+# publish that version to PyPI and tag `v<version>`.
+#
+# On every push to develop:
+#   1. Hard-resets `release/next` to develop's HEAD
+#   2. Computes next version = max(develop_version, main_version + patch)
+#      — so manual minor/major bumps on develop are respected; default is
+#      a patch bump from main.
+#   3. Runs `poetry version <next>` on release/next, commits the bump
+#   4. Force-pushes `release/next`
+#   5. Opens the standing PR if it doesn't already exist
+#
+# Releasing develop → main becomes "click Merge on the standing PR".
+# No human ever creates or checks out `release/next`.
+
+name: Open standing release PR
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: standing-release-pr
+  cancel-in-progress: true
+
+jobs:
+  update:
+    if: github.repository == 'Smartspace-ai/smartspace-sdk'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10.15"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Reset release/next to develop
+        run: |
+          git fetch origin main develop
+          git checkout -B release/next origin/develop
+
+      - name: Compute next version
+        id: ver
+        run: |
+          set -euo pipefail
+
+          extract_version() {
+            # Reads `version = "X.Y.Z"` from a pyproject.toml on stdin.
+            sed -n 's/^version = "\(.*\)"$/\1/p' | head -1
+          }
+
+          MAIN_VERSION=$(git show origin/main:pyproject.toml | extract_version)
+          DEV_VERSION=$(extract_version < pyproject.toml)
+
+          if [ -z "$MAIN_VERSION" ] || [ -z "$DEV_VERSION" ]; then
+            echo "::error::Could not parse version from pyproject.toml (main=$MAIN_VERSION dev=$DEV_VERSION)"
+            exit 1
+          fi
+
+          IFS='.' read -ra PARTS <<< "$MAIN_VERSION"
+          if [ "${#PARTS[@]}" -ne 3 ]; then
+            echo "::error::Unexpected version shape on main: $MAIN_VERSION"
+            exit 1
+          fi
+          MAIN_NEXT="${PARTS[0]}.${PARTS[1]}.$((PARTS[2]+1))"
+
+          NEXT=$(printf '%s\n%s\n' "$DEV_VERSION" "$MAIN_NEXT" | sort -V | tail -1)
+
+          echo "main=$MAIN_VERSION  dev=$DEV_VERSION  main_next=$MAIN_NEXT  -> next=$NEXT"
+          echo "next=$NEXT" >> "$GITHUB_OUTPUT"
+
+      - name: Apply version bump on release/next
+        run: |
+          poetry version "${{ steps.ver.outputs.next }}"
+          if git diff --quiet pyproject.toml; then
+            echo "pyproject.toml already at ${{ steps.ver.outputs.next }} — nothing to commit."
+          else
+            git add pyproject.toml
+            git commit -m "chore(release): bump version to ${{ steps.ver.outputs.next }}"
+          fi
+
+      # Force-push: release/next is fully derived from develop + version bump
+      # each run. Local commits to release/next are intentionally lost.
+      - name: Force-push release/next
+        run: git push origin release/next --force
+
+      - name: Ensure standing release PR exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          OPEN=$(gh pr list --head release/next --base main --state open --json number --jq 'length')
+          if [ "$OPEN" != "0" ]; then
+            NUM=$(gh pr list --head release/next --base main --state open --json number --jq '.[0].number')
+            echo "Standing release PR already open at #$NUM — force-push has updated it."
+            exit 0
+          fi
+
+          gh pr create \
+            --base main \
+            --head release/next \
+            --title "Release: develop → main (standing, v${{ steps.ver.outputs.next }})" \
+            --body-file - <<EOF
+          Standing release PR. Auto-updated on every push to \`develop\`.
+
+          **Merging this PR releases \`v${{ steps.ver.outputs.next }}\` to PyPI** (via [\`release.yml\`](.github/workflows/release.yml)) and creates the matching GitHub release/tag.
+
+          ## How this works
+
+          [\`open-standing-release-pr.yml\`](.github/workflows/open-standing-release-pr.yml) runs on every push to \`develop\`:
+
+          1. Resets \`release/next\` to develop's HEAD
+          2. Computes \`next = max(develop_version, main_version + patch)\`
+          3. Runs \`poetry version <next>\` and commits the bump
+          4. Force-pushes \`release/next\`
+
+          ## Bumping minor or major
+
+          Default is a patch bump from \`main\`. To release a minor or major version, bump \`pyproject.toml\` on \`develop\` manually (e.g. \`poetry version minor\`) and push — the workflow will respect any version higher than \`main + patch\`.
+
+          ## Don't commit to \`release/next\`
+
+          The branch is force-pushed by automation. Any local commits will be lost on the next sync.
+          EOF

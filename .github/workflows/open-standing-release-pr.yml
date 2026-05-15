@@ -66,7 +66,8 @@ jobs:
 
           extract_version() {
             # Reads `version = "X.Y.Z"` from a pyproject.toml on stdin.
-            sed -n 's/^version = "\(.*\)"$/\1/p' | head -1
+            # Tolerant of CRLF line endings — the repo's pyproject.toml is CRLF.
+            sed -n 's/^version = "\([^"]*\)".*$/\1/p' | head -1 | tr -d '\r'
           }
 
           MAIN_VERSION=$(git show origin/main:pyproject.toml | extract_version)

@@ -2441,6 +2441,12 @@ def callback() -> Callable[[Callable[Concatenate[B, P], Awaitable]], Callback[B,
 UserMessageT = TypeVar("UserMessageT")
 
 
+@metadata(
+    category=BlockCategory.CONTROL,
+    icon="fa-user",
+    label="user input, user form, ask user, human in the loop, user response",
+    description="Sends a message to the user and waits for a response. The response schema determines the form fields shown.",
+)
 class User(WorkSpaceBlock, Generic[UserMessageT]):
     schema: GenericSchema[UserMessageT] = GenericSchema({"type": "string"})
     response: Output[UserMessageT]

@@ -1,0 +1,50 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Pacific/Auckland
+    target-branch: main
+    open-pull-requests-limit: 5
+    groups:
+      azure:
+        patterns:
+          - "azure-*"
+          - "msal"
+      pydantic:
+        patterns:
+          - "pydantic*"
+      llm:
+        patterns:
+          - "litellm"
+          - "llama-index*"
+          - "llama_index*"
+      data-stores:
+        patterns:
+          - "neo4j"
+          - "sqlalchemy"
+          - "aioodbc"
+          - "aiomysql"
+          - "pyodbc"
+      test-frameworks:
+        patterns:
+          - "pytest*"
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Pacific/Auckland
+    target-branch: main
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions

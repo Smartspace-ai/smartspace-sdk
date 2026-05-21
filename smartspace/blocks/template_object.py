@@ -3,6 +3,14 @@ from typing import Annotated, Any
 
 from smartspace.core import Block, Config, Metadata, metadata, step
 from smartspace.enums import BlockCategory, InputDisplayType
+from smartspace.blocks._template_utils import (
+    AutoJsonDict,
+    AutoJsonList,
+    AutoJsonScalar,
+    AutoJsonWrapper,
+    unwrap_for_json,
+    wrap_auto_json,
+)
 
 
 @metadata(
@@ -13,6 +21,9 @@ from smartspace.enums import BlockCategory, InputDisplayType
     """,
     icon="fa-code",
     label="template object, JSON templating, dynamic JSON, structured template, object generation",
+    obsolete=True,
+    deprecated_reason="Use the Transform block to extract and reshape data from JSON objects.",
+    use_instead="Transform",
 )
 class TemplatedObject(Block):
     templated_json: Annotated[
@@ -60,93 +71,3 @@ class TemplatedObject(Block):
             )
 
 
-class AutoJsonWrapper:
-    """
-    Base class that ensures that when converted to a string,
-    we produce valid JSON of the wrapped data.
-    """
-
-    def __init__(self, data):
-        self._data = data
-
-    def __str__(self):
-        from markupsafe import Markup
-
-        # When Jinja calls str(...) on this object, we dump it as JSON
-        # and mark it safe so it doesn't get escaped again.
-        return Markup(json.dumps(self._unwrap()))
-
-    def _unwrap(self):
-        # By default, just return the underlying data.
-        # Subclasses can override if needed.
-        return self._data
-
-
-class AutoJsonDict(AutoJsonWrapper):
-    """
-    Wraps a dict so that attribute or item lookups return more wrappers.
-    """
-
-    def __getitem__(self, key):
-        return wrap_auto_json(self._data[key])
-
-    def __getattr__(self, key):
-        # If we do person.sports, Jinja calls __getattr__('sports')
-        return self.__getitem__(key)
-
-    def _unwrap(self):
-        # Recursively produce a normal dict for final json.dumps
-        return {k: unwrap_for_json(v) for k, v in self._data.items()}
-
-
-class AutoJsonList(AutoJsonWrapper):
-    """
-    Wraps a list so that item lookups return more wrappers.
-    """
-
-    def __getitem__(self, idx):
-        return wrap_auto_json(self._data[idx])
-
-    def __len__(self):
-        return len(self._data)
-
-    def _unwrap(self):
-        return [unwrap_for_json(item) for item in self._data]
-
-
-class AutoJsonScalar(AutoJsonWrapper):
-    """
-    Wraps a scalar (string, int, float, bool, None)
-    """
-
-    # In most cases, the base class behavior is enough.
-    # We just define it for clarity.
-
-
-def wrap_auto_json(value):
-    """
-    Return an AutoJson wrapper appropriate for the given value.
-    """
-    if isinstance(value, dict):
-        return AutoJsonDict(value)
-    elif isinstance(value, list):
-        return AutoJsonList(value)
-    else:
-        # String, int, float, bool, or any other scalar
-        return AutoJsonScalar(value)
-
-
-def unwrap_for_json(wrapper):
-    """
-    If 'wrapper' is an AutoJsonWrapper, recursively convert it to
-    normal Python objects for final JSON serialization. Otherwise
-    just return it.
-    """
-    if isinstance(wrapper, AutoJsonDict):
-        return {k: unwrap_for_json(v) for k, v in wrapper._data.items()}
-    elif isinstance(wrapper, AutoJsonList):
-        return [unwrap_for_json(item) for item in wrapper._data]
-    elif isinstance(wrapper, AutoJsonScalar):
-        return wrapper._data
-    else:
-        return wrapper

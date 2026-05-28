@@ -7,7 +7,7 @@ from smartspace.core import Block, Config, metadata, step
 from smartspace.enums import BlockCategory
 
 @metadata(
-    category=BlockCategory.DATA,
+    category=BlockCategory.WEB,
     description=(
         "Executes an async SQL query via SQLAlchemy against any supported database. "
         "Ensure your `connection_string` uses the correct dialect+driver prefix and proper URL encoding. Examples:\n"
@@ -18,6 +18,7 @@ from smartspace.enums import BlockCategory
         "Percent-encode special characters in credentials (e.g., `^` → `%5E`)."
     ),
     icon="fa-database",
+    label="sql query, database, sqlalchemy, select, async db, relational",
 )
 class SQL(Block):
     connection_string: Annotated[str, Config()]

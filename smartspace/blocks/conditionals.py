@@ -14,7 +14,7 @@ ValueT = TypeVar("ValueT")
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.CONTROL,
     description=f"""Evaluates the input value using the configured condition.
 {expression_tooltip}""",
     label="conditional logic, boolean check, if-then-else, branching, condition evaluation",
@@ -43,7 +43,7 @@ class SwitchOption:
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.CONTROL,
     description=f"""Evaluates the input value using the configured condition.
     {expression_tooltip}""",
     label="switch statement, case selection, multi-way branching, conditional routing, expression switch",
@@ -76,7 +76,7 @@ class Switch(Block, Generic[ValueT]):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.CONTROL,
     description=f"""Filters a list of items using the configured condition.
 {expression_tooltip}""",
     label="list filtering, item selection, data subsetting, conditional filtering, collection filtering",

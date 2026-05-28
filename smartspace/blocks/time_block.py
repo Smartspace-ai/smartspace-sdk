@@ -35,7 +35,7 @@ class DateTimeRequest(BaseModel):
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description=(
         "Provides comprehensive date and time operations including current time awareness, "
         "date arithmetic, formatting, parsing, timezone conversions, and component extraction. "

@@ -7,7 +7,7 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="takes in a string input and truncates it given a token limit",
     icon="fa-cut",
     label="truncate string, shorten text, cut text, limit tokens, trim text",

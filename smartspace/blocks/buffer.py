@@ -1,11 +1,13 @@
 from typing import Annotated, Any, Generic, TypeVar
 
 from smartspace.core import Block, Output, State, metadata, step
+from smartspace.enums import BlockCategory
 
 ValueT = TypeVar("ValueT")
 
 
 @metadata(
+    category=BlockCategory.TRANSFORM,
     description="Buffers values in a list and outputs them one at a time.",
     icon="fa-database",
     label="buffer, queue, buffer block, queue block, buffer list, queue list",

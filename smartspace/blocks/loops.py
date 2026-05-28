@@ -20,7 +20,7 @@ ItemT = TypeVar("ItemT")
 ResultT = TypeVar("ResultT")
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.CONTROL,
     description="Loops through each item in the items input and sends them to the configured tool. Once all items have been processed, outputs the resulting list",
     icon="fa-project-diagram",
     label="map function, transform items, process list, iterate collection, apply function to list",
@@ -92,7 +92,7 @@ class Map(Block, Generic[ItemT, ResultT]):
             )
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.CONTROL,
     description="Collects data from a channel and outputs them as a list once the channel closes.",
     icon="fa-boxes",
     label="collect list, gather items, accumulate data, assemble collection, aggregate entries",
@@ -125,7 +125,7 @@ class Collect(OperatorBlock, Generic[ItemT]):
             self.items.send(self.items_state)
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.CONTROL,
     description="Loops through a list of items and outputs them one at a time",
     icon="fa-ellipsis-h\t",
     label="for each, iterate items, loop through list, process each item, step through collection",

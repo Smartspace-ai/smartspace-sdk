@@ -357,6 +357,12 @@ class GenericSchema(Generic[GenericSchemaT], dict[str, Any]): ...
 class Config: ...
 
 
+class Templatable: ...
+
+
+class Expression: ...
+
+
 def _get_all_bases(cls: type):
     bases: list[type] = []
 
@@ -409,6 +415,9 @@ def _get_input_pin_from_metadata(
 
             if isinstance(m, Metadata):
                 metadata = m.data
+
+        if any(isinstance(m, Templatable) for m in getattr(field_type, "__metadata__", [])):
+            metadata = {**metadata, "templatable": True}
 
         matches = len([True for i in [config, _input, state] if i is not None])
 
@@ -2441,6 +2450,12 @@ def callback() -> Callable[[Callable[Concatenate[B, P], Awaitable]], Callback[B,
 UserMessageT = TypeVar("UserMessageT")
 
 
+@metadata(
+    category=BlockCategory.CONTROL,
+    icon="fa-user",
+    label="user input, user form, ask user, human in the loop, user response",
+    description="Sends a message to the user and waits for a response. The response schema determines the form fields shown.",
+)
 class User(WorkSpaceBlock, Generic[UserMessageT]):
     schema: GenericSchema[UserMessageT] = GenericSchema({"type": "string"})
     response: Output[UserMessageT]

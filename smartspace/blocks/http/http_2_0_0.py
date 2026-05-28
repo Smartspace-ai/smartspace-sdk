@@ -25,7 +25,7 @@ class ResponseObject(BaseModel):
 
 @metadata(
     description="Performs HTTP requests such as GET, POST, PUT, DELETE, and more.",
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.WEB,
     icon="fa-cloud-download-alt",
     label="HTTP request, web API call, REST client, API request, web service call",
 )

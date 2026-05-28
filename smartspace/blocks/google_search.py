@@ -89,13 +89,14 @@ class GoogleSearchResponse(BaseModel):
 
 # Block implementation that uses the Pydantic models
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.WEB,
     description="""
-    A block that connects to the Google Custom Search API, parses the JSON response 
+    A block that connects to the Google Custom Search API, parses the JSON response
     into a Pydantic model, and returns the structured result.
     It uses a configuration value 'page' (default=1) to determine which page of results to fetch.
     """,
     icon="fa-search",
+    label="google search, web search, custom search api, search engine, query web",
 )
 class GoogleSearch(Block):
     google_api_key: Annotated[str, Config()]

@@ -18,7 +18,7 @@ class WebsiteDetails(BaseModel):
 
 @metadata(
     description="Scrapes the content of a website. Returns both the raw content and the content with metadata.",
-    category=BlockCategory.MISC,
+    category=BlockCategory.WEB,
     icon="fa-globe",
     label="website scraper, web crawler, content extractor, web harvester, site parser",
 )

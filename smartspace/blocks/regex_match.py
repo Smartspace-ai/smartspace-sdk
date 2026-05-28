@@ -6,7 +6,7 @@ from smartspace.enums import BlockCategory
 
 
 @metadata(
-    category=BlockCategory.FUNCTION,
+    category=BlockCategory.TRANSFORM,
     description="Regex match or replace: if substitution string is empty, return list of matches; otherwise return replaced string.",
     icon="fa-text-width",
     label="regex match, regex replace, find and replace, pattern substitution, text extraction",

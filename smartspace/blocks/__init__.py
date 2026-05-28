@@ -2,6 +2,7 @@ import concurrent.futures
 import inspect
 from typing import cast
 
+import smartspace.blocks.templatable
 import smartspace.core
 import smartspace.utils.utils
 
@@ -91,6 +92,8 @@ async def load(
                     smartspace.utils.utils._issubclass(item, smartspace.core.Block)
                     and item != smartspace.core.Block
                     and item != smartspace.core.WorkSpaceBlock
+                    and item != smartspace.core.OperatorBlock
+                    and item != smartspace.blocks.templatable.TemplatableBlock
                     and not inspect.isabstract(item)
                 ):
                     block_type = cast(type[smartspace.core.Block], item)

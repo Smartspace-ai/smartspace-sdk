@@ -15,8 +15,6 @@ from smartspace.enums import BlockCategory
     category=BlockCategory.TRANSFORM,
     icon="fa-file-alt",
     label="string template, text formatting, variable substitution, format string, template interpolation",
-    obsolete=True,
-    use_instead="StringTemplate",
 )
 class StringTemplate(Block):
     template: Annotated[str, Config()]

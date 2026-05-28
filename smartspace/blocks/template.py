@@ -14,6 +14,8 @@ from smartspace.blocks._template_utils import make_jinja_env, wrap_auto_json
         "Use {{ name }} to reference connected inputs. "
         "A jmespath filter is available: {{ items | jmespath('[*].title') | join(', ') }}."
     ),
+    obsolete=True,
+    use_instead="StringTemplate",
 )
 class Template(Block):
     template: Annotated[

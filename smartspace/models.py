@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Annotated, Any, Generic, TypeVar, Union
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_serializer
+from pydantic import BaseModel, ConfigDict, Field, GetCoreSchemaHandler, model_serializer
+from pydantic_core import core_schema
 
 from smartspace.enums import (
     BlockClass,
@@ -14,6 +15,22 @@ from smartspace.enums import (
     StreamingEvent,
 )
 from smartspace.utils.utils import _get_type_adapter
+
+
+class SecretRef(str):
+    """A reference to a secret, e.g. the name of a secret configured in the workspace.
+
+    Behaves exactly like ``str`` at runtime and on the wire (validates and
+    serializes as a plain string, JSON schema is ``{"type": "string"}``), but
+    gives block authors a distinct type to pair with the ``Secret()`` config
+    marker: ``api_key: Annotated[SecretRef, Config(), Secret()]``.
+    """
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        return core_schema.str_schema()
 
 
 class File(BaseModel):

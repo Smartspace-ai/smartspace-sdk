@@ -60,12 +60,16 @@ async def test_markdown_to_rtf_single_run_enforced(ensure_pandoc):
 
 
 def test_markdown_to_rtf_metadata_and_step_properties():
+    from smartspace.enums import BlockCategory
+
     # Class-level metadata attached by @metadata
     meta = getattr(MarkdownToRTF, "metadata", {})
-    assert meta.get("label") == "markdown-to-rtf converter"
+    assert (
+        meta.get("label")
+        == "markdown to rtf, format conversion, document conversion, pandoc"
+    )
     assert meta.get("description") == "Converts Markdown input to RTF format."
-    assert isinstance(meta.get("category"), dict)
-    assert meta["category"].get("name") == "Custom"
+    assert meta.get("category") is BlockCategory.TRANSFORM
 
     # Step exists and has correct output name per decorator
     block = MarkdownToRTF()

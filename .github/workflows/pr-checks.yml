@@ -43,10 +43,5 @@ jobs:
       - name: Build package
         run: poetry build
 
-      - name: Run pytest if tests exist
-        run: |
-          if [ -d tests ] && [ -n "$(ls -A tests 2>/dev/null)" ]; then
-            poetry run pytest
-          else
-            echo "No tests directory yet — skipping pytest. Add tests under tests/ to gate merges on them."
-          fi
+      - name: Run pytest
+        run: poetry run pytest

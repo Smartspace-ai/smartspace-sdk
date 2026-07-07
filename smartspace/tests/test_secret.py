@@ -78,3 +78,40 @@ def test_secret_ref_pin_schema_is_plain_string():
     interface = SecretConfigBlock.interface()
     pin = interface.ports["api_key"].inputs[""]
     assert pin.json_schema == {"type": "string"}
+
+
+# ---------------------------------------------------------------------------
+# Guard rails
+# ---------------------------------------------------------------------------
+
+def test_bare_class_secret_marker_still_flags_pin():
+    class BareMarkerBlock(Block):
+        api_key: Annotated[SecretRef, Config(), Secret]
+
+        @step(output_name="out")
+        async def run(self, x: str) -> str:
+            return x
+
+    pin = BareMarkerBlock.interface().ports["api_key"].inputs[""]
+    assert pin.metadata["secret"] is True
+
+
+def test_secret_pin_with_default_is_optional_and_keeps_flag():
+    class DefaultedBlock(Block):
+        api_key: Annotated[SecretRef, Config(), Secret()] = SecretRef("")
+
+        @step(output_name="out")
+        async def run(self, x: str) -> str:
+            return x
+
+    pin = DefaultedBlock.interface().ports["api_key"].inputs[""]
+    assert pin.metadata["secret"] is True
+    assert pin.required is False
+
+
+def test_package_root_exports():
+    import smartspace
+
+    assert smartspace.Secret is Secret
+    assert smartspace.SecretRef is SecretRef
+    assert set(smartspace.__all__) >= {"Secret", "SecretRef"}

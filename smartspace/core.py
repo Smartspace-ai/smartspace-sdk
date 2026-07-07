@@ -357,7 +357,11 @@ class GenericSchema(Generic[GenericSchemaT], dict[str, Any]): ...
 class Config: ...
 
 
-class Secret: ...
+class Secret:
+    """Marks a Config pin as secret-typed (class-attribute Config pins only).
+
+    Usage: `api_key: Annotated[SecretRef, Config(), Secret()]`
+    """
 
 
 class Templatable: ...
@@ -422,7 +426,10 @@ def _get_input_pin_from_metadata(
         if any(isinstance(m, Templatable) for m in getattr(field_type, "__metadata__", [])):
             metadata = {**metadata, "templatable": True}
 
-        if any(isinstance(m, Secret) for m in getattr(field_type, "__metadata__", [])):
+        if any(
+            isinstance(m, Secret) or m is Secret
+            for m in getattr(field_type, "__metadata__", [])
+        ):
             metadata = {**metadata, "secret": True}
 
         matches = len([True for i in [config, _input, state] if i is not None])

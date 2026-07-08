@@ -1667,6 +1667,17 @@ files = [
 ]
 
 [[package]]
+name = "jmespath"
+version = "1.1.0"
+description = "JSON Matching Expressions"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "jmespath-1.1.0-py3-none-any.whl", hash = "sha256:a5663118de4908c91729bea0acadca56526eb2698e83de10cd116ae0f4e97c64"},
+    {file = "jmespath-1.1.0.tar.gz", hash = "sha256:472c87d80f36026ae83c6ddd0f1d05d4e510134ed462851fd5f754c8c3cbb88d"},
+]
+
+[[package]]
 name = "joblib"
 version = "1.5.2"
 description = "Lightweight pipelining with Python functions"
@@ -5211,4 +5222,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "4fef4fccadc64364c941d3462abf1c223fc48bf01f597c460f7c08f7feddae85"
+content-hash = "508c258765f6cfe46e8a628fa0b8e24233f4f28b4794534bf8d56c44281b0600"

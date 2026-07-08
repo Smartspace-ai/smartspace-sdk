@@ -340,7 +340,7 @@ class BuildObject(Block):
     label="unpack object, extract object properties, decompose dictionary, spread object, distribute fields",
 )
 class UnpackObject(Block):
-    properties: dict[str, Output[dict[str, Any]]]
+    properties: dict[str, Output[Any]]
 
     @step()
     async def unpack(self, object: dict[str, Any]):

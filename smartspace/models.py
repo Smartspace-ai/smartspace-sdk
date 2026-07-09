@@ -512,6 +512,16 @@ class FlowConstant(BaseModel):
 
     value: Any
 
+    # Flow-author intent: this constant holds an `ss://secret/{name}` managed-secret
+    # reference and should be resolved to the real value when it binds to a block
+    # pin. Set when an input is switched to "Secret" mode in the flow editor.
+    #
+    # The marker — rather than resolving on value shape alone — is what keeps
+    # resolution to values that come from the flow *definition*. Runtime data
+    # (user input, upstream block outputs) is never marked, so it can never be
+    # made to resolve a secret by containing a reference-shaped string.
+    secret: bool = False
+
 
 class FlowInput(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

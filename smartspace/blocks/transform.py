@@ -4,7 +4,7 @@ import jmespath
 from jmespath.exceptions import JMESPathError
 
 from smartspace.core import Block, BlockError, Config, Metadata, Output, metadata, step
-from smartspace.enums import BlockCategory
+from smartspace.enums import BlockCategory, InputLanguage
 
 
 @metadata(
@@ -26,10 +26,15 @@ class Transform(Block):
         str,
         Config(),
         Metadata(
+            language=InputLanguage.JMESPATH,
             description=(
                 "JMESPath expression to evaluate against an object whose keys are "
-                "the names of the connected input pins. See https://jmespath.org/ for syntax."
-            )
+                "the names of the connected input pins. See https://jmespath.org/ for syntax. "
+                "Note that string literals use SINGLE quotes — double quotes denote a field "
+                "reference, so \"Bearer \" is a lookup for a field of that name, not text. "
+                "There is no {placeholder} interpolation; concatenate with "
+                "join(' ', ['Bearer', token])."
+            ),
         ),
     ] = "@"
 

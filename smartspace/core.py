@@ -35,6 +35,7 @@ from smartspace.enums import (
     BlockScope,
     ChannelEvent,
     InputDisplayType,
+    InputLanguage,
     StreamingEvent,
 )
 from smartspace.models import (
@@ -425,6 +426,11 @@ def _get_input_pin_from_metadata(
 
         if any(isinstance(m, Templatable) for m in getattr(field_type, "__metadata__", [])):
             metadata = {**metadata, "templatable": True}
+            metadata.setdefault("language", InputLanguage.JINJA)
+
+        if any(isinstance(m, Expression) for m in getattr(field_type, "__metadata__", [])):
+            metadata = {**metadata, "expression": True}
+            metadata.setdefault("language", InputLanguage.JMESPATH)
 
         if any(
             isinstance(m, Secret) or m is Secret

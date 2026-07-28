@@ -4,10 +4,11 @@ from smartspace.core import (
     Block,
     BlockError,
     Config,
+    Metadata,
     metadata,
     step,
 )
-from smartspace.enums import BlockCategory
+from smartspace.enums import BlockCategory, InputLanguage
 
 
 @metadata(
@@ -17,7 +18,7 @@ from smartspace.enums import BlockCategory
     label="string template, text formatting, variable substitution, format string, template interpolation",
 )
 class StringTemplate(Block):
-    template: Annotated[str, Config()]
+    template: Annotated[str, Config(), Metadata(language=InputLanguage.JINJA)]
 
     @step(output_name="string")
     async def build(self, **inputs: Any) -> str:
@@ -39,7 +40,7 @@ class StringTemplate(Block):
     label="string template, text formatting, variable substitution, format string, template interpolation, jinja2, render",
 )
 class StringTemplate_2_0_0(Block):
-    template: Annotated[str, Config()]
+    template: Annotated[str, Config(), Metadata(language=InputLanguage.JINJA)]
 
     @step(output_name="string")
     async def build(self, **inputs: Any) -> str:

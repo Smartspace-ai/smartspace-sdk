@@ -2,7 +2,7 @@ import re
 from typing import Annotated
 
 from smartspace.core import Block, Config, Metadata, metadata, step
-from smartspace.enums import BlockCategory
+from smartspace.enums import BlockCategory, InputLanguage
 
 
 @metadata(
@@ -17,7 +17,22 @@ class RegexMatch(Block):
     pattern and substitution string.
     """
 
-    regex: Annotated[str, Config()] = (
+    regex: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.REGEX,
+            description=(
+                "Python regular expression (re module syntax), e.g. "
+                r"\b(\w+)@(\w+\.\w+)\b."
+                "\n"
+                "Named groups are (?P<name>...); backreferences in "
+                "replace_with are \\1 or \\g<name>. With replace_with empty "
+                "the block returns the list of matches; otherwise the "
+                "replaced string."
+            ),
+        ),
+    ] = (
         r".*"  # Default pattern to match the entire string
     )
     replace_with: Annotated[

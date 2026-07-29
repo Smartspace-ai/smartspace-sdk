@@ -3,8 +3,8 @@ from decimal import Decimal
 from typing import Annotated, Any, Dict, List, Union
 
 
-from smartspace.core import Block, Config, metadata, step
-from smartspace.enums import BlockCategory
+from smartspace.core import Block, Config, Metadata, metadata, step
+from smartspace.enums import BlockCategory, InputLanguage
 
 @metadata(
     category=BlockCategory.WEB,
@@ -22,7 +22,25 @@ from smartspace.enums import BlockCategory
 )
 class SQL(Block):
     connection_string: Annotated[str, Config()]
-    query: Annotated[str, Config()]
+    query: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.SQL,
+            description=(
+                "SQL statement, e.g. "
+                "SELECT * FROM orders WHERE status = :status.\n"
+                "\n"
+                ":name placeholders are bind parameters — each one is filled "
+                "from the block's input pin of the same name, safely "
+                "parameterised (never string-interpolated).\n"
+                "\n"
+                "Runs against the connection_string database, so use that "
+                "engine's dialect. SELECTs return a list of row objects; "
+                "other statements return the affected row count."
+            ),
+        ),
+    ]
 
     @step(output_name="result")
     async def run(self, **params) -> Union[List[Dict[str, Any]], int]:

@@ -94,3 +94,21 @@ def test_get_path_is_jsonpath():
 
     pin = _pin(Get, "path")
     assert pin.metadata["language"] == InputLanguage.JSONPATH
+
+
+def test_sql_condition_and_regex_pins_are_tagged():
+    from smartspace.blocks.conditionals import Filter, If
+    from smartspace.blocks.regex_match import RegexMatch
+    from smartspace.blocks.sql import SQL
+
+    assert _pin(SQL, "query").metadata["language"] == InputLanguage.SQL
+    assert _pin(If, "condition").metadata["language"] == InputLanguage.CONDITION
+    assert _pin(Filter, "condition").metadata["language"] == InputLanguage.CONDITION
+    assert _pin(RegexMatch, "regex").metadata["language"] == InputLanguage.REGEX
+
+
+def test_condition_pins_carry_the_expression_guide():
+    from smartspace.blocks.conditionals import If
+    from smartspace.utils.expressions import expression_tooltip
+
+    assert _pin(If, "condition").metadata["description"] == expression_tooltip

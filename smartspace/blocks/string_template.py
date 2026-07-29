@@ -18,7 +18,24 @@ from smartspace.enums import BlockCategory, InputLanguage
     label="string template, text formatting, variable substitution, format string, template interpolation",
 )
 class StringTemplate(Block):
-    template: Annotated[str, Config(), Metadata(language=InputLanguage.JINJA)]
+    template: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.JINJA,
+            description=(
+                "Jinja template. Reference connected inputs with {{ name }} and "
+                "nested fields with {{ name.field }}.\n"
+                "\n"
+                "Logic: {% if x %}...{% endif %}, {% for item in items %}"
+                "{{ item }}{% endfor %}. Filters with |, e.g. "
+                "{{ items | join(', ') }}.\n"
+                "\n"
+                "Referencing a variable that isn't wired in fails when the "
+                "block runs."
+            ),
+        ),
+    ]
 
     @step(output_name="string")
     async def build(self, **inputs: Any) -> str:
@@ -40,7 +57,25 @@ class StringTemplate(Block):
     label="string template, text formatting, variable substitution, format string, template interpolation, jinja2, render",
 )
 class StringTemplate_2_0_0(Block):
-    template: Annotated[str, Config(), Metadata(language=InputLanguage.JINJA)]
+    template: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.JINJA,
+            description=(
+                "Jinja template. Reference connected inputs with {{ name }} and "
+                "nested fields with {{ name.field }}.\n"
+                "\n"
+                "Logic: {% if x %}...{% endif %}, {% for item in items %}"
+                "{{ item }}{% endfor %}. Filters with |, e.g. "
+                "{{ items | join(', ') }} or "
+                "{{ items | jmespath('[*].title') | join(', ') }}.\n"
+                "\n"
+                "Complex objects serialise automatically. Referencing a "
+                "variable that isn't wired in fails when the block runs."
+            ),
+        ),
+    ]
 
     @step(output_name="string")
     async def build(self, **inputs: Any) -> str:

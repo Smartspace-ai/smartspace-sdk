@@ -132,8 +132,15 @@ class Get(OperatorBlock):
         Metadata(
             language=InputLanguage.JSONPATH,
             description=(
-                "JSONPath expression evaluated with jsonpath-ng's extended "
-                "dialect. Start from the root with $ (e.g. $.items[*].name)."
+                "JSONPath expression, e.g. $.items[*].name.\n"
+                "\n"
+                "$ is the root; .field / ['field'] descend; [*] every element; "
+                "[0] an index; $..name searches recursively; "
+                "$.items[?(@.price > 10)] filters (@ = the current element).\n"
+                "\n"
+                "Evaluated with jsonpath-ng's extended dialect. A dict input "
+                "returns the first match (null if none); a list input returns "
+                "every match."
             ),
         ),
     ]

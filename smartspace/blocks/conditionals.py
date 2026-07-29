@@ -3,11 +3,12 @@ from typing import Annotated, Any, Generic, TypeVar
 from smartspace.core import (
     Block,
     Config,
+    Metadata,
     Output,
     metadata,
     step,
 )
-from smartspace.enums import BlockCategory
+from smartspace.enums import BlockCategory, InputLanguage
 from smartspace.utils.expressions import evaluate_expression, expression_tooltip
 
 ValueT = TypeVar("ValueT")
@@ -20,7 +21,14 @@ ValueT = TypeVar("ValueT")
     label="conditional logic, boolean check, if-then-else, branching, condition evaluation",
 )
 class If(Block, Generic[ValueT]):
-    condition: Annotated[str, Config()] = "value"
+    condition: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.CONDITION,
+            description=expression_tooltip,
+        ),
+    ] = "value"
     false: Output[ValueT]
     true: Output[ValueT]
 
@@ -38,7 +46,14 @@ class If(Block, Generic[ValueT]):
 
 
 class SwitchOption:
-    condition: Annotated[str, Config()] = "value == "
+    condition: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.CONDITION,
+            description=expression_tooltip,
+        ),
+    ] = "value == "
     output: Output[Any]
 
 
@@ -82,7 +97,14 @@ class Switch(Block, Generic[ValueT]):
     label="list filtering, item selection, data subsetting, conditional filtering, collection filtering",
 )
 class Filter(Block, Generic[ValueT]):
-    condition: Annotated[str, Config()] = "value"
+    condition: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.CONDITION,
+            description=expression_tooltip,
+        ),
+    ] = "value"
 
     @step(output_name="items")
     async def create_response(self, items: list[ValueT]) -> list[ValueT]:

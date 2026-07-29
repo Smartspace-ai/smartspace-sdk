@@ -87,3 +87,10 @@ def test_string_template_is_jinja():
 def test_language_serialises_to_its_string_value():
     dumped = Transform.interface().model_dump(mode="json")
     assert dumped["ports"]["expression"]["inputs"][""]["metadata"]["language"] == "jmespath"
+
+
+def test_get_path_is_jsonpath():
+    from smartspace.blocks.json_blocks import Get
+
+    pin = _pin(Get, "path")
+    assert pin.metadata["language"] == InputLanguage.JSONPATH

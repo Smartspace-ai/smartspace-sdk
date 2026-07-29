@@ -96,6 +96,7 @@ class InputLanguage(Enum):
 
     JMESPATH = "jmespath"
     JINJA = "jinja"
+    JSONPATH = "jsonpath"
     DATASET_FILTER = "datasetFilter"
     DATASET_SORT = "datasetSort"
     SQL = "sql"

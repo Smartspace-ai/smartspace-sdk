@@ -17,7 +17,7 @@ from smartspace.core import (
     metadata,
     step,
 )
-from smartspace.enums import BlockCategory
+from smartspace.enums import BlockCategory, InputLanguage
 
 
 @metadata(
@@ -126,7 +126,17 @@ class GetJsonField(Block):
     label="get JSON path, query JSON data, extract JSON values, JSON lookup, search JSON",
 )
 class Get(OperatorBlock):
-    path: Annotated[str, Config()]
+    path: Annotated[
+        str,
+        Config(),
+        Metadata(
+            language=InputLanguage.JSONPATH,
+            description=(
+                "JSONPath expression evaluated with jsonpath-ng's extended "
+                "dialect. Start from the root with $ (e.g. $.items[*].name)."
+            ),
+        ),
+    ]
 
     @step(output_name="result")
     async def get(self, data: list[Any] | dict[str, Any]) -> Any:

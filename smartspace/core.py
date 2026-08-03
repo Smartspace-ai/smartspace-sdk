@@ -134,6 +134,18 @@ def _get_function_pins(fn: Callable, port_name: str | None = None) -> FunctionPi
             {},
         )
 
+        # Mirror the class-attribute pin path: Templatable()/Expression() on a
+        # step parameter stamp the same metadata, so the designer renders the
+        # same code editor and TemplatableBlock knows to rewrite the pending
+        # value before the step runs.
+        if any(isinstance(m, Templatable) for m in annotations):
+            metadata = {**metadata, "templatable": True}
+            metadata.setdefault("language", InputLanguage.JINJA)
+
+        if any(isinstance(m, Expression) for m in annotations):
+            metadata = {**metadata, "expression": True}
+            metadata.setdefault("language", InputLanguage.JMESPATH)
+
         if param.default == inspect._empty:
             default = None
             required = True

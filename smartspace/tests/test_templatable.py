@@ -2,8 +2,9 @@ from typing import Annotated, Any
 
 import pytest
 
-from smartspace.core import BlockError, Config, Expression, Templatable
+from smartspace.core import BlockError, Config, Expression, Templatable, step
 from smartspace.blocks.templatable import TemplatableBlock
+from smartspace.enums import InputLanguage
 from smartspace.models import BlockPinRef, InputValue
 
 
@@ -179,3 +180,147 @@ def test_class_fields_cached_correctly():
     assert "prompt" not in SimpleTemplatable._expression_fields
     assert "condition" in SimpleExpression._expression_fields
     assert "condition" not in SimpleExpression._expression_fields or True  # expression only
+
+
+# ---------------------------------------------------------------------------
+# TemplatableBlock — @step parameters
+# ---------------------------------------------------------------------------
+
+
+class StepParamTemplatable(TemplatableBlock):
+    @step(output_name="out")
+    async def run(
+        self,
+        url: Annotated[str, Templatable()],
+        plain: str = "untouched",
+    ) -> str:
+        return url
+
+
+class StepParamExpression(TemplatableBlock):
+    @step(output_name="out")
+    async def run(self, picked: Annotated[Any, Expression()]) -> Any:
+        return picked
+
+
+class StepParamDict(TemplatableBlock):
+    @step(output_name="out")
+    async def run(
+        self, query_params: Annotated[dict[str, Any], Templatable()]
+    ) -> dict[str, Any]:
+        return query_params
+
+
+def test_step_params_cached_correctly():
+    assert StepParamTemplatable._templatable_step_params == {"run": frozenset({"url"})}
+    assert StepParamTemplatable._expression_step_params == {}
+    assert StepParamExpression._expression_step_params == {"run": frozenset({"picked"})}
+
+
+def test_step_param_interface_stamps_templatable_metadata():
+    pin = StepParamTemplatable.interface().ports["run"].inputs["url"]
+    assert pin.metadata["templatable"] is True
+    assert pin.metadata["language"] == InputLanguage.JINJA
+
+
+def test_step_param_interface_stamps_expression_metadata():
+    pin = StepParamExpression.interface().ports["run"].inputs["picked"]
+    assert pin.metadata["expression"] is True
+    assert pin.metadata["language"] == InputLanguage.JMESPATH
+
+
+def test_step_param_renders_when_context_set():
+    block = StepParamTemplatable()
+    block._set_inputs([
+        _iv("run", "url", "https://api.example.com/{{ path }}"),
+        _context_iv("path", "users/1"),
+    ])
+    assert block.run._pending_inputs["url"][""] == "https://api.example.com/users/1"
+
+
+def test_step_param_context_arriving_after_input():
+    block = StepParamTemplatable()
+    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
+    assert block.run._pending_inputs["url"][""] == "{{ base }}/items"  # not yet
+
+    block._set_inputs([_context_iv("base", "https://api.example.com")])
+    assert block.run._pending_inputs["url"][""] == "https://api.example.com/items"
+
+
+def test_step_param_no_context_leaves_raw():
+    block = StepParamTemplatable()
+    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
+    assert block.run._pending_inputs["url"][""] == "{{ base }}/items"
+
+
+def test_step_param_unmarked_param_untouched():
+    block = StepParamTemplatable()
+    block._set_inputs([
+        _iv("run", "url", "{{ base }}"),
+        _iv("run", "plain", "{{ base }}"),
+        _context_iv("base", "rendered"),
+    ])
+    assert block.run._pending_inputs["url"][""] == "rendered"
+    assert block.run._pending_inputs["plain"][""] == "{{ base }}"
+
+
+def test_step_param_render_error_names_port_and_pin():
+    block = StepParamTemplatable()
+    with pytest.raises(BlockError, match="run.url"):
+        block._set_inputs([
+            _iv("run", "url", "{{ typo }}"),
+            _context_iv("base", "x"),
+        ])
+
+
+def test_step_param_expression_evaluates():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "user.name"),
+        _context_iv("user", {"name": "Erin"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == "Erin"
+
+
+def test_step_param_dict_renders_string_leaves():
+    block = StepParamDict()
+    block._set_inputs([
+        _iv("run", "query_params", {"q": "{{ term }}", "page": 2, "tags": ["{{ tag }}", "fixed"]}),
+        _context_iv("term", "fishing"),
+        _context_iv("tag", "nz"),
+    ])
+    assert block.run._pending_inputs["query_params"][""] == {
+        "q": "fishing",
+        "page": 2,
+        "tags": ["nz", "fixed"],
+    }
+
+
+# ---------------------------------------------------------------------------
+# TemplatableBlock — dict/list class-attribute fields
+# ---------------------------------------------------------------------------
+
+
+class DictConfigTemplatable(TemplatableBlock):
+    headers: Annotated[dict[str, Any], Config(), Templatable()] = {}
+
+
+def test_dict_config_renders_string_leaves():
+    block = DictConfigTemplatable()
+    block._set_inputs([
+        _iv("headers", "", {"Authorization": "Bearer {{ token }}", "Accept": "application/json"}),
+        _context_iv("token", "abc123"),
+    ])
+    assert block.headers == {
+        "Authorization": "Bearer abc123",
+        "Accept": "application/json",
+    }
+
+
+def test_dict_config_keys_not_rendered():
+    block = DictConfigTemplatable()
+    block._set_inputs([
+        _iv("headers", "", {"{{ key }}": "value"}),
+        _context_iv("key", "X-Real"),
+    ])
+    assert block.headers == {"{{ key }}": "value"}

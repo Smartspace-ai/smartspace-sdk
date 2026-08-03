@@ -13,6 +13,14 @@ from smartspace.core import (
 from smartspace.blocks._template_utils import make_jinja_env, wrap_auto_json
 from smartspace.utils.utils import _issubclass
 
+# Appended to expression errors: mistaking literal text for an expression is
+# the overwhelmingly common first mistake, and the raw JMESPath lexer error
+# ("Unknown token /") doesn't hint at the fix.
+_EXPRESSION_HINT = (
+    "Values are JMESPath expressions, so literal text needs single quotes "
+    "(e.g. 'application/json') and bare names must match a wired context input."
+)
+
 
 def _eval_expression(raw: Any, context: dict[str, Any]) -> Any:
     """Evaluate an Expression value against the context.
@@ -207,7 +215,8 @@ class TemplatableBlock(Block):
                 result = _eval_expression(raw, self.context)
             except JMESPathError as e:
                 raise BlockError(
-                    f"Expression evaluation failed for '{field_name}': {e}"
+                    f"Expression evaluation failed for '{field_name}': {e}. "
+                    f"{_EXPRESSION_HINT}"
                 )
             setattr(self, field_name, result)
 
@@ -230,7 +239,8 @@ class TemplatableBlock(Block):
                     value = _eval_expression(raw, self.context)
                 except JMESPathError as e:
                     raise BlockError(
-                        f"Expression evaluation failed for '{port_name}.{pin_name}': {e}"
+                        f"Expression evaluation failed for '{port_name}.{pin_name}': "
+                        f"{e}. {_EXPRESSION_HINT}"
                     )
 
             port = getattr(self, port_name)

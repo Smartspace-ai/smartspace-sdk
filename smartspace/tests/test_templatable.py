@@ -285,16 +285,37 @@ def test_step_param_expression_evaluates():
     assert block.run._pending_inputs["picked"][""] == "Erin"
 
 
-def test_step_param_expression_non_string_passes_through():
-    # A wired object is data, not an expression — e.g. a dict piped into an
-    # Expression()-marked body pin must arrive untouched.
+def test_step_param_expression_object_is_evaluated():
+    # An Expression pin holds an expression wherever the value came from: a
+    # wired object is an expression object, its string leaves evaluated.
     block = StepParamExpression()
-    payload = {"name": "Erin", "tags": ["a", "b"]}
     block._set_inputs([
-        _iv("run", "picked", payload),
-        _context_iv("user", {"name": "X"}),
+        _iv("run", "picked", {"name": "user.name", "kind": "'literal'"}),
+        _context_iv("user", {"name": "Erin"}),
     ])
-    assert block.run._pending_inputs["picked"][""] == payload
+    assert block.run._pending_inputs["picked"][""] == {
+        "name": "Erin",
+        "kind": "literal",
+    }
+
+
+def test_step_param_expression_nested_list_evaluated():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", {"ids": ["items[0].id", "items[1].id"], "n": 3}),
+        _context_iv("items", [{"id": "a"}, {"id": "b"}]),
+    ])
+    # Non-string scalars can't be expressions and pass through
+    assert block.run._pending_inputs["picked"][""] == {"ids": ["a", "b"], "n": 3}
+
+
+def test_step_param_expression_dict_keys_not_evaluated():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", {"user": "'x'"}),
+        _context_iv("user", {"name": "Erin"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == {"user": "x"}
 
 
 def test_step_param_expression_quoted_literal_is_itself():
@@ -311,13 +332,33 @@ def test_step_param_expression_empty_context_missing_ref_is_null():
     assert block.run._pending_inputs["picked"][""] is None
 
 
-def test_expression_class_attr_non_string_passes_through():
+def test_expression_class_attr_object_is_evaluated():
     block = SimpleExpression()
     block._set_inputs([
-        _iv("condition", "", {"already": "data"}),
+        _iv("condition", "", {"a": "x", "b": "'lit'", "c": True}),
         _context_iv("x", 1),
     ])
-    assert block.condition == {"already": "data"}
+    assert block.condition == {"a": 1, "b": "lit", "c": True}
+
+
+def test_expression_headers_shape_end_to_end():
+    # The motivating case: an expression object mixing a literal, an
+    # interpolation-by-join, and a computed value.
+    block = SimpleExpression()
+    block._set_inputs([
+        _iv("condition", "", {
+            "Content-Type": "'application/json'",
+            "Authorization": "join(' ', ['Bearer', apiKey])",
+            "X-Count": "length(items)",
+        }),
+        _context_iv("apiKey", "tok-123"),
+        _context_iv("items", [1, 2, 3]),
+    ])
+    assert block.condition == {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer tok-123",
+        "X-Count": 3,
+    }
 
 
 def test_step_param_dict_renders_string_leaves():

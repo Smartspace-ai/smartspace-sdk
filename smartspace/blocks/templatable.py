@@ -1,6 +1,8 @@
 import inspect
 from typing import Annotated, Any, ClassVar
 
+import jmespath
+
 from smartspace.core import (
     Block,
     BlockFunction,
@@ -10,6 +12,29 @@ from smartspace.core import (
 )
 from smartspace.blocks._template_utils import make_jinja_env, wrap_auto_json
 from smartspace.utils.utils import _issubclass
+
+
+def _eval_expression(raw: Any, context: dict[str, Any]) -> Any:
+    """Evaluate an Expression value against the context.
+
+    Uniform and provenance-free: whatever arrives at an Expression() pin is an
+    expression, whether it was typed into the designer or wired in from
+    upstream. Strings are evaluated as JMESPath. Dicts and lists are walked and
+    their string leaves evaluated, so an object-shaped pin (e.g. HTTP headers)
+    is an expression object. Dict keys are never evaluated. Numbers, booleans
+    and None can't be expressions and pass through.
+
+    Note this means literal text needs JMESPath's raw-string quoting —
+    `'application/json'`, not `application/json`. To pass computed data
+    through untouched, wire it into a `context` pin and reference it by name.
+    """
+    if isinstance(raw, str):
+        return jmespath.search(raw, context)
+    if isinstance(raw, dict):
+        return {k: _eval_expression(v, context) for k, v in raw.items()}
+    if isinstance(raw, list):
+        return [_eval_expression(v, context) for v in raw]
+    return raw
 
 
 def _render_value(env: Any, raw: Any, wrapped_context: dict[str, Any]) -> Any:
@@ -42,8 +67,14 @@ class TemplatableBlock(Block):
     rendered, so e.g. header or query-param dicts can carry templates in
     their values.
 
-    Expression() pins only treat *strings* as expressions — any other value
-    (e.g. an object wired straight into the pin) passes through as data.
+    Expression() pins are evaluated uniformly regardless of where the value
+    came from: a value typed into the designer and a value wired in from
+    upstream are both expressions. Objects and lists are walked and their
+    string leaves evaluated, so an object-shaped pin is an expression object.
+    Literal text therefore needs JMESPath raw-string quoting
+    ('application/json'); to pass computed data through untouched, wire it
+    into a `context` pin and reference it by name.
+
     Evaluation always runs, context or not: literal-only templates work with
     nothing wired, expressions evaluate against an empty document (missing
     references become null), and a Jinja template referencing an unwired
@@ -172,13 +203,8 @@ class TemplatableBlock(Block):
             raw = self._raw_config.get(field_name)
             if raw is None:
                 continue
-            # Only strings are expressions. A non-string value (e.g. an object
-            # wired straight into the pin) is data, not an expression — leave
-            # the delivered value in place untouched.
-            if not isinstance(raw, str):
-                continue
             try:
-                result = jmespath.search(raw, self.context)
+                result = _eval_expression(raw, self.context)
             except JMESPathError as e:
                 raise BlockError(
                     f"Expression evaluation failed for '{field_name}': {e}"
@@ -200,12 +226,8 @@ class TemplatableBlock(Block):
                         f"Template rendering failed for '{port_name}.{pin_name}': {e}"
                     )
             else:
-                # Only strings are expressions — non-string values (e.g. an
-                # object wired straight into the pin) pass through as data.
-                if not isinstance(raw, str):
-                    continue
                 try:
-                    value = jmespath.search(raw, self.context)
+                    value = _eval_expression(raw, self.context)
                 except JMESPathError as e:
                     raise BlockError(
                         f"Expression evaluation failed for '{port_name}.{pin_name}': {e}"

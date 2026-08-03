@@ -42,15 +42,6 @@ def test_templatable_renders_when_context_set():
     assert block.prompt == "Hello World!"
 
 
-def test_templatable_context_arriving_after_config():
-    block = SimpleTemplatable()
-    block._set_inputs([_iv("prompt", "", "Hello {{ name }}!")])
-    assert block.prompt == "Hello {{ name }}!"  # not yet rendered
-
-    block._set_inputs([_context_iv("name", "Alice")])
-    assert block.prompt == "Hello Alice!"
-
-
 def test_templatable_config_arriving_after_context():
     block = SimpleTemplatable()
     block._set_inputs([_context_iv("name", "Bob")])
@@ -58,10 +49,18 @@ def test_templatable_config_arriving_after_context():
     assert block.prompt == "Hello Bob!"
 
 
-def test_templatable_no_context_leaves_raw():
+def test_templatable_literal_renders_without_context():
     block = SimpleTemplatable()
-    block._set_inputs([_iv("prompt", "", "Hello {{ name }}!")])
-    assert block.prompt == "Hello {{ name }}!"
+    block._set_inputs([_iv("prompt", "", "Hello, no variables here.")])
+    assert block.prompt == "Hello, no variables here."
+
+
+def test_templatable_unwired_reference_raises():
+    # The engine delivers a run's inputs in one batch, so a template that
+    # references an unwired context input must fail loudly, not pass through.
+    block = SimpleTemplatable()
+    with pytest.raises(BlockError, match="Template rendering failed"):
+        block._set_inputs([_iv("prompt", "", "Hello {{ name }}!")])
 
 
 def test_templatable_none_value_skipped():
@@ -238,19 +237,23 @@ def test_step_param_renders_when_context_set():
     assert block.run._pending_inputs["url"][""] == "https://api.example.com/users/1"
 
 
-def test_step_param_context_arriving_after_input():
+def test_step_param_context_arriving_first():
     block = StepParamTemplatable()
-    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
-    assert block.run._pending_inputs["url"][""] == "{{ base }}/items"  # not yet
-
     block._set_inputs([_context_iv("base", "https://api.example.com")])
+    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
     assert block.run._pending_inputs["url"][""] == "https://api.example.com/items"
 
 
-def test_step_param_no_context_leaves_raw():
+def test_step_param_literal_passes_without_context():
     block = StepParamTemplatable()
-    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
-    assert block.run._pending_inputs["url"][""] == "{{ base }}/items"
+    block._set_inputs([_iv("run", "url", "https://api.example.com/items")])
+    assert block.run._pending_inputs["url"][""] == "https://api.example.com/items"
+
+
+def test_step_param_unwired_reference_raises():
+    block = StepParamTemplatable()
+    with pytest.raises(BlockError, match="run.url"):
+        block._set_inputs([_iv("run", "url", "{{ base }}/items")])
 
 
 def test_step_param_unmarked_param_untouched():
@@ -280,6 +283,41 @@ def test_step_param_expression_evaluates():
         _context_iv("user", {"name": "Erin"}),
     ])
     assert block.run._pending_inputs["picked"][""] == "Erin"
+
+
+def test_step_param_expression_non_string_passes_through():
+    # A wired object is data, not an expression — e.g. a dict piped into an
+    # Expression()-marked body pin must arrive untouched.
+    block = StepParamExpression()
+    payload = {"name": "Erin", "tags": ["a", "b"]}
+    block._set_inputs([
+        _iv("run", "picked", payload),
+        _context_iv("user", {"name": "X"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == payload
+
+
+def test_step_param_expression_quoted_literal_is_itself():
+    # JMESPath raw string literals are the escape hatch for literal text
+    # payloads: 'query { things }' evaluates to itself.
+    block = StepParamExpression()
+    block._set_inputs([_iv("run", "picked", "'query { things }'")])
+    assert block.run._pending_inputs["picked"][""] == "query { things }"
+
+
+def test_step_param_expression_empty_context_missing_ref_is_null():
+    block = StepParamExpression()
+    block._set_inputs([_iv("run", "picked", "user.name")])
+    assert block.run._pending_inputs["picked"][""] is None
+
+
+def test_expression_class_attr_non_string_passes_through():
+    block = SimpleExpression()
+    block._set_inputs([
+        _iv("condition", "", {"already": "data"}),
+        _context_iv("x", 1),
+    ])
+    assert block.condition == {"already": "data"}
 
 
 def test_step_param_dict_renders_string_leaves():

@@ -42,6 +42,13 @@ class TemplatableBlock(Block):
     rendered, so e.g. header or query-param dicts can carry templates in
     their values.
 
+    Expression() pins only treat *strings* as expressions — any other value
+    (e.g. an object wired straight into the pin) passes through as data.
+    Evaluation always runs, context or not: literal-only templates work with
+    nothing wired, expressions evaluate against an empty document (missing
+    references become null), and a Jinja template referencing an unwired
+    context input raises (StrictUndefined) rather than leaking "{{ }}".
+
     Example:
         class MyBlock(TemplatableBlock):
             prompt: Annotated[str | None, Config(), Templatable()] = None
@@ -131,8 +138,12 @@ class TemplatableBlock(Block):
 
         super()._set_inputs(inputs)
 
-        if self.context:
-            self._apply_templates()
+        # Always apply — a template/expression may be entirely literal (no
+        # context references), so an empty context must not skip evaluation.
+        # The engine delivers all of a run's inputs in a single batch, so a
+        # Jinja template referencing an unwired context input fails loudly
+        # here (StrictUndefined) instead of leaking "{{ }}" downstream.
+        self._apply_templates()
 
     def _apply_templates(self) -> None:
         from jmespath.exceptions import JMESPathError
@@ -161,6 +172,11 @@ class TemplatableBlock(Block):
             raw = self._raw_config.get(field_name)
             if raw is None:
                 continue
+            # Only strings are expressions. A non-string value (e.g. an object
+            # wired straight into the pin) is data, not an expression — leave
+            # the delivered value in place untouched.
+            if not isinstance(raw, str):
+                continue
             try:
                 result = jmespath.search(raw, self.context)
             except JMESPathError as e:
@@ -184,6 +200,10 @@ class TemplatableBlock(Block):
                         f"Template rendering failed for '{port_name}.{pin_name}': {e}"
                     )
             else:
+                # Only strings are expressions — non-string values (e.g. an
+                # object wired straight into the pin) pass through as data.
+                if not isinstance(raw, str):
+                    continue
                 try:
                     value = jmespath.search(raw, self.context)
                 except JMESPathError as e:

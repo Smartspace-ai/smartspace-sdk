@@ -42,15 +42,6 @@ def test_templatable_renders_when_context_set():
     assert block.prompt == "Hello World!"
 
 
-def test_templatable_context_arriving_after_config():
-    block = SimpleTemplatable()
-    block._set_inputs([_iv("prompt", "", "Hello {{ name }}!")])
-    assert block.prompt == "Hello {{ name }}!"  # not yet rendered
-
-    block._set_inputs([_context_iv("name", "Alice")])
-    assert block.prompt == "Hello Alice!"
-
-
 def test_templatable_config_arriving_after_context():
     block = SimpleTemplatable()
     block._set_inputs([_context_iv("name", "Bob")])
@@ -58,10 +49,18 @@ def test_templatable_config_arriving_after_context():
     assert block.prompt == "Hello Bob!"
 
 
-def test_templatable_no_context_leaves_raw():
+def test_templatable_literal_renders_without_context():
     block = SimpleTemplatable()
-    block._set_inputs([_iv("prompt", "", "Hello {{ name }}!")])
-    assert block.prompt == "Hello {{ name }}!"
+    block._set_inputs([_iv("prompt", "", "Hello, no variables here.")])
+    assert block.prompt == "Hello, no variables here."
+
+
+def test_templatable_unwired_reference_raises():
+    # The engine delivers a run's inputs in one batch, so a template that
+    # references an unwired context input must fail loudly, not pass through.
+    block = SimpleTemplatable()
+    with pytest.raises(BlockError, match="Template rendering failed"):
+        block._set_inputs([_iv("prompt", "", "Hello {{ name }}!")])
 
 
 def test_templatable_none_value_skipped():
@@ -131,7 +130,7 @@ def test_templatable_autojson_full_object_serialises():
 def test_expression_evaluates_jmespath():
     block = SimpleExpression()
     block._set_inputs([
-        _iv("condition", "", "user.active"),
+        _iv("condition", "", "{{ user.active }}"),
         _context_iv("user", {"active": True}),
     ])
     assert block.condition is True
@@ -140,7 +139,7 @@ def test_expression_evaluates_jmespath():
 def test_expression_returns_typed_value():
     block = SimpleExpression()
     block._set_inputs([
-        _iv("condition", "", "length(items)"),
+        _iv("condition", "", "{{ length(items) }}"),
         _context_iv("items", [1, 2, 3]),
     ])
     assert block.condition == 3
@@ -150,7 +149,7 @@ def test_expression_invalid_raises_block_error():
     block = SimpleExpression()
     with pytest.raises(BlockError, match="Expression evaluation failed"):
         block._set_inputs([
-            _iv("condition", "", "!!!invalid!!!"),
+            _iv("condition", "", "{{ !!!invalid!!! }}"),
             _context_iv("x", 1),
         ])
 
@@ -163,7 +162,7 @@ def test_both_markers_render_independently():
     block = BothMarkers()
     block._set_inputs([
         _iv("prompt", "", "Hello {{ name }}"),
-        _iv("condition", "", "score"),
+        _iv("condition", "", "{{ score }}"),
         _context_iv("name", "Dave"),
         _context_iv("score", 42),
     ])
@@ -238,19 +237,23 @@ def test_step_param_renders_when_context_set():
     assert block.run._pending_inputs["url"][""] == "https://api.example.com/users/1"
 
 
-def test_step_param_context_arriving_after_input():
+def test_step_param_context_arriving_first():
     block = StepParamTemplatable()
-    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
-    assert block.run._pending_inputs["url"][""] == "{{ base }}/items"  # not yet
-
     block._set_inputs([_context_iv("base", "https://api.example.com")])
+    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
     assert block.run._pending_inputs["url"][""] == "https://api.example.com/items"
 
 
-def test_step_param_no_context_leaves_raw():
+def test_step_param_literal_passes_without_context():
     block = StepParamTemplatable()
-    block._set_inputs([_iv("run", "url", "{{ base }}/items")])
-    assert block.run._pending_inputs["url"][""] == "{{ base }}/items"
+    block._set_inputs([_iv("run", "url", "https://api.example.com/items")])
+    assert block.run._pending_inputs["url"][""] == "https://api.example.com/items"
+
+
+def test_step_param_unwired_reference_raises():
+    block = StepParamTemplatable()
+    with pytest.raises(BlockError, match="run.url"):
+        block._set_inputs([_iv("run", "url", "{{ base }}/items")])
 
 
 def test_step_param_unmarked_param_untouched():
@@ -276,10 +279,140 @@ def test_step_param_render_error_names_port_and_pin():
 def test_step_param_expression_evaluates():
     block = StepParamExpression()
     block._set_inputs([
-        _iv("run", "picked", "user.name"),
+        _iv("run", "picked", "{{ user.name }}"),
         _context_iv("user", {"name": "Erin"}),
     ])
     assert block.run._pending_inputs["picked"][""] == "Erin"
+
+
+def test_step_param_expression_object_is_evaluated():
+    # An Expression pin holds an expression wherever the value came from: a
+    # wired object is an expression object, its string leaves evaluated.
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", {"name": "{{ user.name }}", "kind": "literal"}),
+        _context_iv("user", {"name": "Erin"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == {
+        "name": "Erin",
+        "kind": "literal",
+    }
+
+
+def test_step_param_expression_nested_list_evaluated():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", {"ids": ["{{ items[0].id }}", "{{ items[1].id }}"], "n": 3}),
+        _context_iv("items", [{"id": "a"}, {"id": "b"}]),
+    ])
+    # Non-string scalars can't be expressions and pass through
+    assert block.run._pending_inputs["picked"][""] == {"ids": ["a", "b"], "n": 3}
+
+
+def test_step_param_expression_dict_keys_not_evaluated():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", {"user": "x"}),
+        _context_iv("user", {"name": "Erin"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == {"user": "x"}
+
+
+def test_step_param_expression_literal_text_needs_no_quoting():
+    # Text outside {{ }} is never parsed, so literal payloads (GraphQL, XML)
+    # pass through as written.
+    block = StepParamExpression()
+    block._set_inputs([_iv("run", "picked", "query { things }")])
+    assert block.run._pending_inputs["picked"][""] == "query { things }"
+
+
+def test_step_param_expression_interpolates_into_text():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "Bearer {{ apiKey }}"),
+        _context_iv("apiKey", "tok-123"),
+    ])
+    assert block.run._pending_inputs["picked"][""] == "Bearer tok-123"
+
+
+def test_step_param_expression_whole_value_keeps_type():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "{{ length(items) }}"),
+        _context_iv("items", [1, 2, 3]),
+    ])
+    value = block.run._pending_inputs["picked"][""]
+    assert value == 3 and isinstance(value, int)
+
+
+def test_step_param_expression_embedded_stringifies():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "count={{ length(items) }} obj={{ user }}"),
+        _context_iv("items", [1, 2]),
+        _context_iv("user", {"a": 1}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == 'count=2 obj={"a": 1}'
+
+
+def test_step_param_expression_wired_data_passes_through():
+    # The case that made us choose {{ }}: real data has no braces, so an
+    # upstream payload wired into an Expression pin is untouched.
+    block = StepParamExpression()
+    payload = {"name": "Alice", "role": "admin", "age": 30}
+    block._set_inputs([
+        _iv("run", "picked", payload),
+        _context_iv("user", {"name": "someone else"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == payload
+
+
+def test_step_param_expression_embedded_null_raises():
+    # "Bearer null" is never what anyone meant.
+    block = StepParamExpression()
+    with pytest.raises(BlockError, match="evaluated to null"):
+        block._set_inputs([_iv("run", "picked", "Bearer {{ apiKey }}")])
+
+
+def test_step_param_expression_empty_braces_raise():
+    block = StepParamExpression()
+    with pytest.raises(BlockError, match="Empty expression"):
+        block._set_inputs([_iv("run", "picked", "{{ }}")])
+
+
+def test_step_param_expression_empty_context_missing_ref_is_null():
+    block = StepParamExpression()
+    block._set_inputs([_iv("run", "picked", "{{ user.name }}")])
+    assert block.run._pending_inputs["picked"][""] is None
+
+
+def test_expression_class_attr_object_is_evaluated():
+    block = SimpleExpression()
+    block._set_inputs([
+        _iv("condition", "", {"a": "{{ x }}", "b": "lit", "c": True}),
+        _context_iv("x", 1),
+    ])
+    assert block.condition == {"a": 1, "b": "lit", "c": True}
+
+
+def test_expression_headers_shape_end_to_end():
+    # The motivating case: an expression object mixing a plain literal, an
+    # interpolation, and a computed value that keeps its type.
+    block = SimpleExpression()
+    block._set_inputs([
+        _iv("condition", "", {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ apiKey }}",
+            "X-Count": "{{ length(items) }}",
+        }),
+        _context_iv("apiKey", "tok-123"),
+        _context_iv("items", [1, 2, 3]),
+    ])
+    assert block.condition == {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer tok-123",
+        "X-Count": 3,
+    }
 
 
 def test_step_param_dict_renders_string_leaves():

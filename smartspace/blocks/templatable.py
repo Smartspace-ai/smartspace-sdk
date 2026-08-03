@@ -1,4 +1,6 @@
 import inspect
+import json
+import re
 from typing import Annotated, Any, ClassVar
 
 import jmespath
@@ -13,31 +15,73 @@ from smartspace.core import (
 from smartspace.blocks._template_utils import make_jinja_env, wrap_auto_json
 from smartspace.utils.utils import _issubclass
 
-# Appended to expression errors: mistaking literal text for an expression is
-# the overwhelmingly common first mistake, and the raw JMESPath lexer error
-# ("Unknown token /") doesn't hint at the fix.
 _EXPRESSION_HINT = (
-    "Values are JMESPath expressions, so literal text needs single quotes "
-    "(e.g. 'application/json') and bare names must match a wired context input."
+    "JMESPath expressions go inside {{ }} and resolve against the wired "
+    "context inputs; text outside {{ }} is literal."
 )
+
+# Non-greedy so adjacent expressions in one string don't merge into one match.
+_EXPRESSION_PATTERN = re.compile(r"\{\{(.*?)\}\}", re.DOTALL)
+# A leaf that is nothing but one expression, so its typed result can be spliced
+# in whole rather than stringified into surrounding text.
+_WHOLE_EXPRESSION_PATTERN = re.compile(r"\s*\{\{(.*?)\}\}\s*", re.DOTALL)
+
+
+class ExpressionError(Exception):
+    """An expression was malformed or produced an unusable value."""
+
+
+def _stringify(value: Any) -> str:
+    """Render an expression result for interpolation into surrounding text."""
+    if isinstance(value, str):
+        return value
+    return json.dumps(value)
+
+
+def _eval_expression_string(raw: str, context: dict[str, Any]) -> Any:
+    whole = _WHOLE_EXPRESSION_PATTERN.fullmatch(raw)
+    if whole:
+        expression = whole.group(1).strip()
+        if not expression:
+            raise ExpressionError("Empty expression: {{ }}")
+        return jmespath.search(expression, context)
+
+    def _replace(match: "re.Match[str]") -> str:
+        expression = match.group(1).strip()
+        if not expression:
+            raise ExpressionError("Empty expression: {{ }}")
+        value = jmespath.search(expression, context)
+        if value is None:
+            # Interpolating null into surrounding text is nearly always a
+            # mistake (a typo, or an input that was never wired) and would
+            # otherwise silently produce "Bearer null".
+            raise ExpressionError(
+                f"{{{{ {expression} }}}} evaluated to null in {raw!r}"
+            )
+        return _stringify(value)
+
+    return _EXPRESSION_PATTERN.sub(_replace, raw)
 
 
 def _eval_expression(raw: Any, context: dict[str, Any]) -> Any:
     """Evaluate an Expression value against the context.
 
-    Uniform and provenance-free: whatever arrives at an Expression() pin is an
-    expression, whether it was typed into the designer or wired in from
-    upstream. Strings are evaluated as JMESPath. Dicts and lists are walked and
-    their string leaves evaluated, so an object-shaped pin (e.g. HTTP headers)
-    is an expression object. Dict keys are never evaluated. Numbers, booleans
-    and None can't be expressions and pass through.
+    JMESPath expressions are delimited by ``{{ }}``; text outside them is
+    literal. A leaf that is *only* an expression splices its result in with
+    the type intact (``"{{ length(items) }}"`` -> ``3``); an expression
+    embedded in text stringifies into place (``"Bearer {{ apiKey }}"``).
 
-    Note this means literal text needs JMESPath's raw-string quoting —
-    `'application/json'`, not `application/json`. To pass computed data
-    through untouched, wire it into a `context` pin and reference it by name.
+    Evaluation is uniform and provenance-free: a value typed into the designer
+    and a value wired in from upstream are treated identically. Dicts and
+    lists are walked so an object-shaped pin is an expression object; dict keys
+    are never evaluated, and non-string scalars pass through.
+
+    Because only ``{{ }}`` is an expression, data that contains no braces
+    passes through untouched — wiring a computed payload into an Expression
+    pin is safe.
     """
     if isinstance(raw, str):
-        return jmespath.search(raw, context)
+        return _eval_expression_string(raw, context)
     if isinstance(raw, dict):
         return {k: _eval_expression(v, context) for k, v in raw.items()}
     if isinstance(raw, list):
@@ -75,13 +119,13 @@ class TemplatableBlock(Block):
     rendered, so e.g. header or query-param dicts can carry templates in
     their values.
 
-    Expression() pins are evaluated uniformly regardless of where the value
-    came from: a value typed into the designer and a value wired in from
-    upstream are both expressions. Objects and lists are walked and their
-    string leaves evaluated, so an object-shaped pin is an expression object.
-    Literal text therefore needs JMESPath raw-string quoting
-    ('application/json'); to pass computed data through untouched, wire it
-    into a `context` pin and reference it by name.
+    Expression() pins hold JMESPath inside `{{ }}`; text outside is literal.
+    Evaluation is uniform regardless of where the value came from — typed into
+    the designer or wired in from upstream — and objects and lists are walked,
+    so an object-shaped pin is an expression object. A leaf that is only an
+    expression keeps its type ("{{ length(items) }}" -> 3); one embedded in
+    text stringifies ("Bearer {{ apiKey }}"). Data containing no braces passes
+    through untouched.
 
     Evaluation always runs, context or not: literal-only templates work with
     nothing wired, expressions evaluate against an empty document (missing
@@ -213,7 +257,7 @@ class TemplatableBlock(Block):
                 continue
             try:
                 result = _eval_expression(raw, self.context)
-            except JMESPathError as e:
+            except (JMESPathError, ExpressionError) as e:
                 raise BlockError(
                     f"Expression evaluation failed for '{field_name}': {e}. "
                     f"{_EXPRESSION_HINT}"
@@ -237,7 +281,7 @@ class TemplatableBlock(Block):
             else:
                 try:
                     value = _eval_expression(raw, self.context)
-                except JMESPathError as e:
+                except (JMESPathError, ExpressionError) as e:
                     raise BlockError(
                         f"Expression evaluation failed for '{port_name}.{pin_name}': "
                         f"{e}. {_EXPRESSION_HINT}"

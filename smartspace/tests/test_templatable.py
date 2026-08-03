@@ -130,7 +130,7 @@ def test_templatable_autojson_full_object_serialises():
 def test_expression_evaluates_jmespath():
     block = SimpleExpression()
     block._set_inputs([
-        _iv("condition", "", "user.active"),
+        _iv("condition", "", "{{ user.active }}"),
         _context_iv("user", {"active": True}),
     ])
     assert block.condition is True
@@ -139,7 +139,7 @@ def test_expression_evaluates_jmespath():
 def test_expression_returns_typed_value():
     block = SimpleExpression()
     block._set_inputs([
-        _iv("condition", "", "length(items)"),
+        _iv("condition", "", "{{ length(items) }}"),
         _context_iv("items", [1, 2, 3]),
     ])
     assert block.condition == 3
@@ -149,7 +149,7 @@ def test_expression_invalid_raises_block_error():
     block = SimpleExpression()
     with pytest.raises(BlockError, match="Expression evaluation failed"):
         block._set_inputs([
-            _iv("condition", "", "!!!invalid!!!"),
+            _iv("condition", "", "{{ !!!invalid!!! }}"),
             _context_iv("x", 1),
         ])
 
@@ -162,7 +162,7 @@ def test_both_markers_render_independently():
     block = BothMarkers()
     block._set_inputs([
         _iv("prompt", "", "Hello {{ name }}"),
-        _iv("condition", "", "score"),
+        _iv("condition", "", "{{ score }}"),
         _context_iv("name", "Dave"),
         _context_iv("score", 42),
     ])
@@ -279,7 +279,7 @@ def test_step_param_render_error_names_port_and_pin():
 def test_step_param_expression_evaluates():
     block = StepParamExpression()
     block._set_inputs([
-        _iv("run", "picked", "user.name"),
+        _iv("run", "picked", "{{ user.name }}"),
         _context_iv("user", {"name": "Erin"}),
     ])
     assert block.run._pending_inputs["picked"][""] == "Erin"
@@ -290,7 +290,7 @@ def test_step_param_expression_object_is_evaluated():
     # wired object is an expression object, its string leaves evaluated.
     block = StepParamExpression()
     block._set_inputs([
-        _iv("run", "picked", {"name": "user.name", "kind": "'literal'"}),
+        _iv("run", "picked", {"name": "{{ user.name }}", "kind": "literal"}),
         _context_iv("user", {"name": "Erin"}),
     ])
     assert block.run._pending_inputs["picked"][""] == {
@@ -302,7 +302,7 @@ def test_step_param_expression_object_is_evaluated():
 def test_step_param_expression_nested_list_evaluated():
     block = StepParamExpression()
     block._set_inputs([
-        _iv("run", "picked", {"ids": ["items[0].id", "items[1].id"], "n": 3}),
+        _iv("run", "picked", {"ids": ["{{ items[0].id }}", "{{ items[1].id }}"], "n": 3}),
         _context_iv("items", [{"id": "a"}, {"id": "b"}]),
     ])
     # Non-string scalars can't be expressions and pass through
@@ -312,44 +312,98 @@ def test_step_param_expression_nested_list_evaluated():
 def test_step_param_expression_dict_keys_not_evaluated():
     block = StepParamExpression()
     block._set_inputs([
-        _iv("run", "picked", {"user": "'x'"}),
+        _iv("run", "picked", {"user": "x"}),
         _context_iv("user", {"name": "Erin"}),
     ])
     assert block.run._pending_inputs["picked"][""] == {"user": "x"}
 
 
-def test_step_param_expression_quoted_literal_is_itself():
-    # JMESPath raw string literals are the escape hatch for literal text
-    # payloads: 'query { things }' evaluates to itself.
+def test_step_param_expression_literal_text_needs_no_quoting():
+    # Text outside {{ }} is never parsed, so literal payloads (GraphQL, XML)
+    # pass through as written.
     block = StepParamExpression()
-    block._set_inputs([_iv("run", "picked", "'query { things }'")])
+    block._set_inputs([_iv("run", "picked", "query { things }")])
     assert block.run._pending_inputs["picked"][""] == "query { things }"
+
+
+def test_step_param_expression_interpolates_into_text():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "Bearer {{ apiKey }}"),
+        _context_iv("apiKey", "tok-123"),
+    ])
+    assert block.run._pending_inputs["picked"][""] == "Bearer tok-123"
+
+
+def test_step_param_expression_whole_value_keeps_type():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "{{ length(items) }}"),
+        _context_iv("items", [1, 2, 3]),
+    ])
+    value = block.run._pending_inputs["picked"][""]
+    assert value == 3 and isinstance(value, int)
+
+
+def test_step_param_expression_embedded_stringifies():
+    block = StepParamExpression()
+    block._set_inputs([
+        _iv("run", "picked", "count={{ length(items) }} obj={{ user }}"),
+        _context_iv("items", [1, 2]),
+        _context_iv("user", {"a": 1}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == 'count=2 obj={"a": 1}'
+
+
+def test_step_param_expression_wired_data_passes_through():
+    # The case that made us choose {{ }}: real data has no braces, so an
+    # upstream payload wired into an Expression pin is untouched.
+    block = StepParamExpression()
+    payload = {"name": "Alice", "role": "admin", "age": 30}
+    block._set_inputs([
+        _iv("run", "picked", payload),
+        _context_iv("user", {"name": "someone else"}),
+    ])
+    assert block.run._pending_inputs["picked"][""] == payload
+
+
+def test_step_param_expression_embedded_null_raises():
+    # "Bearer null" is never what anyone meant.
+    block = StepParamExpression()
+    with pytest.raises(BlockError, match="evaluated to null"):
+        block._set_inputs([_iv("run", "picked", "Bearer {{ apiKey }}")])
+
+
+def test_step_param_expression_empty_braces_raise():
+    block = StepParamExpression()
+    with pytest.raises(BlockError, match="Empty expression"):
+        block._set_inputs([_iv("run", "picked", "{{ }}")])
 
 
 def test_step_param_expression_empty_context_missing_ref_is_null():
     block = StepParamExpression()
-    block._set_inputs([_iv("run", "picked", "user.name")])
+    block._set_inputs([_iv("run", "picked", "{{ user.name }}")])
     assert block.run._pending_inputs["picked"][""] is None
 
 
 def test_expression_class_attr_object_is_evaluated():
     block = SimpleExpression()
     block._set_inputs([
-        _iv("condition", "", {"a": "x", "b": "'lit'", "c": True}),
+        _iv("condition", "", {"a": "{{ x }}", "b": "lit", "c": True}),
         _context_iv("x", 1),
     ])
     assert block.condition == {"a": 1, "b": "lit", "c": True}
 
 
 def test_expression_headers_shape_end_to_end():
-    # The motivating case: an expression object mixing a literal, an
-    # interpolation-by-join, and a computed value.
+    # The motivating case: an expression object mixing a plain literal, an
+    # interpolation, and a computed value that keeps its type.
     block = SimpleExpression()
     block._set_inputs([
         _iv("condition", "", {
-            "Content-Type": "'application/json'",
-            "Authorization": "join(' ', ['Bearer', apiKey])",
-            "X-Count": "length(items)",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ apiKey }}",
+            "X-Count": "{{ length(items) }}",
         }),
         _context_iv("apiKey", "tok-123"),
         _context_iv("items", [1, 2, 3]),

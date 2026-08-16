@@ -1,0 +1,109 @@
+{
+  "File@1.0.0": {
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "name"
+    ],
+    "title": "File",
+    "type": "object"
+  },
+  "FileList@1.0.0": {
+    "$defs": {
+      "File": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "File",
+        "type": "object"
+      }
+    },
+    "items": {
+      "$ref": "#/$defs/File"
+    },
+    "type": "array"
+  },
+  "Json@1.0.0": {},
+  "Object@1.0.0": {
+    "additionalProperties": true,
+    "type": "object"
+  },
+  "Prompt@1.0.0": {
+    "$defs": {
+      "ContentItem": {
+        "properties": {
+          "image": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/File"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Text"
+          }
+        },
+        "title": "ContentItem",
+        "type": "object"
+      },
+      "File": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "File",
+        "type": "object"
+      }
+    },
+    "items": {
+      "$ref": "#/$defs/ContentItem"
+    },
+    "type": "array"
+  },
+  "String@1.0.0": {
+    "type": "string"
+  }
+}

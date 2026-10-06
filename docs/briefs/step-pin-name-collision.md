@@ -1,10 +1,10 @@
-# Brief Draft: Step pin names colliding with BlockFunction's own attributes
+# Brief : Step pin names colliding with BlockFunction's own attributes
 
-A step whose input or output pin shares a name with one of the step object's own attributes runs correctly and then fails to report its result, surfacing as an HTTP 500.
+A step whose input or output pin shares a name with one of the step object's own attributes overwrites that attribute. When the pin is `name` and the step returns a value, the step runs correctly and then fails to report its result, surfacing as an HTTP 500.
 
 
 **Owner:** Harigovindan M G.
-**Signed off:** pending, by the owner's restatement below.
+**Signed off:** pending.
 **Target branch:** `develop` in `smartspace-sdk`, then a version bump in `Smartspace-ai-api`. `Smartspace-app` is not touched.
 
 **Decisions governing this area:**
@@ -12,14 +12,15 @@ A step whose input or output pin shares a name with one of the step object's own
 **D2** `Step` and `Callback` are treated the same, because they share the code path and the problem.
 **D3** `Tool` ports and plain port classes keep their pin seeding exactly as it is.
 **D4** rejecting reserved names at registration time is a separate, later safeguard, not part of this fix.
+**D5** the fix is made once in the SDK.
 
-> **One assumption still unconfirmed.** Nothing outside the SDK reads a pin off a step or callback as an attribute (for example `block.echo.result` expecting an `Output`). Nothing inside the SDK does. `Smartspace-ai-api` and the published custom blocks need checking before the SDK version is bumped in `Smartspace-ai-api`. If anything does, stop and report.
+> **One assumption still unconfirmed.** No custom block sends through a step's own output pin, for example `@step(output_name="result")` followed by `self.echo.result.send(x)`. That `Output` object exists only because of the seeding this fix removes, so after the fix it raises `AttributeError`. Block-level outputs such as `self.guid.send(...)` are not affected. Nothing in the SDK or `Smartspace-ai-api` uses the pattern. The published custom blocks need checking before the SDK version is bumped. If any does, stop and report.
 
 ## What this is
 
 A block author writes a step, which is a method on the block marked `@step`. The SDK wraps that method in a `Step` object, and the object keeps a few facts about itself. The one that matters most is its `name`, for example `"echo"`, which is used at the very end to label the step's result so the engine knows which wire to send it down.
 
-While a block is being built, the SDK prepares every pin on every port by writing a placeholder onto the port's object. For a step, that object is the `Step` itself. So a step input called `name` writes `None` over the step's own name. The step still receives its real input through a separate route and does its work correctly, but when it comes to labelling the result, the label is `None`, the label is rejected, and the result is discarded. The caller sees a 500 for work that actually succeeded. In the case where this was first found, a record had already been written to an external system by then, so the caller was told a write had failed when it had gone through.
+While a block is being built, the SDK prepares every pin on every port by writing a placeholder onto the port's object. For a step, that object is the `Step` itself. So a step input called `name` writes `None` over the step's own name. The step still receives its real input through a separate route and does its work correctly, but when it comes to labelling the result, the label is `None`, the label is rejected, and the result is discarded. This only happens when the step returns a value, because only then is the result labelled. Steps that emit through block-level outputs instead (`self.chunks.send(...)`) still have their name overwritten, but nothing reads it. The caller sees a 500 for work that actually succeeded. In the case where this was first found, a record had already been written to an external system by then, so the caller was told a write had failed when it had gone through.
 
 When this brief is done, any step or callback can use any input or output name, steps with no inputs and no output name run normally, and nothing else about how blocks are built or run changes.
 
@@ -60,18 +61,20 @@ When this brief is done, any step or callback can use any input or output name, 
 6. **The step runs.** `_run_function` calls `_run`, which reads the function signature and takes each argument out of `_pending_inputs`. `_call_inner` wraps the call, and the engine's `async for m in block_run` runs it.
 7. **The result is labelled.** After the user's function returns, `_inner` builds `OutputValue(source=BlockPinRef(port=self.name, pin=self._output_name), value=result)`.
 
-The bug is step 4 writing onto the `Step`. Nothing ever reads a step's pins back as attributes, because inputs come from `_pending_inputs` (step 6) and the output is labelled from `name` and `_output_name` (step 7). So seeding a function port does nothing useful, and any pin whose name matches one of the attributes from step 2 overwrites it.
+The bug is step 4 writing onto the `Step`. The SDK never reads a step's pins back as attributes, because inputs come from `_pending_inputs` (step 6) and the output is labelled from `name` and `_output_name` (step 7). So seeding a function port does nothing useful, and any pin whose name matches one of the attributes from step 2 overwrites it. The one seeded value block code could use is the `Output` set on a step's own output pin, covered under consequences.
 
 ### What each colliding name does
 
-| Pin name | Effect |
-|---|---|
-| `name` | step 7 builds `BlockPinRef(port=None, ...)`, which Pydantic rejects |
-| `_output_name` | step 7 builds `BlockPinRef(..., pin=None)`, rejected the same way |
-| `_pending_inputs` | the input store becomes `None`, so step 5 raises `TypeError` |
-| `_fn` | the user's function becomes `None`, so step 6 raises `TypeError` |
-| `_block` | the step loses its block, so `_call_inner` raises `AttributeError` before running |
-| `metadata` | becomes `None`. Nothing reads it at run time today, but it is still wrong |
+| Pin name | Effect | Breaks when |
+|---|---|---|
+| `name` | step 7 builds `BlockPinRef(port=None, ...)`, which Pydantic rejects | the step also returns a value |
+| `_output_name` | step 7 builds `BlockPinRef(..., pin=None)`, rejected the same way | the step also returns a value |
+| `_pending_inputs` | the input store becomes `None`, so step 5 raises `TypeError` | always |
+| `_fn` | the user's function becomes `None`, so step 6 raises `TypeError` | always |
+| `_block` | the step loses its block, so `_call_inner` raises `AttributeError` before running | always |
+| `metadata` | becomes `None`. Nothing reads it at run time today, but it is still wrong | never at run time today |
+
+This is not limited to custom blocks. Two native blocks already have a `name` input: `sentence_chunk` (`sentence_chunk_1_0_0.py:47`) and `generate` (`guid_generator_v5.py:38`). Their `step.name` is overwritten today, to `""` and `None` respectively. They work only because neither step has a return annotation, so nothing is labelled at the end. The real trigger is a colliding pin name plus a step that returns a value.
 
 Output pins collide the same way. `@step(output_name="name")` replaces `step.name` with an `Output` object, and step 7 fails.
 
@@ -132,20 +135,43 @@ The branch further down that fetches the function port (`if port_interface.is_fu
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Changes**           | Step and callback objects never get pin attributes, so their own attributes always hold the values set in their constructors. Steps with no inputs and no `output_name` stay steps and can be run.                  |
 | **Stays the same**    | Argument delivery through `_pending_inputs`. Output labelling and routing. Seeding for `Tool` ports and plain port classes. The block interface the Designer reads.                                                 |
-| **Could be affected** | Code that reads a pin off a step as an attribute. None in the SDK. `Smartspace-ai-api` and published custom blocks need checking before the SDK version is bumped there. Any such code was already reading whatever the seeding happened to write. |
+| **Could be affected** | Custom blocks that send through a step's own output pin (`self.<step>.<output_name>.send(...)`). The seeded `Output` that made this work is no longer created, so it raises `AttributeError`. Not used in the SDK or `Smartspace-ai-api`. Block-level outputs are unaffected. |
 
 ## Modification vs. extension
 
 **Modification is required.** `_create_port` is a private method on `Block` that runs inside `__init__`, before any subclass code. There is no hook for a block author or a consuming service to skip it for function ports.
 
-Working around it outside the SDK was considered and rejected (D2). Subclassing `Block` or patching `BlockFunction` would depend on private internals, would have to be repeated in every codebase that uses the SDK, and would not help authors who install the published SDK directly.
+Working around it outside the SDK was considered and rejected (D5). Subclassing `Block` or patching `BlockFunction` would depend on private internals, would have to be repeated in every codebase that uses the SDK, and would not help authors who install the published SDK directly.
 
 ## Known ambiguities / deliberately not in scope
 
-- **Does anything downstream read step pins as attributes?** Believed no. It is checked in `Smartspace-ai-api` and the published custom blocks before the SDK version is bumped there. **If any is found, stop and report.**
-- **Authors can still choose these names.** With the fix the names are harmless, so this is no longer a correctness problem. A registration time check that rejects pin names matching `BlockFunction` attributes, with a clear message to the author, is still worth having as a guard against those attributes being read in a new way later (D5).
+- **Does any custom block send through a step's own output pin?** Not found in the SDK or `Smartspace-ai-api`. The published custom blocks are searched for `self.<step>.<output_name>.send(` before the SDK version is bumped (task 2). **If any is found, stop and report.**
+- **Authors can still choose these names.** With the fix the names are harmless, so this is no longer a correctness problem. A registration time check that rejects pin names matching `BlockFunction` attributes, with a clear message to the author, is still worth having as a guard against those attributes being read in a new way later (D4).
 - **Future attributes.** If `BlockFunction` gains new attributes, the fix already protects them, because function ports have no pin attributes set at all. This is one reason it is preferred over renaming.
 - **Designer validation is unrelated.** The Workflow Designer's pre-run checks (`node-readiness.ts` in `Smartspace-app`) work on the flow definition, not the running block object. They are a separate safety net and need no change.
+
+## Owner's restatement
+
+The owner's own words. This is the sign-off, and it is not edited.
+
+- **What done means:** a custom block can name its step inputs or outputs anything, including `name`, and the step runs and its result reaches the next block instead of failing with the BlockPinRef error and a 500. The same goes for callbacks, and for a step that has no inputs and no output name. The fix is in the SDK and ai-api is running that SDK version, so it actually works on dev and not just in the SDK tests.
+- **What I will build first:** the fix in `_create_port` in the SDK so it returns straight away for steps and callbacks, with a test for each case: an input named `name`, `output_name="name"`, a callback input named `name`, and a step with no inputs. Each one fails on develop and passes with the fix. Plus a test showing the native blocks that already have a `name` input behave the same. After that is merged, the one line version bump in ai-api.
+- **What I will NOT build:** the check that stops block authors using these names when a block is registered. That is a separate PR. No changes to the Designer, and no changes to how the engine reports errors from blocks.
+- **Edge cases that apply:** custom blocks that send through their step's own output pin, like `self.echo.result.send(x)`. That stops working after the fix, so the published custom blocks have to be checked before the bump. The two native blocks with a `name` input, `sentence_chunk` and `guid_generator_v5`, have to keep producing exactly the same output. And blocks that were already failing with this error will start succeeding, but anything they wrote before failing, and any duplicates from callers retrying, stays as it is.
+
+## Tasks (each is one PR)
+
+**In execution order.** The SDK ships before the ai-api bump. Hours are build time, AI assisted.
+
+1. **Function ports skip pin handling in `_create_port`** *(smartspace-sdk · ~2 h)*. Returns early from `Block._create_port` for step and callback ports, before the single pin shortcut and before any seeding, and removes the function port branch that can no longer be reached.
+   **After this merges:** a step or callback with any input or output name keeps its own attributes and labels its result with its own name; a step with no inputs and no `output_name` runs; `Tool` and plain port pins are seeded exactly as before.
+   **Tests:** one per collision case, each failing on `develop` and passing with the fix: a step input named `name` on a step that returns a value; `@step(output_name="name")`; a callback input named `name`; a step with no inputs and no `output_name`. One confirming the native `name` input steps behave the same: a block shaped like `sentence_chunk` and `guid_generator_v5` (a `name` input, no return annotation, emitting through a block-level `Output`) sends the same output as before. A `Tool` config pin and a plain port config pin with no default still read `None`. The existing suite passes unchanged.
+
+2. **Bump the SDK in `Smartspace-ai-api`** *(Smartspace-ai-api · ~1 h)*. Points `poetry.lock` at the SDK commit from task 1. Before that, the published custom blocks are checked for the one pattern the fix breaks: a step's own output pin used directly, for example `self.echo.result.send(x)`.
+   **After this merges:** `ReproPinNamed` runs on dev and its result reaches `Response`; `sentence_chunk` and `guid_generator_v5` produce the same output as before.
+   **Tests:** the native block suite, including `sentence_chunk` and `guid_generator_v5`, and the `LLM` block's `tools` port.
+
+
 
 
 

@@ -1860,6 +1860,12 @@ class Block(metaclass=MetaBlock):
         port_id = port_name if not port_index else f"{port_name}.{port_index}"
 
         port_interface = self.interface().ports[port_name]
+
+        # Step and Callback receive inputs via _pending_inputs and emit their return
+        # value directly, so no pin attributes are set on them
+        if port_interface.is_function:
+            return getattr(self, port_name)
+
         dynamic_inputs: list[tuple[str, str]] = []
         for (_port_name, _port_index), (
             _input_name,
@@ -1896,27 +1902,24 @@ class Block(metaclass=MetaBlock):
                     return Output(BlockPinRef(port=port_id, pin=""))
 
         tool_port = None
-        if port_interface.is_function:
-            port = getattr(self, port_name)
+        annotation = self.__class__._all_annotations[port_name]
+        if port_interface.type == PortType.SINGLE:
+            port_type = annotation
         else:
-            annotation = self.__class__._all_annotations[port_name]
-            if port_interface.type == PortType.SINGLE:
-                port_type = annotation
-            else:
-                if get_origin(annotation) == Annotated:
-                    annotation = get_args(annotation)[0]
+            if get_origin(annotation) == Annotated:
+                annotation = get_args(annotation)[0]
 
-                if port_interface.type == PortType.LIST:
-                    port_type = get_args(annotation)[0]
-                elif port_interface.type == PortType.DICTIONARY:
-                    port_type = get_args(annotation)[1]
+            if port_interface.type == PortType.LIST:
+                port_type = get_args(annotation)[0]
+            elif port_interface.type == PortType.DICTIONARY:
+                port_type = get_args(annotation)[1]
 
-            if _issubclass(port_type, Tool):
-                port = port_type(port_name=port_id, input_names=[])
-                self._tools.append(port)
-                tool_port = cast(Tool, port)
-            else:
-                port = port_type()
+        if _issubclass(port_type, Tool):
+            port = port_type(port_name=port_id, input_names=[])
+            self._tools.append(port)
+            tool_port = cast(Tool, port)
+        else:
+            port = port_type()
 
         for input_name, input_interface in port_interface.inputs.items():
             type_adapter = self._input_pin_type_adapters[port_name][input_name]

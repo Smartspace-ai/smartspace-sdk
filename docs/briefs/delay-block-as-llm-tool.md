@@ -97,6 +97,10 @@ The request then arrives as one object, so a Get block (path `$.delay_ms`) picks
 
 A Delay dragged onto a new flow gets 2.0.0, because new blocks default to the latest version. Flows that already use Delay 1.0.0 as a tool are switched to 2.0.0 by hand in the version selector.
 
+### Also tried: Delay as an LLM component
+
+Docking Delay 1.0.0 in the LLM block's Components slot, instead of wiring it as a tool, does not work. The component offers `delay_ms` to the model as an optional parameter, because it has a default of 1000. On dev the model left it unset, so Delay waited 1 second.
+
 ### Consequences of the leading option (B)
 
 | | |

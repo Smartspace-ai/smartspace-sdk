@@ -12,7 +12,7 @@ When the Delay block is wired to an LLM block as a tool, it does not wait for th
 ### Decisions governing this area
 
 - **D1** - Delay 1.0.0 is not removed. Saved flows are pinned to it, and removing it would break them.
-- **D2** - The fix is released as Delay 1.1.0. In 1.1.0, `delay_ms` is required, has no default, and starts as dynamic. The output pins do not change.
+- **D2** - The fix is released as Delay 1.1.0. In 1.1.0, `delay_ms` is a required Config with no default, declared the same way other blocks declare their settings. The output pins do not change.
 
 ## What this is
 
@@ -25,7 +25,7 @@ Used as an LLM tool, the only thing the model sends is the wait time, and it lan
 - **Making it work is unintuitive.** The model's value only takes effect if `delay_ms` is switched from fixed to dynamic and the same tool request is wired to both `data` and `delay_ms`.
 - **There is no confirmation for the model.** Delay returns the model's own value, so a finished wait looks like a tool that did nothing. Without a confirmation, the model calls the tool over and over again, depending on the model. Today the flow designer has to add a String Template, such as "Waited {{output}}", to give the model that confirmation.
 
-When this brief is done, Delay can no longer fall back to 1 second without anyone noticing. A flow designer has to supply `delay_ms`, the field starts ready to be wired, and an LLM component has to send it.
+When this brief is done, Delay can no longer fall back to 1 second without anyone noticing. A flow designer has to set or wire `delay_ms`, and an LLM component has to send it.
 
 ### Terms used here
 
@@ -63,7 +63,7 @@ Docking Delay 1.0.0 in the LLM block's Components slot does not help either. The
 Release Delay 1.1.0 next to an unchanged Delay 1.0.0, the way String Template (1.0.0, 2.0.0) and HTTP Request (1.0.0, 2.0.0) already keep older versions.
 
 1. **`delay_ms` is required, with no default.** It can no longer fall back to 1 second. The designer flags it as missing until it is set or wired.
-2. **`delay_ms` starts as dynamic.** A new Delay 1.1.0 shows `delay_ms` as an input pin, ready to be wired from a tool request. It can still be switched to fixed. It keeps its value between messages, as a fixed setting does.
+2. **`delay_ms` stays a Config.** Like other blocks' settings, it starts as fixed in the designer and can be switched to dynamic to wire it from a tool request. It keeps its value between messages.
 3. **Output pins are unchanged.** Delay still forwards `data` unchanged after the wait.
 
 As an LLM component, a required `delay_ms` becomes a required parameter, so the model has to send it. Checked against ai-api's `develop` code: Delay 1.0.0 requires only `data`, Delay 1.1.0 requires `data` and `delay_ms`.
@@ -79,7 +79,7 @@ As a tool, the request is still wired to both `delay_ms` and `data`, and a Strin
 
 | | |
 |---|---|
-| **Changes** | Delay 1.1.0 appears in the block's version selector, and a Delay dragged onto a new flow gets 1.1.0. Its `delay_ms` starts as dynamic and must be set or wired. As a component, the model must send `delay_ms`. |
+| **Changes** | Delay 1.1.0 appears in the block's version selector, and a Delay dragged onto a new flow gets 1.1.0. Its `delay_ms` has no default and must be set or wired. As a component, the model must send `delay_ms`. |
 | **Stays the same** | Delay 1.0.0 and every saved flow that uses it, including flows pinned to `1.0.X`. Delay's output. The LLM block, and its `max_calls` and global tool call limits. |
 | **Could be affected** | A flow switched from 1.0.0 to 1.1.0 by hand loses the 1000 default and has to set `delay_ms`. |
 
@@ -100,8 +100,8 @@ Existing flows are not affected by Delay 1.1.0: they stay on Delay 1.0.0 and run
 
 The owner's own words. This is the sign-off, and it is not edited.
 
-- **What done means:** `Delay_1_1_0` is registered alongside Delay 1.0.0. Its `delay_ms` is declared `Input(sticky=True)` with no default, so the interface marks it required, without `config` metadata (dynamic in the designer), and sticky. The `delay` step and the `output` pin are the same as 1.0.0.
-- **What will be built first:** tests for 1.1.0's `delay_ms` interface (required, no default, dynamic, sticky), version resolution of `1.0.0`, `1.0.X` and `1.1.0`, and Delay 1.0.0's unchanged behaviour. Then `Delay_1_1_0`, and the SDK bump in ai-api.
+- **What done means:** `Delay_1_1_0` is registered alongside Delay 1.0.0. Its `delay_ms` is declared `Config()` with no default, so the interface marks it required, with `config` metadata (fixed in the designer by default), and sticky. The `delay` step and the `output` pin are the same as 1.0.0.
+- **What will be built first:** tests for 1.1.0's `delay_ms` interface (required, no default, Config, sticky), version resolution of `1.0.0`, `1.0.X` and `1.1.0`, and Delay 1.0.0's unchanged behaviour. Then `Delay_1_1_0`, and the SDK bump in ai-api.
 - **What will NOT be built:** no change to Delay 1.0.0, no change to Delay's output, no negative-value check, and no change to the LLM block.
 - **Edge cases that apply:** saved flows pinned to Delay 1.0.0 or `1.0.X` keep resolving to 1.0.0. A Delay 1.1.0 run without `delay_ms` fails rather than waiting a default time. A negative `delay_ms` returns straight away.
 
@@ -111,11 +111,11 @@ The owner's own words. This is the sign-off, and it is not edited.
 
 *smartspace-sdk*
 
-Adds Delay 1.1.0 next to Delay 1.0.0, with `delay_ms` required, no default, and dynamic by default. Delay 1.0.0 is not changed.
+Adds Delay 1.1.0 next to Delay 1.0.0, with `delay_ms` a required Config with no default. Delay 1.0.0 is not changed.
 
 **After this merges:**
 
-- Delay 1.1.0 can be selected in the designer, with `delay_ms` starting as dynamic.
+- Delay 1.1.0 can be selected in the designer, with `delay_ms` flagged until it is set or wired.
 - `delay_ms` must be set or wired; there is no 1 second fallback.
 - Saved flows on Delay 1.0.0 or `1.0.X` run exactly as before.
 
@@ -123,7 +123,7 @@ Adds Delay 1.1.0 next to Delay 1.0.0, with `delay_ms` required, no default, and 
 
 - Delay 1.1.0 registers as "Delay", version 1.1.0.
 - Delay 1.1.0's `delay_ms` is required, with no default.
-- Delay 1.1.0's `delay_ms` starts as dynamic and is sticky.
+- Delay 1.1.0's `delay_ms` is a Config (fixed by default) and is sticky.
 - Delay 1.0.0's `delay_ms` keeps its 1000 default and stays fixed.
 - Delay 1.1.0's output pins match Delay 1.0.0's.
 - `1.0.0` and `1.0.X` resolve to Delay 1.0.0, and `1.1.0` resolves to Delay 1.1.0.
@@ -151,7 +151,7 @@ Fix on `fix/delay-ms-required`. Verified on 2026-10-21:
 | Delay unit tests | 10 of 10 pass |
 | SDK test suite | 149 of 149 pass. Lint clean. |
 | Component projection (ai-api `develop` code) | Delay 1.0.0 requires `data`; Delay 1.1.0 requires `data` and `delay_ms` |
-| New Delay in the designer (local) | Version 1.1.0, `delay_ms` dynamic and flagged until set or wired |
+| New Delay in the designer (local) | Version 1.1.0, `delay_ms` flagged until set or wired. Checked while `delay_ms` was declared dynamic; it is now a Config, which starts as fixed (unit tested) |
 | Fixed and wired `delay_ms` (local) | Waits the set time; output unchanged |
 | LLM tool, request wired to `delay_ms` and `data` (local) | Waits the time the model asks for |
 | Existing flows on 1.0.0 and `1.0.X` (local) | Unchanged, still wait 1 second by default |

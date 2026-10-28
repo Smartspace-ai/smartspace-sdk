@@ -53,10 +53,10 @@ def test_delay_1_0_0_delay_ms_keeps_default():
     assert pin.default == 1000
 
 
-def test_delay_1_1_0_delay_ms_starts_dynamic():
+def test_delay_1_1_0_delay_ms_is_config():
     pin = _delay_ms_pin(Delay_1_1_0)
 
-    assert not pin.metadata.get("config")
+    assert pin.metadata.get("config") is True
     assert pin.sticky is True
 
 

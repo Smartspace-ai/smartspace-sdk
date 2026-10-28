@@ -1,7 +1,7 @@
 import asyncio
 from typing import Annotated, Any
 
-from smartspace.core import Block, Config, Input, Metadata, Output, metadata, step
+from smartspace.core import Block, Config, Metadata, Output, metadata, step
 from smartspace.enums import BlockCategory
 
 
@@ -41,7 +41,7 @@ class Delay(Block):
 class Delay_1_1_0(Block):
     delay_ms: Annotated[
         int,
-        Input(sticky=True),
+        Config(),
         Metadata(
             description="Delay duration in milliseconds before forwarding the input"
         ),

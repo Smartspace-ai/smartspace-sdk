@@ -27,3 +27,29 @@ class Delay(Block):
     async def delay(self, data: Any):
         await asyncio.sleep(self.delay_ms / 1000)
         self.output.send(data)
+
+
+@metadata(
+    category=BlockCategory.CONTROL,
+    icon="fa-hourglass-half",
+    label="delay, wait, pause, sleep, timer",
+    description=(
+        "Waits for the configured number of milliseconds, then forwards the "
+        "input data unchanged to the output."
+    ),
+)
+class Delay_1_1_0(Block):
+    delay_ms: Annotated[
+        int,
+        Config(),
+        Metadata(
+            description="Delay duration in milliseconds before forwarding the input"
+        ),
+    ]
+
+    output: Output[Any]
+
+    @step()
+    async def delay(self, data: Any):
+        await asyncio.sleep(self.delay_ms / 1000)
+        self.output.send(data)

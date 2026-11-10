@@ -1,0 +1,14 @@
+# Line endings: stored as LF and checked out as LF on every OS.
+* text=auto eol=lf
+*.sh text eol=lf
+
+# Binary: never touch line endings.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.pdf   binary
+*.zip   binary
+*.whl   binary
